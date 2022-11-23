@@ -1,4 +1,4 @@
-Package: GWmodel
+Package: GWmodel3
 Type: Package
 Title: What the package does (short line)
 Version: 3.0-0
@@ -11,7 +11,7 @@ Description: Techniques from a particular branch of spatial statistics, termed
     geographically-weighted (GW) models. GW models suit situations when
     data are not described well by some global model, but where there are
     spatial regions where a suitably localised calibration provides a
-    better description. 'GWmodel' includes:
+    better description. 'GWmodel3' includes:
     GW summary statistics
     (Brunsdon et al., 2002)<doi:10.1016/s0198-9715(01)00009-6>,
     GW principal components analysis

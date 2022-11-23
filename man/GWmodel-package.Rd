@@ -1,25 +1,25 @@
-\name{GWmodel-package}
-\alias{GWmodel-package}
-\alias{GWmodel}
+\name{GWmodel3-package}
+\alias{GWmodel3-package}
+\alias{GWmodel3}
 \docType{package}
 \title{
-\packageTitle{GWmodel}
+\packageTitle{GWmodel3}
 }
 \description{
-\packageDescription{GWmodel}
+\packageDescription{GWmodel3}
 }
 \details{
 
 The DESCRIPTION file:
-\packageDESCRIPTION{GWmodel}
-\packageIndices{GWmodel}
+\packageDESCRIPTION{GWmodel3}
+\packageIndices{GWmodel3}
 ~~ An overview of how to use the package, including the most important ~~
 ~~ functions ~~
 }
 \author{
-\packageAuthor{GWmodel}
+\packageAuthor{GWmodel3}
 
-Maintainer: \packageMaintainer{GWmodel}
+Maintainer: \packageMaintainer{GWmodel3}
 }
 \references{
 ~~ Literature or other references for background information ~~
