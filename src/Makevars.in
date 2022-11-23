@@ -1,0 +1,55 @@
+
+## With R 3.1.0 or later, you can uncomment the following line to tell R to 
+## enable compilation with C++11 (where available)
+##
+## Also, OpenMP support in Armadillo prefers C++11 support. However, for wider
+## availability of the package we do not yet enforce this here.  It is however
+## recommended for client packages to set it.
+##
+## And with R 3.4.0, and RcppArmadillo 0.7.960.*, we turn C++11 on as OpenMP
+## support within Armadillo prefers / requires it
+CXX_STD = CXX17
+
+GSL_LIBS = @GSL_LIBS@
+GSL_CFLAGS = @GSL_CFLAGS@
+
+DEF_DOUBLE_EPS = 1e-8
+DEF_M_PI = 3.14159265358979323846
+DEF_M_PI_2 = 1.57079632679489661923
+
+LIBGWMODEL_CXXFLAGS = -I./libgwmodel/include -I./libgwmodel/include/gwmodelpp -DM_PI=$(DEF_M_PI) -DM_PI_2=$(DEF_M_PI_2) -DDOUBLE_EPS=$(DEF_DOUBLE_EPS) -DDBL_MAX=__DBL_MAX__
+
+ifdef SHLIB_OPENMP_CXXFLAGS
+	LIBGWMODEL_CXXFLAGS = $(LIBGWMODEL_CXXFLAGS) -DENABLE_OPENMP
+endif
+
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DRCPP_USE_GLOBAL_ROSTREAM -DENABLE_OPENMP
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_LIBS)
+
+OBJECTS_LIBGWMODEL = \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmBandwidthWeight.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmCRSDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmDMatDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmMinkwoskiDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmOneDimDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmSpatialWeight.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CGwmWeight.o \
+	libgwmodel/src/gwmodelpp/CGwmAlgorithm.o \
+	libgwmodel/src/gwmodelpp/CGwmBandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/CGwmGWDR.o \
+	libgwmodel/src/gwmodelpp/CGwmGWPCA.o \
+	libgwmodel/src/gwmodelpp/CGwmGWRBase.o \
+	libgwmodel/src/gwmodelpp/CGwmGWRBasic.o \
+	libgwmodel/src/gwmodelpp/CGwmGWSS.o \
+	libgwmodel/src/gwmodelpp/CGwmMGWR.o \
+	libgwmodel/src/gwmodelpp/CGwmSimpleLayer.o \
+	libgwmodel/src/gwmodelpp/CGwmSpatialAlgorithm.o \
+	libgwmodel/src/gwmodelpp/CGwmSpatialMonoscaleAlgorithm.o \
+	libgwmodel/src/gwmodelpp/CGwmSpatialMultiscaleAlgorithm.o \
+	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o
+
+OBJECTS_GWMODEL = \
+	RcppExports.o
+
+OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_GWMODEL)
