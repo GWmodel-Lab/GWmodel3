@@ -23,7 +23,7 @@ Description: Techniques from a particular branch of spatial statistics, termed
     some of which are provided in basic and robust (outlier resistant) forms.
 License: GPL (>= 2)
 Imports:
-    Rcpp (>= 1.0.9),
+    Rcpp (>= 1.0.8),
     sf
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
