@@ -6,9 +6,22 @@
     bw, adaptive, kernel, longlat, p, theta,
     hatmatrix, parallel_type, parallel_arg
 ) {
+    kernel_i = switch(kernel,
+        "gaussian" = 0,
+        "exp" = 1,
+        "bisquare" = 2,
+        "tricube" = 3,
+        "boxcar" = 4
+    )
+    parallel_type_i = switch(parallel_type,
+        "none" = 0,
+        "omp" = 1,
+        "cuda" = 2,
+        "cluster" = 3
+    )
     .Call("_GWmodel_gwr_basic",
         x, y, coords, indep_vars, dep_var,
-        bw, adaptive, kernel, longlat, p, theta,
-        hatmatrix, parallel_type, parallel_arg
+        bw, adaptive, kernel_i, longlat, p, theta,
+        hatmatrix, parallel_type_i, parallel_arg
     )
 }

@@ -30,23 +30,23 @@ gwr_basic <- function(
     theta = 0.0,
     hatmatrix = TRUE,
     parallel_method = c("none", "omp", "cuda", "cluster"),
-    parallel_arg = NULL) 
+    parallel_arg = c(0)) 
 {
     ### Check args
     kernel = match.arg(kernel)
     parallel_method = match.arg(parallel_method)
 
     ### Extract coords
-    coords <- sf::st_centroid(data)
+    coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
     if (is.null(coords) || nrow(coords) != nrow(data))
         stop("Missing coordinates.")
     
     ### Extract variables
     fields <- all.vars(formula)
-    xfields <- fields[1]
-    yfields <- fields[-1]
-    x <- data[, xfields]
-    y <- data[, yfields]
+    xfields <- fields[-1]
+    yfields <- fields[1]
+    x <- as.matrix(sf::st_drop_geometry(data[, xfields]))
+    y <- as.matrix(sf::st_drop_geometry(data[, yfields]))
 
     ### Call solver
     c_result <- .c_gwr_basic(

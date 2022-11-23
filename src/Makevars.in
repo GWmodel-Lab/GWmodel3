@@ -35,6 +35,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmOneDimDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmSpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmWeight.o \
+	libgwmodel/src/gwmodelpp/GwmVariable.o \
 	libgwmodel/src/gwmodelpp/CGwmAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmBandwidthSelector.o \
 	libgwmodel/src/gwmodelpp/CGwmGWDR.o \
@@ -50,6 +51,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o
 
 OBJECTS_GWMODEL = \
+	gwr_basic.o \
 	RcppExports.o
 
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_GWMODEL)
