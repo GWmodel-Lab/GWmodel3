@@ -1,8 +1,8 @@
 #' Calibrate a basic GWR model
-#' 
+#'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.
-#' @param bw Bandwidth value. Depends on the value of `adaptive`. 
+#' @param bw Bandwidth value. Depends on the value of `adaptive`.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
 #' @param longlat Whether the coordinates
@@ -11,13 +11,13 @@
 #' @param hatmatrix If TRUE, great circle will be caculated
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
-#' 
+#'
 #' @return A `gwrm` object.
-#' 
-#' @examples 
+#'
+#' @examples
 #' data(LondonHP)
 #' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
-#' 
+#'
 #' @export
 gwr_basic <- function(
     formula,
@@ -30,17 +30,17 @@ gwr_basic <- function(
     theta = 0.0,
     hatmatrix = TRUE,
     parallel_method = c("none", "omp", "cuda", "cluster"),
-    parallel_arg = c(0)) 
+    parallel_arg = c(0))
 {
     ### Check args
-    kernel = match.arg(kernel)
-    parallel_method = match.arg(parallel_method)
+    kernel = match.arg(tolower(kernel))
+    parallel_method = match.arg(tolower(parallel_method))
 
     ### Extract coords
     coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
     if (is.null(coords) || nrow(coords) != nrow(data))
         stop("Missing coordinates.")
-    
+
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
     mt <- match(c("formula", "data"), names(mc), 0L)
@@ -54,6 +54,10 @@ gwr_basic <- function(
     hasIntercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
+
+    ### Check whether bandwidth is valid.
+    if (missing(bw) || is.na(bw) || is.null(bw) || !(is.numeric(bw) || is.integer(bw)) || is.infinite(bw) || bw <= 0)
+        stop("Bandwidth has invalid value.")
 
     ### Call solver
     c_result <- .c_gwr_basic(
@@ -77,9 +81,9 @@ gwr_basic <- function(
     colnames(betas) <- indep_vars
     colnames(betasSE) <- paste(indep_vars, "SE", sep = ".")
     colnames(betasTV) <- paste(indep_vars, "TV", sep = ".")
-    sdf <- as.data.frame(cbind(betas, "yhat" = fitted, "residual" = resi, betasSE, betasTV))
+    sdf_data <- as.data.frame(cbind(betas, "yhat" = fitted, "residual" = resi, betasSE, betasTV))
     geometry <- sf::st_geometry(data)
-    sdf$geometry <- geometry
+    sdf_data$geometry <- geometry
     sdf <- sf::st_sf(sdf)
     ### Return result
     gwrm <- list(
@@ -107,31 +111,31 @@ gwr_basic <- function(
 }
 
 #' Print description of a `gwrm` object
-#' 
+#'
 #' @param x An `hgwrm` object returned by [gwr_basic()].
 #' @param decimal.fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' 
+#'
 #' @return No return.
-#' 
+#'
 #' @export
-#' 
+#'
 print.gwrm <- function(x, decimal.fmt = "%.3f", ...) {
     if (!inherits(x, "gwrm")) {
         stop("It's not a hgwrm object.")
     }
-    
+
     ### Basic Information
     cat("Geographically Weighted Regression Model", fill = T)
     cat("========================================", fill = T)
     cat("  Formula:", deparse(x$call[[2]]), fill = T)
     cat("     Data:", deparse(x$call[[3]]), fill = T)
     cat("   Kernel:", x$args$kernel, fill = T)
-    cat("Bandwidth:", x$args$bw, 
+    cat("Bandwidth:", x$args$bw,
         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
         fill = T)
     cat("\n", fill = T)
-    
+
     cat("Summary of Coefficient Estimates", fill = T)
     cat("--------------------------------", fill = T)
     beta_fivenum <- t(apply(x$betas, 2, fivenum))
