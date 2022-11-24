@@ -7,7 +7,7 @@
 gwr_basic(
   formula,
   data,
-  bw,
+  bw = NA,
   adaptive = FALSE,
   kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
   longlat = FALSE,
@@ -23,7 +23,13 @@ gwr_basic(
 
 \item{data}{A `sf` objects.}
 
-\item{bw}{Bandwidth value. Depends on the value of `adaptive`.}
+\item{bw}{Either a value to set the size of bandwidth,
+or one of the following characters to set the criterion for
+bandwidth auto-optimization process.
+- `AIC`
+- `CV`
+Note that if `NA` or other non-numeric value is setted,
+this parameter will be reset to `Inf`.}
 
 \item{adaptive}{Whether the bandwidth value is adaptive or not.}
 
@@ -31,7 +37,8 @@ gwr_basic(
 
 \item{longlat}{Whether the coordinates}
 
-\item{p}{Power of the Minkowski distance, default is 2, i.e. the Euclidean distance.}
+\item{p}{Power of the Minkowski distance,
+default to 2, i.e., Euclidean distance.}
 
 \item{theta}{Angle in radian to roate the coordinate system, default to 0.}
 
@@ -49,6 +56,8 @@ Calibrate a basic GWR model
 }
 \examples{
 data(LondonHP)
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+
+gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE) # Basic usage
+gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE) # Bandwidth Optimization
 
 }

@@ -48,7 +48,6 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o
 
 OBJECTS_GWMODEL = \
-	gwr_basic.o \
 	RcppExports.o
 
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_GWMODEL)

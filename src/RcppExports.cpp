@@ -6,7 +6,7 @@
 #include <armadillo>
 #include <vector>
 #include <string>
-#include "libgwmodel/include/gwmodelpp/GwmRegressionDiagnostic.h"
+#include "gwmodel.h"
 
 using namespace Rcpp;
 
@@ -38,17 +38,12 @@ inline SEXP ator(const arma::vec& avec)
     return x;
 }
 
-int gwm_gwr_basic(
-    const arma::mat& x, const arma::vec& y, const arma::mat& coords,
-    double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta,
-    bool hatmatrix, bool intercept, size_t parallel_type, int parallel_arg,
-    arma::mat& betas, arma::mat& betasSE, arma::vec& sTrace, arma::mat& sHat, arma::vec& fitted,
-    GwmRegressionDiagnostic& diagnostic);
 RcppExport SEXP _GWmodel_gwr_basic(
     SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
     SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
     SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP,
-    SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
+    SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP,
+    SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP)
 {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -66,6 +61,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
+    Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
+    Rcpp::traits::input_parameter< size_t >::type optim_bw_criterion(optim_bw_criterionSEXP);
 
     // Convert data types
     arma::mat mx = rtoa(x);
@@ -73,21 +70,34 @@ BEGIN_RCPP
     arma::mat mcoords = rtoa(coords);
     std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
 
-    arma::mat betas, betasSE, sHat;
-    arma::vec sTrace, fitted;
-    GwmRegressionDiagnostic diagnostic;
-    int status = gwm_gwr_basic(
-        mx, my, mcoords, bw, adaptive, kernel, longlat, p, theta,
-        hatmatrix, intercept, parallel_type, vpar_args[0],
-        betas, betasSE, sTrace, sHat, fitted, diagnostic
-    );
-
-    if (status != 0)
+    // Make Spatial Weight
+    CGwmBandwidthWeight bandwidth(bw, adaptive, CGwmBandwidthWeight::KernelFunctionType((size_t)kernel));
+    CGwmDistance* distance = nullptr;
+    if (longlat)
     {
-        throw std::runtime_error("Cannot calibrate basic GWR model.");
+        distance = new CGwmCRSDistance(true);
     }
+    else
+    {
+        if (p == 2.0 && theta == 0.0)
+        {
+            distance = new CGwmCRSDistance(false);
+        }
+        else
+        {
+            distance = new CGwmMinkwoskiDistance(p, theta);
+        }
+    }
+    CGwmSpatialWeight spatial(&bandwidth, distance);
+    
+    // Make Algorithm Object
+    CGwmGWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
+    algorithm.setIsAutoselectBandwidth(optim_bw);
+    algorithm.setBandwidthSelectionCriterion(CGwmGWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
+    algorithm.fit();
 
     // Get Diagnostic
+    GwmRegressionDiagnostic diagnostic = algorithm.diagnostic();
     List mdiagnostic = List::create(
         Named("RSS") = diagnostic.RSS,
         Named("AIC") = diagnostic.AIC,
@@ -98,21 +108,30 @@ BEGIN_RCPP
         Named("RSquareAdjust") = diagnostic.RSquareAdjust
     );
 
+    mat betas = algorithm.betas();
+
     // Return Results
-    rcpp_result_gen = List::create(
+    List result_list = List::create(
         Named("betas") = ator(betas),
-        Named("betasSE") = ator(betasSE),
-        Named("sTrace") = ator(sTrace),
-        Named("sHat") = ator(sHat),
-        Named("fitted") = ator(fitted),
+        Named("betasSE") = ator(algorithm.betasSE()),
+        Named("sTrace") = ator(algorithm.sHat()),
+        Named("sHat") = ator(algorithm.s()),
+        Named("fitted") = ator(algorithm.Fitted(mx, betas)),
         Named("diagnostic") = mdiagnostic
     );
+    if (optim_bw)
+    {
+        double bw_value = algorithm.spatialWeight().weight<CGwmBandwidthWeight>()->bandwidth();
+        result_list["bandwidth"] = wrap(bw_value);
+    }
+
+    rcpp_result_gen = result_list;
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 13},
+    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 15},
     {NULL, NULL, 0}
 };
 

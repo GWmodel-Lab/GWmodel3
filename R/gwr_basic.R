@@ -2,11 +2,18 @@
 #'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.
-#' @param bw Bandwidth value. Depends on the value of `adaptive`.
+#' @param bw Either a value to set the size of bandwidth,
+#'  or one of the following characters to set the criterion for
+#'  bandwidth auto-optimization process.
+#'  - `AIC`
+#'  - `CV`
+#'  Note that if `NA` or other non-numeric value is setted,
+#'  this parameter will be reset to `Inf`.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
 #' @param longlat Whether the coordinates
-#' @param p Power of the Minkowski distance, default is 2, i.e. the Euclidean distance.
+#' @param p Power of the Minkowski distance,
+#'  default to 2, i.e., Euclidean distance.
 #' @param theta Angle in radian to roate the coordinate system, default to 0.
 #' @param hatmatrix If TRUE, great circle will be caculated
 #' @param parallel_method Parallel method.
@@ -16,13 +23,15 @@
 #'
 #' @examples
 #' data(LondonHP)
-#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#' 
+#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE) # Basic usage
+#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE) # Bandwidth Optimization
 #'
 #' @export
 gwr_basic <- function(
     formula,
     data,
-    bw,
+    bw = NA,
     adaptive = FALSE,
     kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
     longlat = FALSE,
@@ -33,8 +42,8 @@ gwr_basic <- function(
     parallel_arg = c(0))
 {
     ### Check args
-    kernel = match.arg(tolower(kernel))
-    parallel_method = match.arg(tolower(parallel_method))
+    kernel = match.arg(kernel)
+    parallel_method = match.arg(parallel_method)
 
     ### Extract coords
     coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
@@ -56,21 +65,39 @@ gwr_basic <- function(
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
 
     ### Check whether bandwidth is valid.
-    if (missing(bw) || is.na(bw) || is.null(bw) || !(is.numeric(bw) || is.integer(bw)) || is.infinite(bw) || bw <= 0)
-        stop("Bandwidth has invalid value.")
+    if (missing(bw))
+    {
+        optim_bw <- TRUE
+        optim_bw_criterion <- "AIC"
+        bw <- Inf
+    }
+    else if (is.numeric(bw) || is.integer(bw)) {
+        optim_bw <- FALSE
+        optim_bw_criterion <- "AIC"
+    }
+    else
+    {
+        optim_bw <- TRUE
+        optim_bw_criterion <- ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
+        bw <- Inf
+    }
 
     ### Call solver
     c_result <- .c_gwr_basic(
         x, y, coords, bw, adaptive, kernel, longlat, p, theta,
-        hatmatrix, hasIntercept, parallel_method, parallel_arg
+        hatmatrix, hasIntercept, parallel_method, parallel_arg,
+        optim_bw, optim_bw_criterion
     )
+    if (optim_bw)
+    {
+        bw <- c_result$bandwidth
+    }
     betas <- c_result$betas
     betasSE <- c_result$betasSE
     sTrace <- c_result$sTrace
     sHat <- c_result$sHat
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
-    ### Additional diagnostic
     resi <- y - fitted
     n_dp <- nrow(coords)
     rss_gw <- sum(resi * resi)
@@ -78,13 +105,15 @@ gwr_basic <- function(
     betasSE <- sqrt(sigma * betasSE)
     betasTV <- betas / betasSE
 
+    ### Create result Layer
     colnames(betas) <- indep_vars
     colnames(betasSE) <- paste(indep_vars, "SE", sep = ".")
     colnames(betasTV) <- paste(indep_vars, "TV", sep = ".")
     sdf_data <- as.data.frame(cbind(betas, "yhat" = fitted, "residual" = resi, betasSE, betasTV))
     geometry <- sf::st_geometry(data)
     sdf_data$geometry <- geometry
-    sdf <- sf::st_sf(sdf)
+    sdf <- sf::st_sf(sdf_data)
+
     ### Return result
     gwrm <- list(
         SDF = sdf,
@@ -102,7 +131,9 @@ gwr_basic <- function(
             theta = theta,
             hatmatrix = hatmatrix,
             parallel_method = parallel_method,
-            parallel_arg = parallel_arg
+            parallel_arg = parallel_arg,
+            optim_bw = optim_bw,
+            optim_bw_criterion = optim_bw_criterion
         ),
         call = mc
     )
@@ -133,6 +164,7 @@ print.gwrm <- function(x, decimal.fmt = "%.3f", ...) {
     cat("   Kernel:", x$args$kernel, fill = T)
     cat("Bandwidth:", x$args$bw,
         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+        ifelse(x$args$optim_bw, paste0("(Optimized accroding to ", x$args$optim_bw_criterion, ")"), ""),
         fill = T)
     cat("\n", fill = T)
 
