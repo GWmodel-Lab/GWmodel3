@@ -35,8 +35,6 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmOneDimDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmSpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CGwmWeight.o \
-	libgwmodel/src/gwmodelpp/GwmVariable.o \
-	libgwmodel/src/gwmodelpp/CGwmAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmBandwidthSelector.o \
 	libgwmodel/src/gwmodelpp/CGwmGWDR.o \
 	libgwmodel/src/gwmodelpp/CGwmGWPCA.o \
@@ -44,7 +42,6 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/CGwmGWRBasic.o \
 	libgwmodel/src/gwmodelpp/CGwmGWSS.o \
 	libgwmodel/src/gwmodelpp/CGwmMGWR.o \
-	libgwmodel/src/gwmodelpp/CGwmSimpleLayer.o \
 	libgwmodel/src/gwmodelpp/CGwmSpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmSpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmSpatialMultiscaleAlgorithm.o \

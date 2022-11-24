@@ -6,6 +6,7 @@
 #include <armadillo>
 #include <vector>
 #include <string>
+#include "libgwmodel/include/gwmodelpp/GwmRegressionDiagnostic.h"
 
 using namespace Rcpp;
 
@@ -16,13 +17,11 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 inline arma::mat rtoa(const NumericMatrix& rmat)
 {
-    Rcout << "rmat(" << rmat.nrow() << "," << rmat.ncol() << ")\n";
     return arma::mat(rmat.begin(), rmat.nrow(), rmat.ncol());
 }
 
 inline arma::vec rtoa(const NumericVector& rvec)
 {
-    Rcout << "rvec(" << rvec.size() << ")\n";
     return arma::vec(rvec.begin(), rvec.size());
 }
 
@@ -41,16 +40,15 @@ inline SEXP ator(const arma::vec& avec)
 
 int gwm_gwr_basic(
     const arma::mat& x, const arma::vec& y, const arma::mat& coords,
-    const std::vector<std::string>& indep_vars, const std::vector<std::string>& dep_var,
-    double bw, bool adaptive, size_t kernel,
-    bool longlat, double p, double theta,
-    bool hatmatrix, size_t parallel_type, int parallel_arg);
+    double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta,
+    bool hatmatrix, bool intercept, size_t parallel_type, int parallel_arg,
+    arma::mat& betas, arma::mat& betasSE, arma::vec& sTrace, arma::mat& sHat, arma::vec& fitted,
+    GwmRegressionDiagnostic& diagnostic);
 RcppExport SEXP _GWmodel_gwr_basic(
     SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
-    SEXP indep_varsSEXP, SEXP dep_varSEXP,
     SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
     SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP,
-    SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
+    SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
 {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -58,8 +56,6 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
     Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
-    Rcpp::traits::input_parameter< const CharacterVector& >::type indep_vars(indep_varsSEXP);
-    Rcpp::traits::input_parameter< const CharacterVector& >::type dep_var(dep_varSEXP);
     Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
     Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
     Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
@@ -67,6 +63,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
     Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
+    Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
 
@@ -74,35 +71,48 @@ BEGIN_RCPP
     arma::mat mx = rtoa(x);
     arma::vec my = rtoa(y);
     arma::mat mcoords = rtoa(coords);
-    std::vector<std::string> vxfields = as< std::vector<std::string> >(Rcpp::CharacterVector(indep_vars));
-    std::vector<std::string> vyfields = as< std::vector<std::string> >(Rcpp::CharacterVector(dep_var));
     std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
 
-    int status = gwm_gwr_basic(mx, my, mcoords, vxfields, vyfields, bw, adaptive, kernel, longlat, p, theta, hatmatrix, parallel_type, vpar_args[0]);
+    arma::mat betas, betasSE, sHat;
+    arma::vec sTrace, fitted;
+    GwmRegressionDiagnostic diagnostic;
+    int status = gwm_gwr_basic(
+        mx, my, mcoords, bw, adaptive, kernel, longlat, p, theta,
+        hatmatrix, intercept, parallel_type, vpar_args[0],
+        betas, betasSE, sTrace, sHat, fitted, diagnostic
+    );
+
+    if (status != 0)
+    {
+        throw std::runtime_error("Cannot calibrate basic GWR model.");
+    }
+
     // Get Diagnostic
-    // GwmRegressionDiagnostic diagnostic = algorithm.diagnostic();
-    // List mdiagnostic = List::create(
-    //     Named("RSS") = diagnostic.RSS,
-    //     Named("AIC") = diagnostic.AIC,
-    //     Named("AICc") = diagnostic.AICc,
-    //     Named("ENP") = diagnostic.ENP,
-    //     Named("EDF") = diagnostic.EDF,
-    //     Named("RSquare") = diagnostic.RSquare,
-    //     Named("RSquareAdjust") = diagnostic.RSquareAdjust
-    // );
+    List mdiagnostic = List::create(
+        Named("RSS") = diagnostic.RSS,
+        Named("AIC") = diagnostic.AIC,
+        Named("AICc") = diagnostic.AICc,
+        Named("ENP") = diagnostic.ENP,
+        Named("EDF") = diagnostic.EDF,
+        Named("RSquare") = diagnostic.RSquare,
+        Named("RSquareAdjust") = diagnostic.RSquareAdjust
+    );
 
     // Return Results
     rcpp_result_gen = List::create(
-        // Named("betas") = wrap(mbetas),
-        // Named("diagnostic") = mdiagnostic,
-        // Named("fitted") = ator(mfitted)
+        Named("betas") = ator(betas),
+        Named("betasSE") = ator(betasSE),
+        Named("sTrace") = ator(sTrace),
+        Named("sHat") = ator(sHat),
+        Named("fitted") = ator(fitted),
+        Named("diagnostic") = mdiagnostic
     );
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 14},
+    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 13},
     {NULL, NULL, 0}
 };
 

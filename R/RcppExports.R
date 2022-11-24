@@ -2,9 +2,8 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .c_gwr_basic <- function(
-    x, y, coords, indep_vars, dep_var,
-    bw, adaptive, kernel, longlat, p, theta,
-    hatmatrix, parallel_type, parallel_arg
+    x, y, coords, bw, adaptive, kernel, longlat, p, theta,
+    hatmatrix, intercept, parallel_type, parallel_arg
 ) {
     kernel_i = switch(kernel,
         "gaussian" = 0,
@@ -20,8 +19,7 @@
         "cluster" = 3
     )
     .Call("_GWmodel_gwr_basic",
-        x, y, coords, indep_vars, dep_var,
-        bw, adaptive, kernel_i, longlat, p, theta,
-        hatmatrix, parallel_type_i, parallel_arg
+        x, y, coords, bw, adaptive, kernel_i, longlat, p, theta,
+        hatmatrix, intercept, parallel_type_i, parallel_arg
     )
 }

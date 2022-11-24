@@ -28,3 +28,4 @@ Imports:
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
 SystemRequirements: GNU make
+RoxygenNote: 7.1.2
