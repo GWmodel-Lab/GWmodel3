@@ -5,9 +5,11 @@
 #include <Rcpp.h>
 #include <armadillo>
 #include <vector>
+#include <utility>
 #include <string>
 #include "gwmodel.h"
 
+using namespace std;
 using namespace Rcpp;
 
 #ifdef RCPP_USE_GLOBAL_ROSTREAM
@@ -38,12 +40,41 @@ inline SEXP ator(const arma::vec& avec)
     return x;
 }
 
+List wrap(const GwmRegressionDiagnostic& diagnostic)
+{
+    return List::create(
+        Named("RSS") = diagnostic.RSS,
+        Named("AIC") = diagnostic.AIC,
+        Named("AICc") = diagnostic.AICc,
+        Named("ENP") = diagnostic.ENP,
+        Named("EDF") = diagnostic.EDF,
+        Named("RSquare") = diagnostic.RSquare,
+        Named("RSquareAdjust") = diagnostic.RSquareAdjust
+    );
+}
+
+List wrap(const VariablesCriterionList& criterion_list)
+{
+    List model_combinations;
+    NumericVector model_criterions;
+    for (auto &&item : criterion_list)
+    {
+        model_combinations.push_back(wrap(item.first));
+        model_criterions.push_back(item.second);
+    }
+    return List::create(
+        Named("models") = model_combinations,
+        Named("criterions") = model_criterions
+    );
+}
+
 RcppExport SEXP _GWmodel_gwr_basic(
     SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
     SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
     SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP,
     SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP,
-    SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP)
+    SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP,
+    SEXP select_modelSEXP, SEXP select_model_criterionSEXP, SEXP select_model_thresholdSEXP)
 {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -63,6 +94,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
     Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
     Rcpp::traits::input_parameter< size_t >::type optim_bw_criterion(optim_bw_criterionSEXP);
+    Rcpp::traits::input_parameter< bool >::type select_model(select_modelSEXP);
+    Rcpp::traits::input_parameter< size_t >::type select_model_criterion(select_model_criterionSEXP);
+    Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
 
     // Convert data types
     arma::mat mx = rtoa(x);
@@ -92,37 +126,37 @@ BEGIN_RCPP
     
     // Make Algorithm Object
     CGwmGWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
+    algorithm.setIsAutoselectIndepVars(select_model);
+    algorithm.setIndepVarSelectionThreshold(select_model_threshold);
     algorithm.setIsAutoselectBandwidth(optim_bw);
     algorithm.setBandwidthSelectionCriterion(CGwmGWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
     algorithm.fit();
 
-    // Get Diagnostic
-    GwmRegressionDiagnostic diagnostic = algorithm.diagnostic();
-    List mdiagnostic = List::create(
-        Named("RSS") = diagnostic.RSS,
-        Named("AIC") = diagnostic.AIC,
-        Named("AICc") = diagnostic.AICc,
-        Named("ENP") = diagnostic.ENP,
-        Named("EDF") = diagnostic.EDF,
-        Named("RSquare") = diagnostic.RSquare,
-        Named("RSquareAdjust") = diagnostic.RSquareAdjust
-    );
-
-    mat betas = algorithm.betas();
-
     // Return Results
+    mat betas = algorithm.betas();
     List result_list = List::create(
         Named("betas") = ator(betas),
         Named("betasSE") = ator(algorithm.betasSE()),
         Named("sTrace") = ator(algorithm.sHat()),
         Named("sHat") = ator(algorithm.s()),
-        Named("fitted") = ator(algorithm.Fitted(mx, betas)),
-        Named("diagnostic") = mdiagnostic
+        Named("diagnostic") = wrap(algorithm.diagnostic())
     );
     if (optim_bw)
     {
         double bw_value = algorithm.spatialWeight().weight<CGwmBandwidthWeight>()->bandwidth();
         result_list["bandwidth"] = wrap(bw_value);
+    }
+    if (select_model)
+    {
+        vector<size_t> sel_vars = algorithm.selectedVariables();
+        result_list["variables"] = wrap(sel_vars);
+        result_list["model_sel_criterions"] = wrap(algorithm.indepVarsSelectionCriterionList());
+        mat x = mx.cols(CGwmVariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = ator(CGwmGWRBasic::Fitted(x, betas));
+    }
+    else
+    {
+        result_list["fitted"] = ator(CGwmGWRBasic::Fitted(mx, betas));
     }
 
     rcpp_result_gen = result_list;
@@ -131,7 +165,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 15},
+    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 18},
     {NULL, NULL, 0}
 };
 

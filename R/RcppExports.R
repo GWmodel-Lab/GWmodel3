@@ -4,7 +4,8 @@
 .c_gwr_basic <- function(
     x, y, coords, bw, adaptive, kernel, longlat, p, theta,
     hatmatrix, intercept, parallel_type, parallel_arg,
-    optim_bw = FALSE, optim_bw_criterion = "AIC"
+    optim_bw = FALSE, optim_bw_criterion = "AIC",
+    select_model = FALSE, select_model_criterion = "AIC", select_model_threshold = 3.0
 ) {
     kernel_i = switch(kernel,
         "gaussian" = 0,
@@ -26,6 +27,7 @@
     .Call("_GWmodel_gwr_basic",
         x, y, coords, bw, adaptive, kernel_i, longlat, p, theta,
         hatmatrix, intercept, parallel_type_i, parallel_arg,
-        optim_bw, optim_bw_criterion_i
+        optim_bw, optim_bw_criterion_i,
+        select_model, select_model_criterion, select_model_threshold
     )
 }
