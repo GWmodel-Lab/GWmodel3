@@ -12,17 +12,20 @@
         "exp" = 1,
         "bisquare" = 2,
         "tricube" = 3,
-        "boxcar" = 4
+        "boxcar" = 4,
+        0
     )
     parallel_type_i = switch(parallel_type,
         "none" = 0,
         "omp" = 1,
         "cuda" = 2,
-        "cluster" = 3
+        "cluster" = 3,
+        0
     )
     optim_bw_criterion_i = switch(optim_bw_criterion,
-        "CV" = 0,
-        "AIC" = 1
+        "AIC" = 0,
+        "CV" = 1,
+        0
     )
     .Call("_GWmodel_gwr_basic",
         x, y, coords, bw, adaptive, kernel_i, longlat, p, theta,
