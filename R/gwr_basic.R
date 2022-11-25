@@ -154,6 +154,12 @@ gwr_basic <- function(
 #'  If `no` is specified, the bandwidth specified by argument `bw`
 #'  is used in calibrating selected models.
 #' @param \dots Other parameters.
+#'
+#' @return A `gwrm` object.
+#'
+#' @examples
+#' data(LondonHP)
+#' model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE), threshold = 100.0)
 #' 
 #' @export 
 model_sel.gwrm <- function(
@@ -219,13 +225,23 @@ model_sel.gwrm <- function(
     sdf_data$geometry <- sf::st_geometry(gwrm$SDF)
     sdf <- sf::st_sf(sdf_data)
 
+    ### Convert model sel criterions
+    model_sel_criterions <- c_result$model_sel_criterions
+    model_sel_criterions$models <- lapply(c_result$model_sel_criterions$models, function(model_var_idx, indep_vars, dep_var, has_intercept) {
+        sel_indep_vars <- indep_vars[model_var_idx + 1]
+        list(
+            formula = paste(dep_var, paste(ifelse(has_intercept, sel_indep_vars, c("0", sel_indep_vars)), collapse = "+"), sep = "~"),
+            variables = sel_indep_vars
+        )
+    }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept)
+
     ### Return result
     gwrm$SDF <- sdf
     gwrm$args$bw <- bw_value
     gwrm$args$select_model <- TRUE
     gwrm$args$select_model_criterion <- criterion
     gwrm$args$select_model_threshold <- threshold
-    gwrm$model_sel <- c_result$model_sel_criterions
+    gwrm$model_sel <- model_sel_criterions
     gwrm$indep_vars <- indep_vars
     gwrm
 }
