@@ -14,7 +14,7 @@ gwr_basic(
   p = 2,
   theta = 0,
   hatmatrix = TRUE,
-  parallel_method = c("none", "omp", "cuda", "cluster"),
+  parallel_method = c("no", "omp"),
   parallel_arg = c(0)
 )
 }

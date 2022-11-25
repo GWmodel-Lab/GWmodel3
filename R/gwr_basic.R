@@ -38,7 +38,7 @@ gwr_basic <- function(
     p = 2.0,
     theta = 0.0,
     hatmatrix = TRUE,
-    parallel_method = c("none", "omp", "cuda", "cluster"),
+    parallel_method = c("no", "omp"),
     parallel_arg = c(0))
 {
     ### Check args

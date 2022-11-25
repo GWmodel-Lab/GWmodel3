@@ -130,6 +130,18 @@ BEGIN_RCPP
     algorithm.setIndepVarSelectionThreshold(select_model_threshold);
     algorithm.setIsAutoselectBandwidth(optim_bw);
     algorithm.setBandwidthSelectionCriterion(CGwmGWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
+    switch (ParallelType(size_t(parallel_type)))
+    {
+    case ParallelType::SerialOnly:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    case ParallelType::OpenMP:
+        algorithm.setParallelType(ParallelType::OpenMP);
+        algorithm.setOmpThreadNum(vpar_args[0]);
+    default:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    }
     algorithm.fit();
 
     // Return Results
