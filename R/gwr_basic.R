@@ -229,11 +229,13 @@ model_sel.gwrm <- function(
     model_sel_criterions <- c_result$model_sel_criterions
     model_sel_criterions$models <- lapply(c_result$model_sel_criterions$models, function(model_var_idx, indep_vars, dep_var, has_intercept) {
         sel_indep_vars <- indep_vars[model_var_idx + 1]
-        list(
-            formula = paste(dep_var, paste(ifelse(has_intercept, sel_indep_vars, c("0", sel_indep_vars)), collapse = "+"), sep = "~"),
-            variables = sel_indep_vars
-        )
+        if (!has_intercept)
+            sel_indep_vars <- c("0", sel_indep_vars)
+        paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
     }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept)
+    model_sel_criterions$indep_vars <- gwrm$indep_vars[gwrm$indep_vars != "Intercept"]
+    model_sel_criterions$dep_var <- gwrm$dep_var
+    class(model_sel_criterions) <- "modelselcritl"
 
     ### Return result
     gwrm$SDF <- sdf
