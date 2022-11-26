@@ -57,7 +57,10 @@ Calibrate a basic GWR model
 \examples{
 data(LondonHP)
 
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE) # Basic usage
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE) # Bandwidth Optimization
+# Basic usage
+gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+
+# Bandwidth Optimization
+gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
 
 }

@@ -4,12 +4,12 @@
 \alias{print.gwrm}
 \title{Print description of a `gwrm` object}
 \usage{
-\method{print}{gwrm}(x, decimal.fmt = "\%.3f", ...)
+\method{print}{gwrm}(x, decimal_fmt = "\%.3f", ...)
 }
 \arguments{
 \item{x}{An `hgwrm` object returned by [gwr_basic()].}
 
-\item{decimal.fmt}{The format string passing to [base::sprintf()].}
+\item{decimal_fmt}{The format string passing to [base::sprintf()].}
 
 \item{...}{
   Arguments passed on to \code{\link[=print_table_md]{print_table_md}}

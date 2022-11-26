@@ -40,6 +40,7 @@ Model selection for basic GWR model
 }
 \examples{
 data(LondonHP)
-model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE), threshold = 100.0)
+model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
+          threshold = 100.0)
 
 }

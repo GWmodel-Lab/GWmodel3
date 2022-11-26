@@ -23,9 +23,12 @@
 #'
 #' @examples
 #' data(LondonHP)
-#' 
-#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE) # Basic usage
-#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE) # Bandwidth Optimization
+#'
+#' # Basic usage
+#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#'
+#' # Bandwidth Optimization
+#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
 #'
 #' @export
 gwr_basic <- function(
@@ -60,7 +63,7 @@ gwr_basic <- function(
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
-    dep_var <- as.character(attr(terms(formula(formula)), which = "variables")[[2]])
+    dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
     hasIntercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
@@ -78,7 +81,8 @@ gwr_basic <- function(
         optim_bw_criterion <- "AIC"
     } else {
         optim_bw <- TRUE
-        optim_bw_criterion <- ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
+        optim_bw_criterion <-
+            ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
         bw <- Inf
     }
 
@@ -91,22 +95,28 @@ gwr_basic <- function(
     if (optim_bw)
         bw <- c_result$bandwidth
     betas <- c_result$betas
-    betasSE <- c_result$betasSE
-    sTrace <- c_result$sTrace
+    betas_se <- c_result$betasSE
+    shat_trace <- c_result$sTrace
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
     resi <- y - fitted
     n_dp <- nrow(coords)
     rss_gw <- sum(resi * resi)
-    sigma <- rss_gw / (n_dp - 2 * sTrace[1] + sTrace[2])
-    betasSE <- sqrt(sigma * betasSE)
-    betasTV <- betas / betasSE
+    sigma <- rss_gw / (n_dp - 2 * shat_trace[1] + shat_trace[2])
+    betas_se <- sqrt(sigma * betas_se)
+    betas_tv <- betas / betas_se
 
     ### Create result Layer
     colnames(betas) <- indep_vars
-    colnames(betasSE) <- paste(indep_vars, "SE", sep = ".")
-    colnames(betasTV) <- paste(indep_vars, "TV", sep = ".")
-    sdf_data <- as.data.frame(cbind(betas, "yhat" = fitted, "residual" = resi, betasSE, betasTV))
+    colnames(betas_se) <- paste(indep_vars, "SE", sep = ".")
+    colnames(betas_tv) <- paste(indep_vars, "TV", sep = ".")
+    sdf_data <- as.data.frame(cbind(
+        betas,
+        "yhat" = fitted,
+        "residual" = resi,
+        betas_se,
+        betas_tv
+    ))
     sdf_data$geometry <- sf::st_geometry(data)
     sdf <- sf::st_sf(sdf_data)
 
@@ -140,14 +150,14 @@ gwr_basic <- function(
 }
 
 #' Model selection for basic GWR model
-#' 
+#'
 #' @param gwrm A "`gwrm`" class object.
 #' @param criterion The model-selection method.
 #'  Currently there is only AIC available.
 #' @param threshold The threshold of criterion changes. Default to 3.0.
 #' @param bw The bandwidth used in selecting models.
 #'  If `NA` or missing, the bandwidth value will be derived
-#'  from the `gwrm` object. 
+#'  from the `gwrm` object.
 #' @param optim_bw Whether optimize bandwidth after selecting models.
 #'  Avaliable values are `no`, `AIC`, and `CV`.
 #'  If `no` is specified, the bandwidth specified by argument `bw`
@@ -158,9 +168,10 @@ gwr_basic <- function(
 #'
 #' @examples
 #' data(LondonHP)
-#' model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE), threshold = 100.0)
-#' 
-#' @export 
+#' model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
+#'           threshold = 100.0)
+#'
+#' @export
 model_sel.gwrm <- function(
     gwrm,
     criterion = c("AIC"),
@@ -184,7 +195,8 @@ model_sel.gwrm <- function(
         bw_value <- bw
     } else {
         optim_bw <- TRUE
-        optim_bw_criterion <- ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
+        optim_bw_criterion <-
+            ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
     }
 
     ### Calibrate GWR
@@ -195,19 +207,19 @@ model_sel.gwrm <- function(
         select_model = TRUE, select_model_criterion = criterion,
         select_model_threshold = threshold
     ))
-    if (optim_bw) 
+    if (optim_bw)
         bw <- c_result$bandwidth
     betas <- c_result$betas
-    betasSE <- c_result$betasSE
-    sTrace <- c_result$sTrace
+    betas_se <- c_result$betasSE
+    shat_trace <- c_result$sTrace
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
     resi <- gwrm$args$y - fitted
     n_dp <- nrow(gwrm$args$coords)
     rss_gw <- sum(resi * resi)
-    sigma <- rss_gw / (n_dp - 2 * sTrace[1] + sTrace[2])
-    betasSE <- sqrt(sigma * betasSE)
-    betasTV <- betas / betasSE
+    sigma <- rss_gw / (n_dp - 2 * shat_trace[1] + shat_trace[2])
+    betas_se <- sqrt(sigma * betas_se)
+    betas_tv <- betas / betas_se
 
     ### Check select variable names
     indep_vars_selected <- c_result$variables + 1
@@ -217,22 +229,35 @@ model_sel.gwrm <- function(
 
     ### Create result Layer
     colnames(betas) <- indep_vars
-    colnames(betasSE) <- paste(indep_vars, "SE", sep = ".")
-    colnames(betasTV) <- paste(indep_vars, "TV", sep = ".")
-    sdf_data <- as.data.frame(cbind(betas, "yhat" = fitted, "residual" = resi, betasSE, betasTV))
+    colnames(betas_se) <- paste(indep_vars, "SE", sep = ".")
+    colnames(betas_tv) <- paste(indep_vars, "TV", sep = ".")
+    sdf_data <- as.data.frame(cbind(
+        betas,
+        "yhat" = fitted,
+        "residual" = resi,
+        betas_se,
+        betas_tv
+    ))
     sdf_data$geometry <- sf::st_geometry(gwrm$SDF)
     sdf <- sf::st_sf(sdf_data)
 
     ### Convert model sel criterions
-    model_sel_criterions <- c_result$model_sel_criterions
-    model_sel_criterions$models <- lapply(c_result$model_sel_criterions$models, function(model_var_idx, indep_vars, dep_var, has_intercept) {
-        sel_indep_vars <- indep_vars[model_var_idx + 1]
-        if (!has_intercept)
-            sel_indep_vars <- c("0", sel_indep_vars)
-        paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
-    }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept)
-    model_sel_criterions$indep_vars <- gwrm$indep_vars[gwrm$indep_vars != "Intercept"]
-    model_sel_criterions$dep_var <- gwrm$dep_var
+    model_sel_criterions <- list(
+        models = lapply(c_result$model_sel_criterions$models, function(
+            model_var_idx,
+            indep_vars,
+            dep_var,
+            has_intercept
+        ) {
+            sel_indep_vars <- indep_vars[model_var_idx + 1]
+            if (!has_intercept)
+                sel_indep_vars <- c("0", sel_indep_vars)
+            paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
+        }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept),
+        criterions = c_result$model_sel_criterions$criterions,
+        indep_vars = gwrm$indep_vars[gwrm$indep_vars != "Intercept"],
+        dep_var = gwrm$dep_var
+    )
     class(model_sel_criterions) <- "modelselcritl"
 
     ### Return result
@@ -250,14 +275,14 @@ model_sel.gwrm <- function(
 #' Print description of a `gwrm` object
 #'
 #' @param x An `hgwrm` object returned by [gwr_basic()].
-#' @param decimal.fmt The format string passing to [base::sprintf()].
+#' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #'
 #' @return No return.
 #'
 #' @export
 #'
-print.gwrm <- function(x, decimal.fmt = "%.3f", ...) {
+print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwrm")) {
         stop("It's not a gwrm object.")
     }
@@ -265,13 +290,20 @@ print.gwrm <- function(x, decimal.fmt = "%.3f", ...) {
     ### Basic Information
     cat("Geographically Weighted Regression Model", fill = T)
     cat("========================================", fill = T)
-    cat("  Formula:", deparse(formula(paste(x$dep_var, paste(x$indep_vars, collapse = "+"), sep = "~"))), fill = T)
+    cat("  Formula:", deparse(formula(paste(
+        x$dep_var,
+        paste(x$indep_vars, collapse = "+"),
+        sep = "~"
+    ))), fill = T)
     cat("     Data:", deparse(x$call[[3]]), fill = T)
     cat("   Kernel:", x$args$kernel, fill = T)
     cat("Bandwidth:", x$args$bw,
         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-        ifelse(x$args$optim_bw, paste0("(Optimized accroding to ", x$args$optim_bw_criterion, ")"), ""),
-        fill = T)
+        ifelse(x$args$optim_bw, paste0(
+            "(Optimized accroding to ",
+            x$args$optim_bw_criterion,
+            ")"
+        ), ""), fill = T)
     cat("\n", fill = T)
 
     cat("Summary of Coefficient Estimates", fill = T)
@@ -282,7 +314,7 @@ print.gwrm <- function(x, decimal.fmt = "%.3f", ...) {
     rownames(beta_fivenum) <- colnames(betas)
     beta_str <- rbind(
         c("Coefficient", colnames(beta_fivenum)),
-        cbind(rownames(beta_fivenum), matrix2char(beta_fivenum, decimal.fmt))
+        cbind(rownames(beta_fivenum), matrix2char(beta_fivenum, decimal_fmt))
     )
     print_table_md(beta_str, ...)
     cat("\n", fill = T)
