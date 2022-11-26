@@ -31,8 +31,8 @@ model_sel_view_circle <- function(object) {
     par(mai = rep(0, times = 4))
     plot(
         x = 0, y = 0,
-        xlim = c(-n, n+6),
-        ylim = c(-n, n),
+        xlim = c(-3*n/4, n+8),
+        ylim = c(-n+n/5, n/2),
         cex = 2,
         axes = F,
         pch = 22,
@@ -68,11 +68,12 @@ model_sel_view_circle <- function(object) {
             y = (radius + 0.5) * sin((i - 1) * alpha),
             labels = as.character(i),
             cex = cex*0.6,
-            srt = (i-1)*alpha / pi * 180)
+            srt = (i-1)*alpha / pi * 180,
+            adj = 0
+        )
     }
     legend(
-        x = n+2,
-        y = n/2,
+        x = "right",
         col = c("black", cols),
         pch = c(22, pchs),
         c(DeVar, InDeVars),
