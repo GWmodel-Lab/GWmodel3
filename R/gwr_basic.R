@@ -93,7 +93,6 @@ gwr_basic <- function(
     betas <- c_result$betas
     betasSE <- c_result$betasSE
     sTrace <- c_result$sTrace
-    sHat <- c_result$sHat
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
     resi <- y - fitted
@@ -201,7 +200,6 @@ model_sel.gwrm <- function(
     betas <- c_result$betas
     betasSE <- c_result$betasSE
     sTrace <- c_result$sTrace
-    sHat <- c_result$sHat
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
     resi <- gwrm$args$y - fitted
@@ -243,6 +241,7 @@ model_sel.gwrm <- function(
     gwrm$args$select_model <- TRUE
     gwrm$args$select_model_criterion <- criterion
     gwrm$args$select_model_threshold <- threshold
+    gwrm$diagnostic <- diagnostic
     gwrm$model_sel <- model_sel_criterions
     gwrm$indep_vars <- indep_vars
     gwrm
