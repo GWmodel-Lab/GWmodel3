@@ -64,10 +64,10 @@ gwr_basic <- function(
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
     dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
-    hasIntercept <- attr(terms(mf), "intercept") == 1
+    has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
-    if (hasIntercept && indep_vars[1] != "Intercept") {
+    if (has_intercept && indep_vars[1] != "Intercept") {
         stop("Please put Intercept to the first column.")
     }
 
@@ -89,7 +89,7 @@ gwr_basic <- function(
     ### Call solver
     c_result <- .c_gwr_basic(
         x, y, coords, bw, adaptive, kernel, longlat, p, theta,
-        hatmatrix, hasIntercept, parallel_method, parallel_arg,
+        hatmatrix, has_intercept, parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion
     )
     if (optim_bw)
@@ -135,7 +135,7 @@ gwr_basic <- function(
             p = p,
             theta = theta,
             hatmatrix = hatmatrix,
-            hasIntercept = hasIntercept,
+            has_intercept = has_intercept,
             parallel_method = parallel_method,
             parallel_arg = parallel_arg,
             optim_bw = optim_bw,
@@ -202,7 +202,7 @@ model_sel.gwrm <- function(
     ### Calibrate GWR
     c_result <- with(gwrm$args, .c_gwr_basic(
         x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
-        hatmatrix, hasIntercept, parallel_method, parallel_arg,
+        hatmatrix, has_intercept, parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion,
         select_model = TRUE, select_model_criterion = criterion,
         select_model_threshold = threshold
@@ -223,7 +223,7 @@ model_sel.gwrm <- function(
 
     ### Check select variable names
     indep_vars_selected <- c_result$variables + 1
-    if (gwrm$args$hasIntercept)
+    if (gwrm$args$has_intercept)
         indep_vars_selected <- c(1, indep_vars_selected)
     indep_vars <- gwrm$indep_vars[indep_vars_selected]
 
@@ -253,7 +253,7 @@ model_sel.gwrm <- function(
             if (!has_intercept)
                 sel_indep_vars <- c("0", sel_indep_vars)
             paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
-        }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept),
+        }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$has_intercept),
         criterion_values = c_result$model_sel_criterions$criterions,
         criterion = criterion,
         threshold = threshold,
