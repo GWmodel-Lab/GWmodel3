@@ -187,16 +187,19 @@ model_sel.gwrm <- function(
 
     ### Check whether bandwidth is valid.
     bw_value <- Inf
-    optim_bw <- FALSE
-    optim_bw_criterion <- "AIC"
     if (missing(bw) || is.na(bw)) {
         bw_value <- gwrm$args$bw
-    } else if (is.numeric(bw) || is.integer(bw)) {
-        bw_value <- bw
+        optim_bw_criterion <- "AIC"
+        optim_bw <- FALSE
     } else {
-        optim_bw <- TRUE
-        optim_bw_criterion <-
-            ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
+        optim_bw_criterion <- match.arg(optim_bw)
+        if (optim_bw_criterion == "no") {
+            optim_bw_criterion <- "AIC"
+            optim_bw <- FALSE
+        } else {
+            optim_bw <- TRUE
+        }
+        bw_value <- ifelse(is.numeric(bw) || is.integer(bw), bw, Inf)
     }
 
     ### Calibrate GWR
