@@ -155,7 +155,7 @@ model_sel_view_value <- function(object, ...) {
         ...
     )
     num_vars <- length(indep_vars)
-    for (i in num_vars) {
+    for (i in seq_len(num_vars)) {
        abline(v = sum(num_vars:(num_vars - i + 1)), lty = 2)
     }
 }
@@ -194,7 +194,7 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
     )
     indep_vars <- object$indep_vars
     num_vars <- length(indep_vars)
-    for (i in num_vars) {
+    for (i in seq_len(num_vars)) {
        abline(v = sum(num_vars:(num_vars - i + 1)), lty = 2)
     }
 }
