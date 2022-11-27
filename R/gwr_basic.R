@@ -310,7 +310,7 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 
     cat("Summary of Coefficient Estimates", fill = T)
     cat("--------------------------------", fill = T)
-    betas <- sf::st_drop_geometry(x$SDF[, x$indep_vars])
+    betas <- coef(x)
     beta_fivenum <- t(apply(betas, 2, fivenum))
     colnames(beta_fivenum) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
     rownames(beta_fivenum) <- colnames(betas)
@@ -331,4 +331,74 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     cat("  AIC:", x$diagnostic$AIC, fill = T)
     cat(" AICc:", x$diagnostic$AICc, fill = T)
     cat("\n", fill = T)
+}
+
+#' Plot the result of basic GWR model.
+#'
+#' @param x A "gwrm" object.
+#' @param y Column names to plot.
+#'  If it is missing or non-character value, all coefficient columns are plottd.
+#' @param \dots Additional arguments passing to [sf::plot()].
+#'
+#' @example
+#' data(LondonHP)
+#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#' plot(m)
+#'
+#' @export
+plot.gwrm <- function(x, y, ...) {
+    if (!inherits(x, "gwrm")) {
+        stop("It's not a gwrm object.")
+    }
+
+    sdf <- sf::st_as_sf(x$SDF)
+    sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
+    if (!missing(y) && is.character(y)) {
+        valid_columns <- intersect(y, sdf_colnames)
+        if (length(valid_columns) > 0) {
+            sdf <- sdf[valid_columns]
+        }
+    } else { ### Select coefficient columns.
+        sdf <- sdf[x$indep_vars]
+    }
+    plot(sdf, ...)
+}
+
+#' Get coefficients of a basic GWR model.
+#' 
+#' @param object A "gwrm" object.
+#' @param \dots Additional arguments passing to [coef()].
+#' 
+#' @export 
+coef.gwrm <- function(object, ...) {
+    if (!inherits(object, "gwrm")) {
+        stop("It's not a gwrm object.")
+    }
+    sf::st_drop_geometry(object$SDF[object$indep_vars])
+}
+
+#' Get fitted values of a basic GWR model.
+#' 
+#' @param object A "gwrm" object.
+#' @param \dots Additional arguments passing to [fitted()].
+#' 
+#' @export 
+fitted.gwrm <- function(object, ...) {
+    if (!inherits(object, "gwrm")) {
+        stop("It's not a gwrm object.")
+    }
+    object$SDF[["yhat"]]
+}
+
+#' Get residuals of a basic GWR model.
+#' 
+#' @param object A "gwrm" object.
+#' @param \dots Additional arguments passing to [residuals()].
+#' 
+#' @export 
+residuals.gwrm <- function(object, ...) {
+    if (!inherits(object, "gwrm")) {
+        stop("It's not a gwrm object.")
+    }
+    object$SDF[["residual"]]
 }
