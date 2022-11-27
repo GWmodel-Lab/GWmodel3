@@ -254,7 +254,9 @@ model_sel.gwrm <- function(
                 sel_indep_vars <- c("0", sel_indep_vars)
             paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
         }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$hasIntercept),
-        criterions = c_result$model_sel_criterions$criterions,
+        criterion_values = c_result$model_sel_criterions$criterions,
+        criterion = criterion,
+        threshold = threshold,
         indep_vars = gwrm$indep_vars[gwrm$indep_vars != "Intercept"],
         dep_var = gwrm$dep_var
     )
