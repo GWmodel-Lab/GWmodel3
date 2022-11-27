@@ -63,6 +63,8 @@ plot.modelselcritl <- function(
 
 #' @describeIn plot.modelselcritl Create circle view for
 #'  model combinations in model selection.
+#' 
+#' @export
 model_sel_view_circle <- function(object, ...) {
     if (!inherits(object, "modelselcritl")) {
         stop("This function can only be applied on 'modelselcritl' objects.")
