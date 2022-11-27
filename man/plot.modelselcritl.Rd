@@ -50,10 +50,7 @@ m <- gwr_basic(
   adaptive = TRUE
 ) |> model_sel(threshold = 10)
 plot(m$model_sel)
-
-### More plots.
-model_sel_view_circle(m$model_sel)   # Circle view.
-model_sel_view_value(m$model_sel)    # Value scatter view.
-model_sel_view_diff(m$model_sel)     # Difference of values.
+plot(m$model_sel, view = "value")
+plot(m$model_sel, view = "diff")
 
 }
