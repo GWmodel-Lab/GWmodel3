@@ -88,7 +88,8 @@ print_table_md <- function(x, col.sep = "", header.sep = "",
     }
 }
 
-#' Convert a numeric matrix to character matrix according to a format string.
+#' @describeIn print_table_md Convert a numeric matrix to character matrix
+#'  according to a format string.
 #'
 #' @param m A numeric matrix.
 #' @param fmt Format string. Passing to [base::sprintf()].

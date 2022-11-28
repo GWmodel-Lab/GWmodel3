@@ -7,61 +7,7 @@ model_sel <- function(object, ...) {
     UseMethod("model_sel")
 }
 
-#' Plot model selection critions (the circle view).
-#' 
-#' @param object An object of `modelselcritl` class.
-#' @param ymin The lower bound of y-axis.
-#' @param main The main title.
-#' @param \dots Additional parameters passing to [plot()].
-#' 
-#' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(
-#'   formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 +
-#'       GARAGE1 + TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW +
-#'       BLDPWW1 +BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
-#'   data = LondonHP,
-#'   bw = "AIC",
-#'   adaptive = TRUE
-#' ) |> model_sel(threshold = 10)
-#' plot(m$model_sel)
-#' plot(m$model_sel, view = "value")
-#' plot(m$model_sel, view = "diff")
-#' 
-#' @export 
-plot.modelselcritl <- function(
-    object,
-    view = c("circle", "value", "diff"),
-    ymin,
-    main,
-    ...
-) {
-    if (!inherits(object, "modelselcritl")) {
-        stop("This function can only be applied on 'modelselcritl' objects.")
-    }
-    view <- match.arg(view)
-    if (view == "circle") {
-        if (missing(main)) {
-            op <- par(mai = c(0, 0, 0, 0), omi = c(0, 0, 0, 0))
-            model_sel_view_circle(object, ...)
-            par(op)
-        } else {
-            op <- par(mai = c(0, 0, 1, 0), omi = c(0, 0, 0, 0))
-            model_sel_view_circle(object, main, ...)
-            par(op)
-        }
-    } else if (view == "value") {
-        model_sel_view_value(object, ...)
-    } else {
-        if (missing(ymin)) {
-            model_sel_view_diff(object, ...)
-        } else {
-            model_sel_view_diff(object, ymin, ...)
-        }
-    }
-}
-
-#' @describeIn plot.modelselcritl Create circle view for
+#' @describeIn model_sel Create circle view for
 #'  model combinations in model selection.
 #' 
 #' @export
@@ -134,7 +80,7 @@ model_sel_view_circle <- function(object, ...) {
     )
 }
 
-#' @describeIn plot.modelselcritl Create scatter plot for
+#' @describeIn model_sel Create scatter plot for
 #'  model selection criterion values
 #' 
 #' @export 
@@ -160,7 +106,7 @@ model_sel_view_value <- function(object, ...) {
     }
 }
 
-#' @describeIn plot.modelselcritl Create scatter plot for
+#' @describeIn model_sel Create scatter plot for
 #'  differences of model selection criterion values
 #' 
 #' @export 
@@ -194,5 +140,62 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
     num_vars <- length(indep_vars)
     for (i in seq_len(num_vars)) {
        abline(v = sum(num_vars:(num_vars - i + 1)), lty = 2)
+    }
+}
+
+#' Plot model selection criterions (the circle view).
+#' 
+#' @param x An object of `modelselcritl` class.
+#' @param y Ignored.
+#' @param view Name of view.
+#' @param ymin The lower bound of y-axis.
+#' @param main The main title.
+#' @param \dots Additional parameters passing to [plot()].
+#' @method plot modelselcritl
+#' @name plot
+#' 
+#' @examples
+#' data(LondonHP)
+#' m <- gwr_basic(
+#'   PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 +
+#'       GARAGE1 + TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW +
+#'       BLDPWW1 +BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
+#'   LondonHP, bw = "AIC", adaptive = TRUE
+#' ) |> model_sel(threshold = 10, bw = Inf, optim_bw = "AIC")
+#' plot(m$model_sel)
+#' plot(m$model_sel, view = "value")
+#' plot(m$model_sel, view = "diff")
+#' 
+#' @export 
+plot.modelselcritl <- function(
+    x,
+    y,
+    ...,
+    view = c("circle", "value", "diff"),
+    ymin,
+    main
+) {
+    if (!inherits(x, "modelselcritl")) {
+        stop("This function can only be applied on 'modelselcritl' objects.")
+    }
+    view <- match.arg(view)
+    if (view == "circle") {
+        if (missing(main)) {
+            op <- par(mai = c(0, 0, 0, 0), omi = c(0, 0, 0, 0))
+            model_sel_view_circle(x, ...)
+            par(op)
+        } else {
+            op <- par(mai = c(0, 0, 1, 0), omi = c(0, 0, 0, 0))
+            model_sel_view_circle(x, main, ...)
+            par(op)
+        }
+    } else if (view == "value") {
+        model_sel_view_value(x, ...)
+    } else {
+        if (missing(ymin)) {
+            model_sel_view_diff(x, ...)
+        } else {
+            model_sel_view_diff(x, ymin, ...)
+        }
     }
 }

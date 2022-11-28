@@ -2,6 +2,7 @@
 % Please edit documentation in R/print_table.R
 \name{print_table_md}
 \alias{print_table_md}
+\alias{matrix2char}
 \title{Print a character matrix as a table.}
 \usage{
 print_table_md(
@@ -13,6 +14,8 @@ print_table_md(
   table.style = c("plain", "md", "latex"),
   ...
 )
+
+matrix2char(m, fmt = "\%.3f")
 }
 \arguments{
 \item{x}{A character matrix.}
@@ -31,6 +34,10 @@ Default to `col.sep`.}
 Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
 
 \item{\dots}{Additional style control arguments.}
+
+\item{m}{A numeric matrix.}
+
+\item{fmt}{Format string. Passing to [base::sprintf()].}
 }
 \value{
 No return.
@@ -54,6 +61,14 @@ are shown in the following table.
 
 In this function, characters are right padded by spaces.
 }
+\section{Functions}{
+\itemize{
+\item \code{matrix2char}: Convert a numeric matrix to character matrix
+according to a format string.
+}}
+
 \seealso{
 [print.gwrm()].
+
+[base::sprintf()], [print.hgwrm()], [print.summary.hgwrm()].
 }

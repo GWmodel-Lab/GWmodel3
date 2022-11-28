@@ -10,7 +10,7 @@
 #' to be adopted for efficient calibrations.
 #' 
 #' @docType package
-#' @name GWmodel3
+#' @name GWmodel3-package
 #' @details \packageDESCRIPTION{GWmodel3}
 #' @author Binbin Lu, Paul Harris, Martin Charlton, Chris Brunsdon, Tomoki Nakaya, Daisuke Murakami,Isabella Gollini[ctb], Yigong Hu[ctb], Fiona H Evans[ctb]
 #' @note Acknowledgements: We gratefully acknowledge support from National Natural Science Foundation of China (42071368); 

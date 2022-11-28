@@ -150,7 +150,7 @@ gwr_basic <- function(
     gwrm
 }
 
-#' @describeIn model_sel Model selection for basic GWR model
+#' Model selection for basic GWR model
 #'
 #' @param object A "`gwrm`" class object.
 #' @param criterion The model-selection method.
@@ -164,8 +164,9 @@ gwr_basic <- function(
 #'  If `no` is specified, the bandwidth specified by argument `bw`
 #'  is used in calibrating selected models.
 #' @param \dots Other parameters.
-#'
 #' @return A `gwrm` object.
+#' @method model_sel gwrm
+#' @name model_sel
 #'
 #' @examples
 #' data(LondonHP)
@@ -288,8 +289,9 @@ model_sel.gwrm <- function(
 #' @param x An `hgwrm` object returned by [gwr_basic()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#'
 #' @return No return.
+#' @method print gwrm
+#' @name print
 #'
 #' @export
 #'
@@ -341,9 +343,12 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' Plot the result of basic GWR model.
 #'
 #' @param x A "gwrm" object.
-#' @param y Column names to plot.
+#' @param y Ignored.
+#' @param columns Column names to plot.
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
+#' @method plot gwrm
+#' @name plot
 #'
 #' @example
 #' data(LondonHP)
@@ -351,15 +356,15 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' plot(m)
 #'
 #' @export
-plot.gwrm <- function(x, y, ...) {
+plot.gwrm <- function(x, y, ..., columns) {
     if (!inherits(x, "gwrm")) {
         stop("It's not a gwrm object.")
     }
 
     sdf <- sf::st_as_sf(x$SDF)
     sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
-    if (!missing(y) && is.character(y)) {
-        valid_columns <- intersect(y, sdf_colnames)
+    if (!missing(columns) && is.character(columns)) {
+        valid_columns <- intersect(columns, sdf_colnames)
         if (length(valid_columns) > 0) {
             sdf <- sdf[valid_columns]
         }
@@ -373,6 +378,8 @@ plot.gwrm <- function(x, y, ...) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [coef()].
+#' @method coef gwrm
+#' @name coef
 #'
 #' @export
 coef.gwrm <- function(object, ...) {
@@ -386,7 +393,8 @@ coef.gwrm <- function(object, ...) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
-#'
+#' @method fitted gwrm
+#' @name fitted
 #' @export
 fitted.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
@@ -399,7 +407,8 @@ fitted.gwrm <- function(object, ...) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
-#'
+#' @method residuals gwrm
+#' @name residuals
 #' @export
 residuals.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
@@ -413,8 +422,9 @@ residuals.gwrm <- function(object, ...) {
 #' @param A "gwrm" object.
 #' @param regression_points Data of new locations.
 #' @param \dots Additional arguments.
-#'
 #' @return A "gwrm" object.
+#' @method predict gwrm
+#' @name predict
 #'
 #' @examples
 #' data(LondonHP)
