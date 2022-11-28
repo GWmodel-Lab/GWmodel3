@@ -150,7 +150,7 @@ gwr_basic <- function(
     gwrm
 }
 
-#' Model selection for basic GWR model
+#' @describeIn model_sel Model selection for basic GWR model
 #'
 #' @param gwrm A "`gwrm`" class object.
 #' @param criterion The model-selection method.
@@ -212,7 +212,7 @@ model_sel.gwrm <- function(
         select_model_threshold = threshold
     ))
     if (optim_bw)
-        bw <- c_result$bandwidth
+        bw_value <- c_result$bandwidth
     betas <- c_result$betas
     betas_se <- c_result$betasSE
     shat_trace <- c_result$sTrace
