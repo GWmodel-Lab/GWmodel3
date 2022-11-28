@@ -56,3 +56,4 @@ config.status
 src/Makevars
 *.so
 *.o
+*.dll
