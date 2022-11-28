@@ -68,7 +68,7 @@ List mywrap(const VariablesCriterionList& criterion_list)
     );
 }
 
-RcppExport SEXP _GWmodel_gwr_basic(
+RcppExport SEXP _GWmodel_gwr_basic_fit(
     SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
     SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
     SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP,
@@ -250,7 +250,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 18},
+    {"_GWmodel_gwr_basic_fit", (DL_FUNC) &_GWmodel_gwr_basic_fit, 18},
     {"_GWmodel_gwr_basic_predict", (DL_FUNC) &_GWmodel_gwr_basic_predict, 13},
     {NULL, NULL, 0}
 };

@@ -88,7 +88,7 @@ gwr_basic <- function(
     }
 
     ### Call solver
-    c_result <- .c_gwr_basic(
+    c_result <- .c_gwr_basic_fit(
         x, y, coords, bw, adaptive, kernel, longlat, p, theta,
         hatmatrix, has_intercept, parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion
@@ -205,7 +205,7 @@ model_sel.gwrm <- function(
     }
 
     ### Calibrate GWR
-    c_result <- with(object$args, .c_gwr_basic(
+    c_result <- with(object$args, .c_gwr_basic_fit(
         x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
         hatmatrix, has_intercept, parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion,
