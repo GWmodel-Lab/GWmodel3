@@ -1,5 +1,5 @@
 
-## With R 3.1.0 or later, you can uncomment the following line to tell R to 
+## With R 3.1.0 or later, you can uncomment the following line to tell R to
 ## enable compilation with C++11 (where available)
 ##
 ## Also, OpenMP support in Armadillo prefers C++11 support. However, for wider
@@ -17,13 +17,20 @@ DEF_DOUBLE_EPS = 1e-8
 DEF_M_PI = 3.14159265358979323846
 DEF_M_PI_2 = 1.57079632679489661923
 
-LIBGWMODEL_CXXFLAGS = -I./libgwmodel/include -I./libgwmodel/include/gwmodelpp -DM_PI=$(DEF_M_PI) -DM_PI_2=$(DEF_M_PI_2) -DDOUBLE_EPS=$(DEF_DOUBLE_EPS) -DDBL_MAX=__DBL_MAX__
+LIBGWMODEL_CXXFLAGS = \
+	-I./libgwmodel/include \
+	-I./libgwmodel/include/gwmodelpp \
+	-DM_PI=$(DEF_M_PI) \
+	-DM_PI_2=$(DEF_M_PI_2) \
+	-DDOUBLE_EPS=$(DEF_DOUBLE_EPS) \
+	-DDBL_MAX=__DBL_MAX__ \
+	-DARMA_NO_DEBUG
 
 ifdef SHLIB_OPENMP_CXXFLAGS
 	LIBGWMODEL_CXXFLAGS = $(LIBGWMODEL_CXXFLAGS) -DENABLE_OPENMP
 endif
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DRCPP_USE_GLOBAL_ROSTREAM -DENABLE_OPENMP
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DRCPP_USE_GLOBAL_ROSTREAM
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_LIBS)
 
 OBJECTS_LIBGWMODEL = \
