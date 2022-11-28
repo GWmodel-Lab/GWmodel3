@@ -226,10 +226,13 @@ model_sel.gwrm <- function(
     betas_tv <- betas / betas_se
 
     ### Check select variable names
-    indep_vars_selected <- c_result$variables + 1
-    if (gwrm$args$has_intercept)
-        indep_vars_selected <- c(1, indep_vars_selected)
-    indep_vars <- gwrm$indep_vars[indep_vars_selected]
+    indep_vars <- gwrm$indep_vars[c_result$variables + 1]
+    if (gwrm$args$has_intercept) {
+        formula_up <- reg_formula(gwrm$dep_var, indep_vars)
+        indep_vars <- c("Intercept", indep_vars)
+    } else {
+        formula_up <- reg_formula(gwrm$dep_var, c("0", indep_vars))
+    }
 
     ### Create result Layer
     colnames(betas) <- indep_vars
@@ -268,7 +271,7 @@ model_sel.gwrm <- function(
 
     ### Return result
     gwrm$SDF <- sdf
-    gwrm$args$x <- gwrm$args$x[, indep_vars_selected]
+    gwrm$args$x <- gwrm$args$x[, indep_vars]
     gwrm$args$bw <- bw_value
     gwrm$args$select_model <- TRUE
     gwrm$args$select_model_criterion <- criterion
@@ -276,6 +279,7 @@ model_sel.gwrm <- function(
     gwrm$diagnostic <- diagnostic
     gwrm$model_sel <- model_sel_criterions
     gwrm$indep_vars <- indep_vars
+    gwrm$call$formula <- str2lang(deparse(formula(formula_up)))
     gwrm
 }
 
@@ -297,12 +301,8 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     ### Basic Information
     cat("Geographically Weighted Regression Model", fill = T)
     cat("========================================", fill = T)
-    cat("  Formula:", deparse(formula(paste(
-        x$dep_var,
-        paste(x$indep_vars, collapse = "+"),
-        sep = "~"
-    ))), fill = T)
-    cat("     Data:", deparse(x$call[[3]]), fill = T)
+    cat("  Formula:", deparse(x$call$formula), fill = T)
+    cat("     Data:", deparse(x$call$data), fill = T)
     cat("   Kernel:", x$args$kernel, fill = T)
     cat("Bandwidth:", x$args$bw,
         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
