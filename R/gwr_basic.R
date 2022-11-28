@@ -152,7 +152,7 @@ gwr_basic <- function(
 
 #' @describeIn model_sel Model selection for basic GWR model
 #'
-#' @param gwrm A "`gwrm`" class object.
+#' @param object A "`gwrm`" class object.
 #' @param criterion The model-selection method.
 #'  Currently there is only AIC available.
 #' @param threshold The threshold of criterion changes. Default to 3.0.
@@ -174,14 +174,14 @@ gwr_basic <- function(
 #'
 #' @export
 model_sel.gwrm <- function(
-    gwrm,
+    object,
     criterion = c("AIC"),
     threshold = 3.0,
     bw = NA,
     optim_bw = c("no", "AIC", "CV"),
     ...
 ) {
-    if (!inherits(gwrm, "gwrm")) {
+    if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
     }
     criterion <- match.arg(criterion)
@@ -189,7 +189,7 @@ model_sel.gwrm <- function(
     ### Check whether bandwidth is valid.
     bw_value <- Inf
     if (missing(bw) || is.na(bw)) {
-        bw_value <- gwrm$args$bw
+        bw_value <- object$args$bw
         optim_bw_criterion <- "AIC"
         optim_bw <- FALSE
     } else {
@@ -204,7 +204,7 @@ model_sel.gwrm <- function(
     }
 
     ### Calibrate GWR
-    c_result <- with(gwrm$args, .c_gwr_basic(
+    c_result <- with(object$args, .c_gwr_basic(
         x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
         hatmatrix, has_intercept, parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion,
@@ -218,20 +218,20 @@ model_sel.gwrm <- function(
     shat_trace <- c_result$sTrace
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
-    resi <- gwrm$args$y - fitted
-    n_dp <- nrow(gwrm$args$coords)
+    resi <- object$args$y - fitted
+    n_dp <- nrow(object$args$coords)
     rss_gw <- sum(resi * resi)
     sigma <- rss_gw / (n_dp - 2 * shat_trace[1] + shat_trace[2])
     betas_se <- sqrt(sigma * betas_se)
     betas_tv <- betas / betas_se
 
     ### Check select variable names
-    indep_vars <- gwrm$indep_vars[c_result$variables + 1]
-    if (gwrm$args$has_intercept) {
-        formula_up <- reg_formula(gwrm$dep_var, indep_vars)
+    indep_vars <- object$indep_vars[c_result$variables + 1]
+    if (object$args$has_intercept) {
+        formula_up <- reg_formula(object$dep_var, indep_vars)
         indep_vars <- c("Intercept", indep_vars)
     } else {
-        formula_up <- reg_formula(gwrm$dep_var, c("0", indep_vars))
+        formula_up <- reg_formula(object$dep_var, c("0", indep_vars))
     }
 
     ### Create result Layer
@@ -245,7 +245,7 @@ model_sel.gwrm <- function(
         betas_se,
         betas_tv
     ))
-    sdf_data$geometry <- sf::st_geometry(gwrm$SDF)
+    sdf_data$geometry <- sf::st_geometry(object$SDF)
     sdf <- sf::st_sf(sdf_data)
 
     ### Convert model sel criterions
@@ -260,27 +260,27 @@ model_sel.gwrm <- function(
             if (!has_intercept)
                 sel_indep_vars <- c("0", sel_indep_vars)
             paste(dep_var, paste(sel_indep_vars, collapse = "+"), sep = "~")
-        }, gwrm$indep_vars, gwrm$dep_var, gwrm$args$has_intercept),
+        }, object$indep_vars, object$dep_var, object$args$has_intercept),
         criterion_values = c_result$model_sel_criterions$criterions,
         criterion = criterion,
         threshold = threshold,
-        indep_vars = gwrm$indep_vars[gwrm$indep_vars != "Intercept"],
-        dep_var = gwrm$dep_var
+        indep_vars = object$indep_vars[object$indep_vars != "Intercept"],
+        dep_var = object$dep_var
     )
     class(model_sel_criterions) <- "modelselcritl"
 
     ### Return result
-    gwrm$SDF <- sdf
-    gwrm$args$x <- gwrm$args$x[, indep_vars]
-    gwrm$args$bw <- bw_value
-    gwrm$args$select_model <- TRUE
-    gwrm$args$select_model_criterion <- criterion
-    gwrm$args$select_model_threshold <- threshold
-    gwrm$diagnostic <- diagnostic
-    gwrm$model_sel <- model_sel_criterions
-    gwrm$indep_vars <- indep_vars
-    gwrm$call$formula <- str2lang(deparse(formula(formula_up)))
-    gwrm
+    object$SDF <- sdf
+    object$args$x <- object$args$x[, indep_vars]
+    object$args$bw <- bw_value
+    object$args$select_model <- TRUE
+    object$args$select_model_criterion <- criterion
+    object$args$select_model_threshold <- threshold
+    object$diagnostic <- diagnostic
+    object$model_sel <- model_sel_criterions
+    object$indep_vars <- indep_vars
+    object$call$formula <- str2lang(deparse(formula(formula_up)))
+    object
 }
 
 #' Print description of a `gwrm` object

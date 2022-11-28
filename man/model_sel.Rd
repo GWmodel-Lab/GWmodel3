@@ -6,7 +6,7 @@
 \title{Generic method for model auto-selection.}
 \usage{
 \method{model_sel}{gwrm}(
-  gwrm,
+  object,
   criterion = c("AIC"),
   threshold = 3,
   bw = NA,
@@ -14,10 +14,10 @@
   ...
 )
 
-model_sel(x, ...)
+model_sel(object, ...)
 }
 \arguments{
-\item{gwrm}{A "`gwrm`" class object.}
+\item{object}{Geographically Weighted Model}
 
 \item{criterion}{The model-selection method.
 Currently there is only AIC available.}
@@ -34,8 +34,6 @@ If `no` is specified, the bandwidth specified by argument `bw`
 is used in calibrating selected models.}
 
 \item{\dots}{Other arguments passing to implementation.}
-
-\item{x}{Geographically Weighted Model}
 }
 \value{
 A `gwrm` object.

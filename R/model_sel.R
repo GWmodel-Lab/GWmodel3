@@ -1,9 +1,9 @@
 #' Generic method for model auto-selection.
-#' @param x Geographically Weighted Model
+#' @param object Geographically Weighted Model
 #' @param \dots Other arguments passing to implementation.
 #' 
 #' @export
-model_sel <- function(x, ...) {
+model_sel <- function(object, ...) {
     UseMethod("model_sel")
 }
 
