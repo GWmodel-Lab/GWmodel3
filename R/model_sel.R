@@ -178,8 +178,6 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
         ruler_diff,
         col = "black",
         pch = 20,
-        lty = 5,
-        type = "b",
         ylab = sprintf("Diff(%s)", object$criterion),
         ylim = c(-50, 0),
         ...
