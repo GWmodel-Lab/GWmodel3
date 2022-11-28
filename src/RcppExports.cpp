@@ -176,8 +176,82 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _GWmodel_gwr_basic_predict(
+    SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
+    SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
+    SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP,
+    SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
+{
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type pcoords(pcoordsSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
+
+    // Convert data types
+    arma::mat mpcoords = myas(pcoords);
+    arma::mat mx = myas(x);
+    arma::vec my = myas(y);
+    arma::mat mcoords = myas(coords);
+    std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
+
+    // Make Spatial Weight
+    CGwmBandwidthWeight bandwidth(bw, adaptive, CGwmBandwidthWeight::KernelFunctionType((size_t)kernel));
+    CGwmDistance* distance = nullptr;
+    if (longlat)
+    {
+        distance = new CGwmCRSDistance(true);
+    }
+    else
+    {
+        if (p == 2.0 && theta == 0.0)
+        {
+            distance = new CGwmCRSDistance(false);
+        }
+        else
+        {
+            distance = new CGwmMinkwoskiDistance(p, theta);
+        }
+    }
+    CGwmSpatialWeight spatial(&bandwidth, distance);
+    
+    // Make Algorithm Object
+    CGwmGWRBasic algorithm(mx, my, mcoords, spatial, false, intercept);
+    switch (ParallelType(size_t(parallel_type)))
+    {
+    case ParallelType::SerialOnly:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    case ParallelType::OpenMP:
+        algorithm.setParallelType(ParallelType::OpenMP);
+        algorithm.setOmpThreadNum(vpar_args[0]);
+    default:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    }
+
+    // Return Results
+    mat betas = algorithm.predict(mpcoords);
+
+    rcpp_result_gen = mywrap(betas);
+    return rcpp_result_gen;
+END_RCPP
+}
+
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel_gwr_basic", (DL_FUNC) &_GWmodel_gwr_basic, 18},
+    {"_GWmodel_gwr_basic_predict", (DL_FUNC) &_GWmodel_gwr_basic_predict, 13},
     {NULL, NULL, 0}
 };
 

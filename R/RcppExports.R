@@ -34,3 +34,28 @@
         select_model, select_model_criterion, select_model_threshold
     )
 }
+
+.c_gwr_basic_predict <- function(
+    pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta,
+    intercept, parallel_type, parallel_arg
+) {
+    kernel_i = switch(kernel,
+        "gaussian" = 0,
+        "exp" = 1,
+        "bisquare" = 2,
+        "tricube" = 3,
+        "boxcar" = 4,
+        0
+    )
+    parallel_type_i = switch(parallel_type,
+        "none" = 0,
+        "omp" = 1,
+        "cuda" = 2,
+        "cluster" = 3,
+        0
+    )
+    .Call("_GWmodel_gwr_basic_predict",
+        pcoords, x, y, coords, bw, adaptive, kernel_i, longlat, p, theta,
+        intercept, parallel_type_i, parallel_arg
+    )
+}

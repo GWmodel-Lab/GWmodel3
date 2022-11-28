@@ -67,6 +67,7 @@ gwr_basic <- function(
     has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
+    colnames(x) <- indep_vars
     if (has_intercept && indep_vars[1] != "Intercept") {
         stop("Please put Intercept to the first column.")
     }
@@ -267,6 +268,7 @@ model_sel.gwrm <- function(
 
     ### Return result
     gwrm$SDF <- sdf
+    gwrm$args$x <- gwrm$args$x[, indep_vars_selected]
     gwrm$args$bw <- bw_value
     gwrm$args$select_model <- TRUE
     gwrm$args$select_model_criterion <- criterion
@@ -368,11 +370,11 @@ plot.gwrm <- function(x, y, ...) {
 }
 
 #' Get coefficients of a basic GWR model.
-#' 
+#'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [coef()].
-#' 
-#' @export 
+#'
+#' @export
 coef.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
@@ -381,11 +383,11 @@ coef.gwrm <- function(object, ...) {
 }
 
 #' Get fitted values of a basic GWR model.
-#' 
+#'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
-#' 
-#' @export 
+#'
+#' @export
 fitted.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
@@ -394,14 +396,100 @@ fitted.gwrm <- function(object, ...) {
 }
 
 #' Get residuals of a basic GWR model.
-#' 
+#'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
-#' 
-#' @export 
+#'
+#' @export
 residuals.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
     }
     object$SDF[["residual"]]
+}
+
+#' Predict on new locations.
+#'
+#' @param A "gwrm" object.
+#' @param regression_points Data of new locations.
+#' @param \dots Additional arguments.
+#'
+#' @return A "gwrm" object.
+#'
+#' @examples
+#' data(LondonHP)
+#' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 64, TRUE)
+#' predict(m, LondonHP)
+#'
+#' @export
+predict.gwrm <- function(object, regression_points, ...) {
+    if (!inherits(object, "gwrm")) {
+        stop("It's not a gwrm object.")
+    }
+    if (!inherits(regression_points, c("sf", "sfc", "matrix", "data.frame"))) {
+        stop("The type of regression_points is not supported.")
+    }
+
+    has_intercept <- object$args$has_intercept
+    ### Extract coordinates (and data, if possible)
+    pcoords <- NULL
+    py <- NULL
+    px <- NULL
+    if (inherits(regression_points, c("sf", "sfc"))) {
+        pcoords <- sf::st_coordinates(sf::st_centroid(regression_points))
+        ### Extract X
+        indep_vars <- object$indep_vars
+        if (has_intercept) indep_vars <- indep_vars[-1]
+        if (all(indep_vars %in% names(regression_points))) {
+            px <- as.matrix(sf::st_drop_geometry(regression_points[indep_vars]))
+        }
+        if (has_intercept) {
+            px <- cbind(1, px)
+        }
+        ### Extract Y
+        dep_var <- object$dep_var
+        if (dep_var %in% names(regression_points)) {
+            py <- regression_points[[dep_var]]
+        }
+    } else if(inherits(regression_points, c("matrix", "data.frame"))) {
+        if (length(dim(regression_points)) == 2 && ncol(regression_points) == 2) {
+            pcoords <- as.matrix(regression_points)
+            if (!is.numeric(pcoords)) {
+                stop("Cannot convert regression_points to numeric matrix.")
+            }
+        } else {
+            stop("Only matrix or data.frame of 2 columns is supported.")
+        }
+    } else {
+        stop("Cannot extract coordinates of regression_points")
+    }
+    pcoords <- as.matrix(pcoords)
+
+    ### Predict coefficients
+    c_betas <- with(object$args, .c_gwr_basic_predict(
+        pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta,
+        has_intercept, parallel_method, parallel_arg
+    ))
+
+    result <- as.data.frame(c_betas)
+    colnames(result) <- object$indep_vars
+
+    ### If px exists, calculate yhat
+    if (!is.null(px)) {
+        yhat <- rowSums(px * c_betas)
+        result <- cbind(result, "yhat" = yhat)
+
+        if (!is.null(py)) {
+            resi <- py - yhat
+            result <- cbind(result, "residual" = resi)
+        }
+    }
+
+    ### If regression_points is a sf object, return sf
+    if (inherits(regression_points, c("sf", "sfc"))) {
+        result$geometry <- sf::st_geometry(regression_points)
+        result <- sf::st_as_sf(result)
+    }
+
+    result
 }
