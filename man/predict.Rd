@@ -8,11 +8,11 @@
 \method{predict}{gwrm}(object, regression_points, ...)
 }
 \arguments{
+\item{object}{A "gwrm" object.}
+
 \item{regression_points}{Data of new locations.}
 
 \item{\dots}{Additional arguments.}
-
-\item{A}{"gwrm" object.}
 }
 \value{
 A "gwrm" object.

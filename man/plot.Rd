@@ -33,6 +33,10 @@ Plot model selection criterions (the circle view).
 }
 \examples{
 data(LondonHP)
+m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+plot(m)
+
+data(LondonHP)
 m <- gwr_basic(
   PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 +
       GARAGE1 + TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW +

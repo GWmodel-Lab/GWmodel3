@@ -43,6 +43,8 @@ If `no` is specified, the bandwidth specified by argument `bw`
 is used in calibrating selected models.}
 
 \item{\dots}{Other arguments passing to implementation.}
+
+\item{ymin}{The lower boundary of y-axis.}
 }
 \value{
 A `gwrm` object.

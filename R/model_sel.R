@@ -9,7 +9,9 @@ model_sel <- function(object, ...) {
 
 #' @describeIn model_sel Create circle view for
 #'  model combinations in model selection.
-#' 
+#' @importFrom grDevices rainbow
+#' @importFrom graphics legend lines points text
+#' @importFrom stats formula terms
 #' @export
 model_sel_view_circle <- function(object, ...) {
     if (!inherits(object, "modelselcritl")) {
@@ -82,7 +84,7 @@ model_sel_view_circle <- function(object, ...) {
 
 #' @describeIn model_sel Create scatter plot for
 #'  model selection criterion values
-#' 
+#' @importFrom graphics abline
 #' @export 
 model_sel_view_value <- function(object, ...) {
     if (!inherits(object, "modelselcritl")) {
@@ -108,7 +110,8 @@ model_sel_view_value <- function(object, ...) {
 
 #' @describeIn model_sel Create scatter plot for
 #'  differences of model selection criterion values
-#' 
+#' @param ymin The lower boundary of y-axis.
+#' @importFrom graphics abline text
 #' @export 
 model_sel_view_diff <- function(object, ymin = -50, ...) {
     if (!inherits(object, "modelselcritl")) {
@@ -166,6 +169,7 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
 #' plot(m$model_sel, view = "value")
 #' plot(m$model_sel, view = "diff")
 #' 
+#' @importFrom graphics par
 #' @export 
 plot.modelselcritl <- function(
     x,

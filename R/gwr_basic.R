@@ -30,6 +30,7 @@
 #' # Bandwidth Optimization
 #' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
 #'
+#' @importFrom stats model.extract model.matrix terms
 #' @export
 gwr_basic <- function(
     formula,
@@ -173,6 +174,7 @@ gwr_basic <- function(
 #' model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
 #'           threshold = 100.0)
 #'
+#' @importFrom stats formula
 #' @export
 model_sel.gwrm <- function(
     object,
@@ -292,9 +294,9 @@ model_sel.gwrm <- function(
 #' @return No return.
 #' @method print gwrm
 #' @name print
-#'
+#' 
+#' @importFrom stats coef fivenum
 #' @export
-#'
 print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwrm")) {
         stop("It's not a gwrm object.")
@@ -350,7 +352,7 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' @method plot gwrm
 #' @name plot
 #'
-#' @example
+#' @examples
 #' data(LondonHP)
 #' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #' plot(m)
@@ -419,7 +421,7 @@ residuals.gwrm <- function(object, ...) {
 
 #' Predict on new locations.
 #'
-#' @param A "gwrm" object.
+#' @param object A "gwrm" object.
 #' @param regression_points Data of new locations.
 #' @param \dots Additional arguments.
 #' @return A "gwrm" object.
