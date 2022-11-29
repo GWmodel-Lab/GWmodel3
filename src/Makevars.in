@@ -52,7 +52,8 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/CGwmSpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmSpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/CGwmSpatialMultiscaleAlgorithm.o \
-	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o
+	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o \
+	libgwmodel/src/gwmodelpp/GwmLogger.o
 
 OBJECTS_GWMODEL = \
 	RcppExports.o

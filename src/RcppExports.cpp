@@ -8,6 +8,7 @@
 #include <utility>
 #include <string>
 #include "gwmodel.h"
+#include "gwmodelpp/GwmLogger.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -68,6 +69,26 @@ List mywrap(const VariablesCriterionList& criterion_list)
     );
 }
 
+void printer(std::string message, GwmLogger::LogLevel level, std::string fun_name, std::string file_name)
+{
+    switch (level)
+    {
+    case GwmLogger::LogLevel::LOG_EMERG:
+    case GwmLogger::LogLevel::LOG_ALERT:
+    case GwmLogger::LogLevel::LOG_CRIT:
+    case GwmLogger::LogLevel::LOG_ERR:
+        Rcpp::Rcerr << "ERROR: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
+        break;
+    case GwmLogger::LogLevel::LOG_WARNING:
+    case GwmLogger::LogLevel::LOG_NOTICE:
+    case GwmLogger::LogLevel::LOG_INFO:
+    case GwmLogger::LogLevel::LOG_DEBUG:
+    default:
+        Rcpp::Rcout << "MSG: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
+        break;
+    }
+}
+
 RcppExport SEXP _GWmodel_gwr_basic_fit(
     SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
     SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
@@ -97,6 +118,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type select_model(select_modelSEXP);
     Rcpp::traits::input_parameter< size_t >::type select_model_criterion(select_model_criterionSEXP);
     Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
+
+    // Logger
+    GwmLogger::logger = printer;
 
     // Convert data types
     arma::mat mx = myas(x);
@@ -198,6 +222,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
+
+    // Logger
+    GwmLogger::logger = printer;
 
     // Convert data types
     arma::mat mpcoords = myas(pcoords);
