@@ -190,16 +190,23 @@ plot.modelselcritl <- function(
             par(op)
         } else {
             op <- par(mai = c(0, 0, 1, 0), omi = c(0, 0, 0, 0))
-            model_sel_view_circle(x, main, ...)
+            model_sel_view_circle(x, main = main, ...)
             par(op)
         }
     } else if (view == "value") {
-        model_sel_view_value(x, ...)
-    } else {
-        if (missing(ymin)) {
-            model_sel_view_diff(x, ...)
-        } else {
-            model_sel_view_diff(x, ymin, ...)
+        view_args <- list(x, ...)
+        if (!missing(main)) {
+            view_args$main <- main
         }
+        do.call(model_sel_view_value, view_args)
+    } else {
+        view_args <- list(x, ...)
+        if (!missing(ymin)) {
+            view_args$ymin <- ymin
+        }
+        if (!missing(main)) {
+            view_args$main <- main
+        }
+        do.call(model_sel_view_diff, view_args)
     }
 }
