@@ -282,7 +282,7 @@ model_sel.gwrm <- function(
     object$diagnostic <- diagnostic
     object$model_sel <- model_sel_criterions
     object$indep_vars <- indep_vars
-    object$call$formula <- str2lang(deparse(formula(formula_up)))
+    object$call$formula <- str2lang(formula_up)
     object
 }
 
