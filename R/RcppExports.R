@@ -16,11 +16,11 @@
         0
     )
     parallel_type_i = switch(parallel_type,
-        "none" = 0,
-        "omp" = 1,
-        "cuda" = 2,
-        "cluster" = 3,
-        0
+        "none" = 1,
+        "omp" = 2,
+        "cuda" = 4,
+        "cluster" = 8,
+        1
     )
     optim_bw_criterion_i = switch(optim_bw_criterion,
         "AIC" = 0,
@@ -48,10 +48,10 @@
         0
     )
     parallel_type_i = switch(parallel_type,
-        "none" = 0,
-        "omp" = 1,
-        "cuda" = 2,
-        "cluster" = 3,
+        "none" = 1,
+        "omp" = 2,
+        "cuda" = 4,
+        "cluster" = 8,
         0
     )
     .Call("_GWmodel_gwr_basic_predict",

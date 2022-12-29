@@ -159,9 +159,12 @@ BEGIN_RCPP
     case ParallelType::SerialOnly:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+#ifdef _OPENMP
     case ParallelType::OpenMP:
         algorithm.setParallelType(ParallelType::OpenMP);
         algorithm.setOmpThreadNum(vpar_args[0]);
+        break;
+#endif
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
@@ -260,9 +263,12 @@ BEGIN_RCPP
     case ParallelType::SerialOnly:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+#ifdef _OPENMP
     case ParallelType::OpenMP:
         algorithm.setParallelType(ParallelType::OpenMP);
         algorithm.setOmpThreadNum(vpar_args[0]);
+        break;
+#endif
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
