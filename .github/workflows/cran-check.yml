@@ -82,7 +82,7 @@ jobs:
           submodules: recursive
       
       - name: Build package
-        run: docker run --rm -v $(pwd):/code --workdir=/code ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest CMD build .
+        run: docker run --rm -v $(pwd):/code --workdir=/code ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest CMD build . --resave-data
         
       - name: Get Version number
         run: echo "R_PACKAGE_VERSION=`cat DESCRIPTION | grep Version | awk 'NR ==1' | cut -c 10-`" >> $GITHUB_ENV
