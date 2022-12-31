@@ -34,6 +34,7 @@ jobs:
         uses: r-lib/actions/check-r-package@v2
         with:
           args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-manual", "--resave-data")'
           error-on: '"error"'
           check-dir: '"check"'
 
@@ -63,5 +64,6 @@ jobs:
         uses: r-lib/actions/check-r-package@v2
         with:
           args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-manual", "--resave-data")'
           error-on: '"error"'
           check-dir: '"check"'
