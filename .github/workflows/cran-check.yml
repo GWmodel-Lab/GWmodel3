@@ -71,6 +71,10 @@ jobs:
   
   check-linux:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [debian, fedora]
+        version: [release, devel]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -78,17 +82,11 @@ jobs:
           submodules: recursive
       
       - name: Build package
-        uses: docker://ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
-        with:
-          args: CMD build .
+        run: docker run --rm -v $(pwd):/code --workdir=/code ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest CMD build .
         
       - name: Get Version number
-        run: |
-          export R_PACKAGE_VERSION=`cat DESCRIPTION | grep Version | awk 'NR ==1' | cut -c 10-`
-          echo "R_PACKAGE_VERSION=$R_PACKAGE_VERSION" >> $GITHUB_ENV
+        run: echo "R_PACKAGE_VERSION=`cat DESCRIPTION | grep Version | awk 'NR ==1' | cut -c 10-`" >> $GITHUB_ENV
       
       - name: Check package
-        uses: docker://ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
-        with:
-          args: CMD check GWmodel3_${R_PACKAGE_VERSION}.tar.gz --as-cran --no-manual
+        run: docker run --rm -v $(pwd):/code --workdir=/code ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest CMD check --as-cran --no-manual
 
