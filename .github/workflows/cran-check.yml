@@ -25,6 +25,9 @@ jobs:
       
       - name: Install R Dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, any::roxygen2
+          needs: check
       
       - name: Check Package
         uses: r-lib/actions/check-r-package@v2
@@ -51,6 +54,9 @@ jobs:
       
       - name: Install R Dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, any::roxygen2
+          needs: check
       
       - name: Check Package
         uses: r-lib/actions/check-r-package@v2
