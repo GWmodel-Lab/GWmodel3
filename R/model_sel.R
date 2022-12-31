@@ -164,7 +164,8 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
 #'       GARAGE1 + TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW +
 #'       BLDPWW1 +BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
 #'   LondonHP, bw = "AIC", adaptive = TRUE
-#' ) |> model_sel(threshold = 10, bw = Inf, optim_bw = "AIC")
+#' )
+#' m <- model_sel(m, threshold = 10, bw = Inf, optim_bw = "AIC")
 #' plot(m$model_sel)
 #' plot(m$model_sel, view = "value")
 #' plot(m$model_sel, view = "diff")
