@@ -68,12 +68,15 @@ jobs:
       matrix:
         os: [debian, fedora]
         version: [release, devel]
+      fail-fast: false
+    container:
+      image: ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
         with:
           submodules: recursive
       - name: Build and Check package
+        shell: Rscript -e {0}
         run: |
-          docker run --rm -v $(pwd):/code --workdir=/code ghcr.io/gwmodel-lab/gwmodel3-test-${{ matrix.os }}-${{ matrix.version }}:latest \
-            -e 'rcmdcheck::rcmdcheck(args=c("--as-cran", "--no-manual"), build_args=c("--no-manual", "--resave-data"), error_on="error", check_dir="check")'
+          rcmdcheck::rcmdcheck(args=c("--as-cran", "--no-manual"), build_args=c("--no-manual", "--resave-data"), error_on="error", check_dir="check")
