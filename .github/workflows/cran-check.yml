@@ -77,6 +77,9 @@ jobs:
         with:
           submodules: recursive
       - name: Build and Check package
-        shell: Rscript '{0}'
-        run: |
-          rcmdcheck::rcmdcheck(args=c("--as-cran", "--no-manual"), build_args=c("--no-manual", "--resave-data"), error_on="error", check_dir="check")
+        uses: r-lib/actions/check-r-package@v2
+        with:
+          args: 'c("--no-manual", "--as-cran")'
+          build_args: 'c("--no-manual", "--resave-data")'
+          error-on: '"error"'
+          check-dir: '"check"'
