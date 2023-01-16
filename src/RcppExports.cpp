@@ -318,7 +318,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
 
     // Logger
-    GwmLogger::logger = printer;
+    Logger::printer = r_printer;
 
     // Convert data types
     arma::mat mx = myas(x);
@@ -339,30 +339,30 @@ BEGIN_RCPP
     auto vinitial_type = as< vector<int> >(IntegerVector(initial_type));
     auto vcentered = as< vector<bool> >(LogicalVector(centered));
     auto vthreshold = as< vector<double> >(NumericVector(threashold));
-    vector<CGwmSpatialWeight> spatials;
+    vector<SpatialWeight> spatials;
     for (size_t i = 0; i < nVar; i++)
     {
-        CGwmBandwidthWeight bandwidth(vbw[i], vadaptive[i], CGwmBandwidthWeight::KernelFunctionType(vkernel[i]));
-        CGwmDistance* distance = nullptr;
-        if (vlonglat[i]) distance = new CGwmCRSDistance(true);
+        BandwidthWeight bandwidth(vbw[i], vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
+        Distance* distance = nullptr;
+        if (vlonglat[i]) distance = new CRSDistance(true);
         else
         {
-            if (vp[i] == 2.0 && vtheta[i] == 0.0) distance = new CGwmCRSDistance(false);
-            else distance = new CGwmMinkwoskiDistance(vp[i], vtheta[i]);
+            if (vp[i] == 2.0 && vtheta[i] == 0.0) distance = new CRSDistance(false);
+            else distance = new MinkwoskiDistance(vp[i], vtheta[i]);
         }
-        spatials.push_back(CGwmSpatialWeight(&bandwidth, distance));
+        spatials.push_back(SpatialWeight(&bandwidth, distance));
     }
-    vector<CGwmMGWR::BandwidthInitilizeType> bandwidthInitialize(vinitial_type.size());
+    vector<GWRMultiscale::BandwidthInitilizeType> bandwidthInitialize(vinitial_type.size());
     transform(vinitial_type.begin(), vinitial_type.end(), bandwidthInitialize.begin(), [](int x) {
-        return CGwmMGWR::BandwidthInitilizeType(x);
+        return GWRMultiscale::BandwidthInitilizeType(x);
     });
-    vector<CGwmMGWR::BandwidthSelectionCriterionType> bandwidthSelectionApproach(voptim_bw_criterion.size());
+    vector<GWRMultiscale::BandwidthSelectionCriterionType> bandwidthSelectionApproach(voptim_bw_criterion.size());
     transform(voptim_bw_criterion.begin(), voptim_bw_criterion.end(), bandwidthSelectionApproach.begin(), [](int x) {
-        return CGwmMGWR::BandwidthSelectionCriterionType(x);
+        return GWRMultiscale::BandwidthSelectionCriterionType(x);
     });
     
     // Make Algorithm Object
-    CGwmMGWR algorithm(mx, my, mcoords, spatials);
+    GWRMultiscale algorithm(mx, my, mcoords, spatials);
     algorithm.setIndependentVariables(mx);
     algorithm.setDependentVariable(my);
     algorithm.setCoords(mcoords);
@@ -371,7 +371,7 @@ BEGIN_RCPP
     algorithm.setBandwidthInitilize(bandwidthInitialize);
     algorithm.setBandwidthSelectionApproach(bandwidthSelectionApproach);
     algorithm.setBandwidthSelectThreshold(vthreshold);
-    algorithm.setCriterionType(CGwmMGWR::BackFittingCriterionType(size_t(criterion)));
+    algorithm.setCriterionType(GWRMultiscale::BackFittingCriterionType(size_t(criterion)));
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setBandwidthSelectRetryTimes(retry_times);
     switch (ParallelType(size_t(parallel_type)))
@@ -393,10 +393,10 @@ BEGIN_RCPP
 
     // Get bandwidth
     vector<double> bw_value;
-    const vector<CGwmSpatialWeight>& spatialWeights = algorithm.spatialWeights();
+    const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
     for (size_t i = 0; i < nVar; i++)
     {
-        bw_value.push_back(spatialWeights[0].weight<CGwmBandwidthWeight>()->bandwidth());
+        bw_value.push_back(spatialWeights[0].weight<BandwidthWeight>()->bandwidth());
     }
     
     // Return Results
