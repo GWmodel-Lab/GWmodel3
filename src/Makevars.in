@@ -34,26 +34,26 @@ PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DR
 PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_LIBS)
 
 OBJECTS_LIBGWMODEL = \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmBandwidthWeight.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmCRSDistance.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmDMatDistance.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmDistance.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmMinkwoskiDistance.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmOneDimDistance.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmSpatialWeight.o \
-	libgwmodel/src/gwmodelpp/spatialweight/CGwmWeight.o \
-	libgwmodel/src/gwmodelpp/CGwmBandwidthSelector.o \
-	libgwmodel/src/gwmodelpp/CGwmGWDR.o \
-	libgwmodel/src/gwmodelpp/CGwmGWPCA.o \
-	libgwmodel/src/gwmodelpp/CGwmGWRBase.o \
-	libgwmodel/src/gwmodelpp/CGwmGWRBasic.o \
-	libgwmodel/src/gwmodelpp/CGwmGWSS.o \
-	libgwmodel/src/gwmodelpp/CGwmMGWR.o \
-	libgwmodel/src/gwmodelpp/CGwmSpatialAlgorithm.o \
-	libgwmodel/src/gwmodelpp/CGwmSpatialMonoscaleAlgorithm.o \
-	libgwmodel/src/gwmodelpp/CGwmSpatialMultiscaleAlgorithm.o \
-	libgwmodel/src/gwmodelpp/CGwmVariableForwardSelector.o \
-	libgwmodel/src/gwmodelpp/GwmLogger.o
+	libgwmodel/src/gwmodelpp/spatialweight/BandwidthWeight.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CRSDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/DMatDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/Distance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/MinkwoskiDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/OneDimDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
+	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
+	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/GWDR.o \
+	libgwmodel/src/gwmodelpp/GWPCA.o \
+	libgwmodel/src/gwmodelpp/GWRBase.o \
+	libgwmodel/src/gwmodelpp/GWRBasic.o \
+	libgwmodel/src/gwmodelpp/GWSS.o \
+	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
+	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
+	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
+	libgwmodel/src/gwmodelpp/SpatialMultiscaleAlgorithm.o \
+	libgwmodel/src/gwmodelpp/VariableForwardSelector.o \
+	libgwmodel/src/gwmodelpp/Logger.o
 
 OBJECTS_GWMODEL = \
 	RcppExports.o

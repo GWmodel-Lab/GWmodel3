@@ -8,10 +8,12 @@
 #include <utility>
 #include <string>
 #include "gwmodel.h"
-#include "gwmodelpp/GwmLogger.h"
+#include "gwmodelpp/Logger.h"
 
 using namespace std;
 using namespace Rcpp;
+using namespace gwm;
+using namespace arma;
 
 #ifdef RCPP_USE_GLOBAL_ROSTREAM
 Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
@@ -41,7 +43,7 @@ inline SEXP mywrap(const arma::vec& avec)
     return x;
 }
 
-List mywrap(const GwmRegressionDiagnostic& diagnostic)
+List mywrap(const RegressionDiagnostic& diagnostic)
 {
     return List::create(
         Named("RSS") = diagnostic.RSS,
@@ -69,20 +71,20 @@ List mywrap(const VariablesCriterionList& criterion_list)
     );
 }
 
-void printer(std::string message, GwmLogger::LogLevel level, std::string fun_name, std::string file_name)
+void r_printer(std::string message, Logger::LogLevel level, std::string fun_name, std::string file_name)
 {
     switch (level)
     {
-    case GwmLogger::LogLevel::LOG_EMERG:
-    case GwmLogger::LogLevel::LOG_ALERT:
-    case GwmLogger::LogLevel::LOG_CRIT:
-    case GwmLogger::LogLevel::LOG_ERR:
+    case Logger::LogLevel::LOG_EMERG:
+    case Logger::LogLevel::LOG_ALERT:
+    case Logger::LogLevel::LOG_CRIT:
+    case Logger::LogLevel::LOG_ERR:
         Rcpp::Rcerr << "ERROR: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
         break;
-    case GwmLogger::LogLevel::LOG_WARNING:
-    case GwmLogger::LogLevel::LOG_NOTICE:
-    case GwmLogger::LogLevel::LOG_INFO:
-    case GwmLogger::LogLevel::LOG_DEBUG:
+    case Logger::LogLevel::LOG_WARNING:
+    case Logger::LogLevel::LOG_NOTICE:
+    case Logger::LogLevel::LOG_INFO:
+    case Logger::LogLevel::LOG_DEBUG:
     default:
         Rcpp::Rcout << "MSG: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
         break;
@@ -120,7 +122,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
 
     // Logger
-    GwmLogger::logger = printer;
+    Logger::printer = r_printer;
 
     // Convert data types
     arma::mat mx = myas(x);
@@ -129,31 +131,31 @@ BEGIN_RCPP
     std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
 
     // Make Spatial Weight
-    CGwmBandwidthWeight bandwidth(bw, adaptive, CGwmBandwidthWeight::KernelFunctionType((size_t)kernel));
-    CGwmDistance* distance = nullptr;
+    BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
+    Distance* distance = nullptr;
     if (longlat)
     {
-        distance = new CGwmCRSDistance(true);
+        distance = new CRSDistance(true);
     }
     else
     {
         if (p == 2.0 && theta == 0.0)
         {
-            distance = new CGwmCRSDistance(false);
+            distance = new CRSDistance(false);
         }
         else
         {
-            distance = new CGwmMinkwoskiDistance(p, theta);
+            distance = new MinkwoskiDistance(p, theta);
         }
     }
-    CGwmSpatialWeight spatial(&bandwidth, distance);
+    SpatialWeight spatial(&bandwidth, distance);
     
     // Make Algorithm Object
-    CGwmGWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
+    GWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
     algorithm.setIsAutoselectIndepVars(select_model);
     algorithm.setIndepVarSelectionThreshold(select_model_threshold);
     algorithm.setIsAutoselectBandwidth(optim_bw);
-    algorithm.setBandwidthSelectionCriterion(CGwmGWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
+    algorithm.setBandwidthSelectionCriterion(GWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
     switch (ParallelType(size_t(parallel_type)))
     {
     case ParallelType::SerialOnly:
@@ -182,7 +184,7 @@ BEGIN_RCPP
     );
     if (optim_bw)
     {
-        double bw_value = algorithm.spatialWeight().weight<CGwmBandwidthWeight>()->bandwidth();
+        double bw_value = algorithm.spatialWeight().weight<BandwidthWeight>()->bandwidth();
         result_list["bandwidth"] = wrap(bw_value);
     }
     if (select_model)
@@ -190,12 +192,12 @@ BEGIN_RCPP
         vector<size_t> sel_vars = algorithm.selectedVariables();
         result_list["variables"] = wrap(sel_vars);
         result_list["model_sel_criterions"] = mywrap(algorithm.indepVarsSelectionCriterionList());
-        mat x = mx.cols(CGwmVariableForwardSelector::index2uvec(sel_vars, intercept));
-        result_list["fitted"] = mywrap(CGwmGWRBasic::Fitted(x, betas));
+        mat x = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = mywrap(GWRBasic::Fitted(x, betas));
     }
     else
     {
-        result_list["fitted"] = mywrap(CGwmGWRBasic::Fitted(mx, betas));
+        result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
     }
 
     rcpp_result_gen = result_list;
@@ -227,7 +229,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
 
     // Logger
-    GwmLogger::logger = printer;
+    Logger::printer = r_printer;
 
     // Convert data types
     arma::mat mpcoords = myas(pcoords);
@@ -237,27 +239,27 @@ BEGIN_RCPP
     std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
 
     // Make Spatial Weight
-    CGwmBandwidthWeight bandwidth(bw, adaptive, CGwmBandwidthWeight::KernelFunctionType((size_t)kernel));
-    CGwmDistance* distance = nullptr;
+    BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
+    Distance* distance = nullptr;
     if (longlat)
     {
-        distance = new CGwmCRSDistance(true);
+        distance = new CRSDistance(true);
     }
     else
     {
         if (p == 2.0 && theta == 0.0)
         {
-            distance = new CGwmCRSDistance(false);
+            distance = new CRSDistance(false);
         }
         else
         {
-            distance = new CGwmMinkwoskiDistance(p, theta);
+            distance = new MinkwoskiDistance(p, theta);
         }
     }
-    CGwmSpatialWeight spatial(&bandwidth, distance);
+    SpatialWeight spatial(&bandwidth, distance);
     
     // Make Algorithm Object
-    CGwmGWRBasic algorithm(mx, my, mcoords, spatial, false, intercept);
+    GWRBasic algorithm(mx, my, mcoords, spatial, false, intercept);
     switch (ParallelType(size_t(parallel_type)))
     {
     case ParallelType::SerialOnly:
