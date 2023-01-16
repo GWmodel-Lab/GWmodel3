@@ -5,11 +5,8 @@
 #' m <- gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
 #'  data = LondonHP,
-#'  config = list(
-#'      new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'      new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'      new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'      new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")))
+#'  config = rep(new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
+#' )
 #' 
 #' @export 
 gwr_multiscale <- function(
@@ -200,6 +197,55 @@ setValidity("MGWRConfig", function(object) {
     }
 })
 
+#' Replicate MGWR config
+#'
+#' @param x A \linkS4class{MGWRConfig} object.
+#' @param \dots Additional arguments.
+#' @param times Replication times.
+#'
+#' @return A list of \linkS4class{MGWRConfig} objects.
+#'
+#' @example
+#' rep(new_mgwr_config(36, TRUE, "bisquare"), 4)
+#'
+#' @name rep-MGWRConfig
+NULL
+
+#' @rdname rep-MGWRConfig
+#' @export
+setMethod(
+    "rep",
+    signature(x = "MGWRConfig"),
+    definition = function(x, ...) {
+        mc <- match.call(rep.int)
+        mc[[1L]] <- as.name("rep.int")
+        eval(mc)
+    }
+)
+
+#' @rdname rep-MGWRConfig
+#' @export
+setMethod(
+    "rep.int",
+    signature(x = "MGWRConfig", times = "numeric"),
+    definition = function(x, times = 1) {
+        times <- as.integer(floor(times))
+        lapply(seq_len(times), function(i) {
+            new_mgwr_config(
+                bw = x@bw,
+                adaptive = x@adaptive,
+                kernel = x@kernel,
+                longlat = x@longlat,
+                p = x@p,
+                theta = x@theta,
+                centered = x@centered,
+                optim_bw = x@optim_bw,
+                optim_threshold = x@optim_threshold
+            )
+        })
+    }
+)
+
 #' Create an instance of MGWRConfig
 #' 
 #' @export 
@@ -317,13 +363,10 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
 #' @examples
 #' data(LondonHP)
 #' m <- gwr_multiscale(
-#' formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#' data = LondonHP,
-#' config = list(
-#'     new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'     new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'     new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"),
-#'     new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")))
+#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+#'  data = LondonHP,
+#'  config = rep(new_mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
+#' )
 #' plot(m)
 #'
 #' @export

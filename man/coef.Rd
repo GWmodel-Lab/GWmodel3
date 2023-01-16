@@ -8,7 +8,7 @@
 \usage{
 \method{coef}{gwrm}(object, ...)
 
-\method{coef}{gwrm}(object, ...)
+\method{coef}{gwrmultiscalem}(object, ...)
 }
 \arguments{
 \item{object}{A "gwrmultiscalem" object.}
