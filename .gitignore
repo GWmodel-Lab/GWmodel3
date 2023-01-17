@@ -50,3 +50,10 @@ rsconnect/
 
 # VSCode
 .vscode
+autom4te.cache
+config.log
+config.status
+src/Makevars
+*.so
+*.o
+*.dll

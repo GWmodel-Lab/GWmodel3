@@ -1,0 +1,5 @@
+\.git
+\.github
+\.vscode
+\.devcontainer
+src/libgwmodel/test

@@ -1,0 +1,6 @@
+#!/bin/sh +x
+
+find src -name "*.o" | xargs rm
+find src -name "*.so" | xargs rm
+rm -rf src/libgwmodel/build src/Makevars
+rm -rf config.log config.status autom4te.cache
