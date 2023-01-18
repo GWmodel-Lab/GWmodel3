@@ -1,0 +1,164 @@
+---
+title: Basic GWR
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Basic GWR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this page we introduce the usage of function `gwr_basic()`.
+
+```{r setup}
+library(sf)
+library(GWmodel3)
+```
+
+# Model Calibration
+
+We use the `LondonHP` data as an example to demonstrate how to use function `gwr_basic()`.
+Assume that the `PURCHASE` is the dependent variable, while `FLOORSZ` and `UNEMPLOY` are independent varaibles.
+We can build a GWR model through the folloing way.
+
+```{r model-calibration}
+data(LondonHP)
+m1 <- gwr_basic(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+    data = LondonHP,
+    bw = 64,
+    adaptive = TRUE
+)
+m1
+```
+
+Compared with **GWmodel**, the usage is changed in the following ways:
+
+1. The function is renamed to `gwr_basic` to avoid conflicts with the old version.
+2. The function no longer support the `regression.points` argument. To predict at new locations, please use the `predict()` function.
+3. The OLS part is no longer shown in outputs of the return value. Users can call `lm()` function with specified arguments.
+
+This function return a `gwrm` object.
+Through the outputs in console, we can get infromation of fomula, data, kernel, bandwidth, coefficient estimates, and diagnostics.
+Besides, it is supported to get more infromation via `coef()` `fitted()` `residuals()`.
+
+```{r}
+head(coef(m1))
+head(fitted(m1))
+head(residuals(m1))
+```
+
+In addition, like **GWmodel**, `gwrm` objects provide a `$SDF` variable which contains coefficient estimates and other sample-wise results.
+
+```{r}
+head(m1$SDF)
+```
+
+We can create maps with this variable. There is a `plot()` function provided to preview coefficient estimates easily.
+
+```{r}
+plot(m1)
+plot(m1, columns = c("FLOORSZ", "UNEMPLOY"))
+```
+
+If the second argument is omitted, all coefficient estimates will be mapped by default.
+Otherwise, only specified variables will be mapped.
+
+# Bandwidth Optimization
+
+We can call the function in the following way when we want the function to get an optimized bandwidth instead.
+
+```{r}
+data(LondonHP)
+m <- gwr_basic(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+    data = LondonHP,
+    bw = "AIC",
+    adaptive = TRUE
+)
+message("Bandwidth:", m$args$bw)
+```
+
+The method for optimizing bandwidth is specified through strings `"AIC"` or `"CV"`.
+Besides, when argument `bw` is missing or set to non-numeric values, this function select an optimized bandwidth according to AIC values.
+
+To obtain the value of optimized bandwidth, use the variable `$args$bw` of the returned object,
+or read it from console output.
+
+# Model Selection
+
+In this package, there is a generic function called `model_sel()`.
+We we apply it to `gwrm` objects, it can select variables, just like the `stepAIC()` in **MASS**.
+
+```{r}
+m2 <- gwr_basic(
+    PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 + GARAGE1 +
+        TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW + BLDPWW1 +
+        BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
+    LondonHP, "AIC", TRUE, parallel_method = "omp"
+)
+m2 <- model_sel(m2, criterion = "AIC", threshold = 10, bw = Inf, optim_bw = "AIC")
+m2
+```
+
+There are two arguments: `bw` and `optim_bw`. This is the way to use them:
+
+1.  When `bw` is missing or is `NA`, then the bandwidth recorded in `gwrm` object is used.
+2.  When `bw` is numeric, its value is used in model optimization.
+    The value of `optim_bw` determined whether optimize bandwidth again before finally calibrate it.
+    - When `optim_bw` is `"no"`, skip the bandwidth optimization process.
+    - When `optim_bw` is `"AIC"` or `"CV"`, optimize bandwidth according to the corresponding criterion.
+3.  When `bw` is non-numeric, use `Inf` as the bandwidth value to optimize bandwidth.
+    And use the criterion specified by `optim_bw` to optimize bandwidth.
+    When `optim_bw` is `"no"`, use the AIC criterion by default.
+
+It seems to be complicated, but it is easy to use.
+On most occassions, set paramters like the example above.
+
+The returned object after model selection contains a `$model_sel` variable,
+in which there are all model combinations and corresponding criterions.
+There are three functions to visualize it.
+
+```{r model-sel-vis}
+model_sel_view_circle(m2$model_sel, main = "Circle View")
+model_sel_view_value(m2$model_sel, main = "AIC Value")
+model_sel_view_diff(m2$model_sel, main = "Diff of AIC")
+```
+
+We can also use the universal `plot()` function which will make some modification to layouts.
+
+```{r model-sel-plot}
+plot(m2$model_sel, main = "Circle View")                 # model_sel_view_circle
+plot(m2$model_sel, main = "AIC Value", view = "value")   # model_sel_view_value
+plot(m2$model_sel, main = "Diff of AIC", view = "diff")  # model_sel_view_diff
+```
+
+If further modification is required, use other arguments supported by `plot()`.
+
+# Predict
+
+Based on the current model, GWR can predict coefficient values at any position.
+We can use `predict()` function.
+
+```{r}
+predict(m2, LondonHP)
+```
+
+The result varies depends on the second argument:
+
+- When it is a `sf` or `sfc` object, the function will return a `sf` or `sfc` object including the orignal geometries.
+- When it is a two-column matrix or `data.frame`, the function will return a `data.frame` object without geometries.
+
+Besides, when the second argument is a `sf` or `sfc` object, the returned value varies depends on its attributes:
+
+- When it does not contains all of independent variables, only coefficient estimates will be returned.
+- When it only contains all of independent variables, coefficient and dependent variable estimates will be returned.
+- When it contains all of independent variables and the dependent variable, coefficient estimates, dependent variable estimates and residuals will be returned.
+
+Then we can get different results for different demands.
