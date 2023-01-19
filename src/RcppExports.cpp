@@ -396,7 +396,7 @@ BEGIN_RCPP
     const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
     for (size_t i = 0; i < nVar; i++)
     {
-        bw_value.push_back(spatialWeights[0].weight<BandwidthWeight>()->bandwidth());
+        bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
     }
     
     // Return Results
