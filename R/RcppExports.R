@@ -64,7 +64,7 @@
     x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
     optim_bw, optim_bw_criterion, optim_threshold, initial_type, centered,
     backfitting_criterion, hatmatrix, has_intercept, retry_times,
-    parallel_type, parallel_arg
+    max_iterations, parallel_type, parallel_arg
 ) {
     kernel_i <- sapply(kernel, function(o)
         switch(o, "gaussian" = 0, "exp" = 1, "bisquare" = 2,
@@ -82,6 +82,6 @@
         optim_bw, optim_bw_criterion_i, optim_threshold,
         initial_type_i, centered,
         backfitting_criterion_i, hatmatrix, has_intercept, retry_times,
-        parallel_type_i, parallel_arg
+        max_iterations, parallel_type_i, parallel_arg
     )
 }

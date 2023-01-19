@@ -33,6 +33,7 @@ gwr_multiscale <- function(
     criterion = c("dCVR", "CVR"),
     hatmatrix = T,
     retry_times = 5,
+    max_iterations = 2000,
     parallel_method = c("no", "omp"),
     parallel_arg = c(0)
 ) {
@@ -132,7 +133,7 @@ gwr_multiscale <- function(
         x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
         optim_bw, optim_bw_criterion, optim_threshold, initial_type, centered,
         criterion, hatmatrix, has_intercept, retry_times,
-        parallel_method, parallel_arg
+        max_iterations, parallel_method, parallel_arg
     )
     bw_value <- c_result$bw_value
     betas <- c_result$betas

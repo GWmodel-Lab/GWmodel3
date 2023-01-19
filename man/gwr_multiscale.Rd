@@ -11,6 +11,7 @@ gwr_multiscale(
   criterion = c("dCVR", "CVR"),
   hatmatrix = T,
   retry_times = 5,
+  max_iterations = 2000,
   parallel_method = c("no", "omp"),
   parallel_arg = c(0)
 )

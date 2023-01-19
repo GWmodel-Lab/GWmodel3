@@ -291,7 +291,7 @@ RcppExport SEXP _GWmodel_gwr_multiscale_fit(
     SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP threasholdSEXP,
     SEXP initial_typeSEXP, SEXP centeredSEXP,
     SEXP criterionSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP retry_timesSEXP,
-    SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
+    SEXP max_iterationsSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP)
 {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -314,6 +314,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type retry_times(retry_timesSEXP);
+    Rcpp::traits::input_parameter< size_t >::type max_iterations(max_iterationsSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
 
@@ -374,6 +375,7 @@ BEGIN_RCPP
     algorithm.setCriterionType(GWRMultiscale::BackFittingCriterionType(size_t(criterion)));
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setBandwidthSelectRetryTimes(retry_times);
+    algorithm.setMaxIteration(max_iterations);
     switch (ParallelType(size_t(parallel_type)))
     {
     case ParallelType::SerialOnly:
@@ -417,7 +419,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel_gwr_basic_fit", (DL_FUNC) &_GWmodel_gwr_basic_fit, 18},
     {"_GWmodel_gwr_basic_predict", (DL_FUNC) &_GWmodel_gwr_basic_predict, 13},
-    {"_GWmodel_gwr_multiscale_fit", (DL_FUNC) &_GWmodel_gwr_multiscale_fit, 20},
+    {"_GWmodel_gwr_multiscale_fit", (DL_FUNC) &_GWmodel_gwr_multiscale_fit, 21},
     {NULL, NULL, 0}
 };
 
