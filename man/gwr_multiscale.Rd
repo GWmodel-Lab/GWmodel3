@@ -7,7 +7,7 @@
 gwr_multiscale(
   formula,
   data,
-  config,
+  config = list(mgwr_config()),
   criterion = c("dCVR", "CVR"),
   hatmatrix = T,
   retry_times = 5,
@@ -22,8 +22,14 @@ Multiscale GWR
 data(LondonHP)
 m <- gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP
+)
+
+# Specify more configurations
+m <- gwr_multiscale(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP,
- config = rep(mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
+ config = rep(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
 )
 
 }

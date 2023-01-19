@@ -98,7 +98,7 @@ mgwr_config <- function(
     p = 2.0,
     theta = 0.0,
     centered = FALSE,
-    optim_bw = c("no", "AIC", "CV"),
+    optim_bw = c("AIC", "CV", "no"),
     optim_threshold = 1e-5
 ) {
     kernel <- match.arg(kernel)

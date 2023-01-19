@@ -1,18 +1,35 @@
 #' Multiscale GWR
-#' 
-#' @examples 
+#'
+#' @examples
 #' data(LondonHP)
 #' m <- gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#'  data = LondonHP,
-#'  config = rep(mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
+#'  data = LondonHP
 #' )
-#' 
-#' @export 
+#'
+#' # Specify more configurations for all variables
+#' m <- gwr_multiscale(
+#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+#'  data = LondonHP,
+#'  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
+#' )
+#'
+#' # Specify more configurations for each variables
+#' m <- gwr_multiscale(
+#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+#'  data = LondonHP,
+#'  config = list(
+#'      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+#'      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+#'      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+#'      mgwr_config(adaptive = TRUE, kernel = "bisquare")
+#'  ))
+#'
+#' @export
 gwr_multiscale <- function(
     formula,
     data,
-    config,
+    config = list(mgwr_config()),
     criterion = c("dCVR", "CVR"),
     hatmatrix = T,
     retry_times = 5,
@@ -58,10 +75,12 @@ gwr_multiscale <- function(
     if (has_intercept && indep_vars[1] != "Intercept") {
         stop("Please put Intercept to the first column.")
     }
-    if (length(config) != ncol(x)) {
+    if (length(config) == 1) {
+        config <- rep(config, times = ncol(x))
+    } else if (length(config) != ncol(x)) {
         stop("The length of config mush be equal to the number of independent variables.")
     }
-    
+
     ### Process config
     bw_config <- lapply(config, function(x) {
         if (is.na(x@bw)) {
@@ -170,7 +189,7 @@ gwr_multiscale <- function(
 #' @return No return.
 #' @method print gwrmultiscalem
 #' @name print
-#' 
+#'
 #' @importFrom stats coef fivenum
 #' @export
 print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {

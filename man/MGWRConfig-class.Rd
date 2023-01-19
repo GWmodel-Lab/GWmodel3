@@ -15,7 +15,7 @@ mgwr_config(
   p = 2,
   theta = 0,
   centered = FALSE,
-  optim_bw = c("no", "AIC", "CV"),
+  optim_bw = c("AIC", "CV", "no"),
   optim_threshold = 1e-05
 )
 }
@@ -35,3 +35,7 @@ Create an instance of MGWRConfig
 \item{\code{bw}}{Bandwidth Value}
 }}
 
+\examples{
+mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")
+
+}
