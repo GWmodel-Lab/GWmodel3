@@ -207,7 +207,7 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
     cat("Parameter-specified Weighting Configuration", fill = T)
     cat("-------------------------------------------", fill = T)
     config_str <- with(x$args, data.frame(
-        bw = matrix2char(bw_value, decimal_fmt),
+        bw = matrix2char(bw_value, ifelse(adaptive, "%i", decimal_fmt)),
         unit = ifelse(adaptive, "NN", "Meters"),
         type = initial_type,
         kernel = kernel,
@@ -218,7 +218,7 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
         criterion = ifelse(optim_bw, optim_bw_criterion, ""),
         threshold = ifelse(
             optim_bw,
-            matrix2char(optim_threshold, decimal_fmt),
+            matrix2char(optim_threshold, "%e"),
             ""
         ),
         centered = centered

@@ -25,11 +25,22 @@ m <- gwr_multiscale(
  data = LondonHP
 )
 
-# Specify more configurations
+# Specify more configurations for all variables
 m <- gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP,
- config = rep(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
+ config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
 )
+
+# Specify more configurations for each variables
+m <- gwr_multiscale(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = list(
+     mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+     mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+     mgwr_config(adaptive = TRUE, kernel = "bisquare"),
+     mgwr_config(adaptive = TRUE, kernel = "bisquare")
+ ))
 
 }
