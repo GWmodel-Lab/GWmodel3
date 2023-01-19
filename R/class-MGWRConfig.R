@@ -97,7 +97,7 @@ mgwr_config <- function(
     longlat = FALSE,
     p = 2.0,
     theta = 0.0,
-    centered = FALSE,
+    centered = TRUE,
     optim_bw = c("AIC", "CV", "no"),
     optim_threshold = 1e-5
 ) {

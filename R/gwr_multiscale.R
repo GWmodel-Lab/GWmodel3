@@ -80,6 +80,9 @@ gwr_multiscale <- function(
     } else if (length(config) != ncol(x)) {
         stop("The length of config mush be equal to the number of independent variables.")
     }
+    if (has_intercept) {
+        config[[1]]@centered <- FALSE
+    }
 
     ### Process config
     bw_config <- lapply(config, function(x) {

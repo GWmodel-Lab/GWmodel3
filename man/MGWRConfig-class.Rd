@@ -14,7 +14,7 @@ mgwr_config(
   longlat = FALSE,
   p = 2,
   theta = 0,
-  centered = FALSE,
+  centered = TRUE,
   optim_bw = c("AIC", "CV", "no"),
   optim_threshold = 1e-05
 )
