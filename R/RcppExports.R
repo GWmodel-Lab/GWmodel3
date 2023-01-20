@@ -74,7 +74,7 @@
     parallel_type_i <- sapply(parallel_type, function(o)
         switch(o, "none" = 1, "omp" = 2, "cuda" = 4, "cluster" = 8, 1))
     optim_bw_criterion_i <- sapply(optim_bw_criterion, function(o)
-        switch(o, "AIC" = 0, "CV" = 1, 0))
+        switch(o, "CV" = 0, "AIC" = 1, 0))
     backfitting_criterion_i <- switch(backfitting_criterion,
         "CVR" = 0, "dCVR" = 1, 0)
     .Call("_GWmodel_gwr_multiscale_fit",
