@@ -251,7 +251,6 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
     cat("  EDF:", x$diagnostic$EDF, fill = T)
     cat("   R2:", x$diagnostic$RSquare, fill = T)
     cat("R2adj:", x$diagnostic$RSquareAdjust, fill = T)
-    cat("  AIC:", x$diagnostic$AIC, fill = T)
     cat(" AICc:", x$diagnostic$AICc, fill = T)
     cat("\n", fill = T)
 }
