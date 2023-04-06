@@ -8,6 +8,7 @@
 #include <utility>
 #include <string>
 #include "gwmodel.h"
+#include "gwmodelpp/spatialweight/OneDimDistance.h"
 #include "gwmodelpp/Logger.h"
 
 using namespace std;
@@ -416,10 +417,122 @@ BEGIN_RCPP
 END_RCPP
 }
 
+RcppExport SEXP _GWmodel_gwdr_fit(
+    SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP,
+    SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP,
+    SEXP interceptSEXP, SEXP hatmatrixSEXP,
+    SEXP parallel_typeSEXP, SEXP parallel_argSEXP,
+    SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP optim_threasholdSEXP,
+    SEXP optim_stepSEXP, SEXP optim_max_iterSEXP,
+    SEXP select_modelSEXP, SEXP select_model_thresholdSEXP)
+{
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< LogicalVector >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
+    Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
+    Rcpp::traits::input_parameter< IntegerVector >::type parallel_arg(parallel_argSEXP);
+    Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
+    Rcpp::traits::input_parameter< size_t >::type optim_bw_criterion(optim_bw_criterionSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_threashold(optim_threasholdSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_step(optim_stepSEXP);
+    Rcpp::traits::input_parameter< size_t >::type optim_max_iter(optim_max_iterSEXP);
+    Rcpp::traits::input_parameter< bool >::type select_model(select_modelSEXP);
+    Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
+
+    // Logger
+    Logger::printer = r_printer;
+
+    // Convert data types
+    arma::mat mx = myas(x);
+    arma::vec my = myas(y);
+    arma::mat mcoords = myas(coords);
+    std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
+
+    // Make Spatial Weight
+    size_t nDim = (size_t)mcoords.n_cols;
+    auto vbw = as< vector<double> >(NumericVector(bw));
+    auto vadaptive = as< vector<bool> >(LogicalVector(adaptive));
+    auto vkernel = as< vector<int> >(IntegerVector(kernel));
+    vector<SpatialWeight> spatials;
+    for (size_t i = 0; i < nDim; i++)
+    {
+        BandwidthWeight bandwidth(vbw[i], vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
+        OneDimDistance distance;
+        spatials.push_back(SpatialWeight(&bandwidth, &distance));
+    }
+    
+    // Make Algorithm Object
+    GWDR algorithm(mx, my, mcoords, spatials);
+    algorithm.setHasHatMatrix(hatmatrix);
+    algorithm.setBandwidthCriterionType(GWDR::BandwidthCriterionType(size_t(optim_bw_criterion)));
+
+    if (select_model)
+    {
+        algorithm.setEnableIndepVarSelect(true);
+        algorithm.setIndepVarSelectThreshold(select_model_threshold);
+    }
+
+    if (optim_bw) 
+    {
+        algorithm.setEnableBandwidthOptimize(true);
+        algorithm.setBandwidthOptimizeEps(optim_threashold);
+        algorithm.setBandwidthOptimizeStep(optim_step);
+        algorithm.setBandwidthOptimizeMaxIter(optim_max_iter);
+    }
+
+    switch (ParallelType(size_t(parallel_type)))
+    {
+    case ParallelType::SerialOnly:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+#ifdef _OPENMP
+    case ParallelType::OpenMP:
+        algorithm.setParallelType(ParallelType::OpenMP);
+        algorithm.setOmpThreadNum(vpar_args[0]);
+        break;
+#endif
+    default:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    }
+    algorithm.fit();
+
+    // Get bandwidth
+    vector<double> bw_value;
+    const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
+    for (size_t i = 0; i < nDim; i++)
+    {
+        bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
+    }
+    
+    // Return Results
+    mat betas = algorithm.betas();
+    vec fitted = sum(mx % betas, 1);
+    List result_list = List::create(
+        Named("betas") = mywrap(betas),
+        Named("diagnostic") = mywrap(algorithm.diagnostic()),
+        Named("bw_value") = wrap(bw_value),
+        Named("fitted") = mywrap(fitted)
+    );
+
+    rcpp_result_gen = result_list;
+    return rcpp_result_gen;
+END_RCPP
+}
+
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel_gwr_basic_fit", (DL_FUNC) &_GWmodel_gwr_basic_fit, 18},
     {"_GWmodel_gwr_basic_predict", (DL_FUNC) &_GWmodel_gwr_basic_predict, 13},
     {"_GWmodel_gwr_multiscale_fit", (DL_FUNC) &_GWmodel_gwr_multiscale_fit, 21},
+    {"_GWmodel_gwdr_fit", (DL_FUNC) &_GWmodel_gwdr_fit, 17},
     {NULL, NULL, 0}
 };
 

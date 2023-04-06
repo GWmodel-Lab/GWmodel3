@@ -85,3 +85,35 @@
         max_iterations, parallel_type_i, parallel_arg
     )
 }
+
+.c_gwr_basic_fit <- function(
+    x, y, coords, bw, adaptive, kernel,
+    intercept, hatmatrix, parallel_type, parallel_arg,
+    optim_bw = FALSE, optim_bw_criterion = "AIC", optim_threashold = 1e-6,
+    optim_step = 0.01, optim_max_iter = 1e6,
+    select_model = FALSE, select_model_threshold = 3.0
+) {
+    kernel_i <- sapply(kernel, function(o)
+        switch(o, "gaussian" = 0, "exp" = 1, "bisquare" = 2,
+               "tricube" = 3, "boxcar" = 4, 0))
+    parallel_type_i = switch(parallel_type,
+        "none" = 1,
+        "omp" = 2,
+        "cuda" = 4,
+        "cluster" = 8,
+        1
+    )
+    optim_bw_criterion_i = switch(optim_bw_criterion,
+        "AIC" = 0,
+        "CV" = 1,
+        0
+    )
+    .Call("_GWmodel_gwdr_fit",
+        x, y, coords, bw, adaptive, kernel_i,
+        intercept, hatmatrix,
+        parallel_type_i, parallel_arg,
+        optim_bw, optim_bw_criterion_i, optim_threashold,
+        optim_step, optim_max_iter,
+        select_model, select_model_threshold
+    )
+}
