@@ -104,8 +104,8 @@
         1
     )
     optim_bw_criterion_i = switch(optim_bw_criterion,
-        "AIC" = 0,
-        "CV" = 1,
+        "CV" = 0,
+        "AIC" = 1,
         0
     )
     .Call("_GWmodel_gwdr_fit",

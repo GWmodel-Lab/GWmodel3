@@ -19,3 +19,16 @@ gwdr(
 \description{
 Geographically Weighted Density Regression
 }
+\examples{
+data(LondonHP)
+gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+    gwdr_config(0.618, T)
+))
+
+### Optim Bandwidth
+data(LondonHP)
+gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+    gwdr_config(0.618, T)
+), optim_bw = "AIC")
+
+}

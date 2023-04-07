@@ -1,5 +1,17 @@
 #' Geographically Weighted Density Regression
 #'
+#' @examples
+#' data(LondonHP)
+#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#'     gwdr_config(0.618, T)
+#' ))
+#'
+#' ### Optim Bandwidth
+#' data(LondonHP)
+#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#'     gwdr_config(0.618, T)
+#' ), optim_bw = "AIC")
+#'
 #' @export
 gwdr <- function(
     formula,
@@ -52,12 +64,9 @@ gwdr <- function(
         stop("Please put Intercept to the first column.")
     }
     if (length(config) == 1) {
-        config <- rep(config, times = ncol(x))
+        config <- rep(config, times = ncol(coords))
     } else if (length(config) != ncol(x)) {
         stop("The length of config mush be equal to the number of independent variables.")
-    }
-    if (has_intercept) {
-        config[[1]]@centered <- FALSE
     }
 
     ### Process config
@@ -80,11 +89,14 @@ gwdr <- function(
         optim_bw, optim_bw_criterion, optim_bw_threshold,
         optim_bw_step, optim_bw_max_iter
     )
-    bw_value <- c_result$bw_value
     betas <- c_result$betas
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic
     resi <- y - fitted
+    if (optim_bw)
+    {
+        bw_value <- c_result$bw_value
+    }
 
     ### Create result Layer
     colnames(betas) <- indep_vars
@@ -237,6 +249,49 @@ model_sel.gwdrm <- function(
     object
 }
 
+#' Get coefficients of a basic GWR model.
+#'
+#' @param object A "gwdrm" object.
+#' @param \dots Additional arguments passing to [coef()].
+#' @method coef gwdrm
+#' @name coef
+#'
+#' @export
+coef.gwdrm <- function(object, ...) {
+    if (!inherits(object, "gwdrm")) {
+        stop("It's not a gwdrm object.")
+    }
+    sf::st_drop_geometry(object$SDF[object$indep_vars])
+}
+
+#' Get fitted values of a basic GWR model.
+#'
+#' @param object A "gwdrm" object.
+#' @param \dots Additional arguments passing to [fitted()].
+#' @method fitted gwdrm
+#' @name fitted
+#' @export
+fitted.gwdrm <- function(object, ...) {
+    if (!inherits(object, "gwdrm")) {
+        stop("It's not a gwdrm object.")
+    }
+    object$SDF[["yhat"]]
+}
+
+#' Get residuals of a basic GWR model.
+#'
+#' @param object A "gwdrm" object.
+#' @param \dots Additional arguments passing to [residuals()].
+#' @method residuals gwdrm
+#' @name residuals
+#' @export
+residuals.gwdrm <- function(object, ...) {
+    if (!inherits(object, "gwdrm")) {
+        stop("It's not a gwdrm object.")
+    }
+    object$SDF[["residual"]]
+}
+
 #' Print description of a `gwdrm` object
 #'
 #' @param x An `gwdrm` object returned by [gwdr()].
@@ -262,11 +317,11 @@ print.gwdrm <- function(x, decimal_fmt = "%.3f", ...) {
     cat("Dimension-specified Weighting Configuration", fill = T)
     cat("-------------------------------------------", fill = T)
     config_str <- with(x$args, data.frame(
-        bw = matrix2char(bw_value, ifelse(adaptive, "%i", decimal_fmt)),
-        unit = ifelse(adaptive, "NN", "Meters"),
+        bw = matrix2char(bw_value, decimal_fmt),
+        unit = ifelse(adaptive, "%", "Meters"),
         kernel = kernel
     ))
-    rownames(config_str) <- x$indep_vars
+    rownames(config_str) <- colnames(x$args$coords)
     print.data.frame(config_str)
     cat("\n", fill = T)
 

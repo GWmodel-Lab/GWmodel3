@@ -464,7 +464,7 @@ BEGIN_RCPP
     vector<SpatialWeight> spatials;
     for (size_t i = 0; i < nDim; i++)
     {
-        BandwidthWeight bandwidth(vbw[i], vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
+        BandwidthWeight bandwidth(vbw[i] * mcoords.n_rows, vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
         OneDimDistance distance;
         spatials.push_back(SpatialWeight(&bandwidth, &distance));
     }
@@ -518,7 +518,7 @@ BEGIN_RCPP
         const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
         for (size_t i = 0; i < nDim; i++)
         {
-            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
+            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth() / double(mcoords.n_rows));
         }
         result_list["bw_value"] = wrap(bw_value);
     }
