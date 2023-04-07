@@ -510,6 +510,9 @@ BEGIN_RCPP
     vec fitted = sum(mx % betas, 1);
     List result_list = List::create(
         Named("betas") = mywrap(betas),
+        Named("betasSE") = mywrap(algorithm.betasSE()),
+        Named("sTrace") = mywrap(algorithm.sHat()),
+        Named("sHat") = mywrap(algorithm.s()),
         Named("diagnostic") = mywrap(algorithm.diagnostic())
     );
     if (optim_bw)

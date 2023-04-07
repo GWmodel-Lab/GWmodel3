@@ -147,17 +147,23 @@ model_sel.gwdrm <- function(
     config = list(gwdr_config()),
     optim_bw = c("no", "AIC", "CV"),
     optim_bw_threshold = 1e-6,
+    optim_bw_step = 0.02,
+    optim_bw_max_iter = 1e6,
     ...
 ) {
     if (!inherits(object, "gwdrm")) {
         stop("It's not a gwdrm object.")
     }
     criterion <- match.arg(criterion)
+    optim_bw <- match.arg(optim_bw)
 
     ### Check whether bandwidth is valid.
-    bw_value <- sapply(config, function(x) {
-        ifelse(is.numeric(x@bw) || is.integer(x@bw), x@bw, Inf)
-    })
+    bw_value <- object$args$bw_value
+    if (!missing(config)) {
+        bw_value <- sapply(config, function(x) {
+            ifelse(is.numeric(x@bw) || is.integer(x@bw), x@bw, Inf)
+        })
+    }
     optim_bw_criterion <- "AIC"
     if (optim_bw == "no") {
         optim_bw <- FALSE
@@ -169,16 +175,16 @@ model_sel.gwdrm <- function(
     kernel <- sapply(config, function(x) x@kernel)
 
     ### Calibrate GWR
-    c_result <- .c_gwdr_fit(
+    c_result <- with(object$args, .c_gwdr_fit(
         x, y, coords, bw_value, adaptive, kernel,
         has_intercept, hatmatrix = TRUE,
         parallel_method, parallel_arg,
         optim_bw, optim_bw_criterion, optim_bw_threshold,
         optim_bw_step, optim_bw_max_iter,
         select_model = TRUE, select_model_threshold = threshold
-    )
+    ))
     if (optim_bw)
-        bw_value <- c_result$bandwidth
+        bw_value <- c_result$bw_value
     betas <- c_result$betas
     betas_se <- c_result$betasSE
     shat_trace <- c_result$sTrace
