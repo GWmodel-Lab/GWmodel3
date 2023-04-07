@@ -59,3 +59,29 @@
         intercept, parallel_type_i, parallel_arg
     )
 }
+
+.c_gwr_multiscale_fit <- function(
+    x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
+    optim_bw, optim_bw_criterion, optim_threshold, initial_type, centered,
+    backfitting_criterion, hatmatrix, has_intercept, retry_times,
+    max_iterations, parallel_type, parallel_arg
+) {
+    kernel_i <- sapply(kernel, function(o)
+        switch(o, "gaussian" = 0, "exp" = 1, "bisquare" = 2,
+               "tricube" = 3, "boxcar" = 4, 0))
+    initial_type_i <- sapply(initial_type, function(o)
+        switch(o, "Null" = 0, "Initial" = 1, "Specified" = 2, 0))
+    parallel_type_i <- sapply(parallel_type, function(o)
+        switch(o, "none" = 1, "omp" = 2, "cuda" = 4, "cluster" = 8, 1))
+    optim_bw_criterion_i <- sapply(optim_bw_criterion, function(o)
+        switch(o, "CV" = 0, "AIC" = 1, 0))
+    backfitting_criterion_i <- switch(backfitting_criterion,
+        "CVR" = 0, "dCVR" = 1, 0)
+    .Call("_GWmodel_gwr_multiscale_fit",
+        x, y, coords, bw_value, adaptive, kernel_i, longlat, p, theta,
+        optim_bw, optim_bw_criterion_i, optim_threshold,
+        initial_type_i, centered,
+        backfitting_criterion_i, hatmatrix, has_intercept, retry_times,
+        max_iterations, parallel_type_i, parallel_arg
+    )
+}
