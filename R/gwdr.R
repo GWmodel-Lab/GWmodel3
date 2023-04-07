@@ -65,8 +65,8 @@ gwdr <- function(
     }
     if (length(config) == 1) {
         config <- rep(config, times = ncol(coords))
-    } else if (length(config) != ncol(x)) {
-        stop("The length of config mush be equal to the number of independent variables.")
+    } else if (length(config) != ncol(coords)) {
+        stop("The length of config mush be equal to the number of coordinate columns.")
     }
 
     ### Process config

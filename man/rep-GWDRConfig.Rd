@@ -24,6 +24,6 @@ A list of \linkS4class{GWDRConfig} objects.
 Replicate MGWR config
 }
 \examples{
-rep(mgwr_config(36, TRUE, "bisquare"), 4)
+rep(gwdr_config(36, TRUE, "bisquare"), 4)
 
 }

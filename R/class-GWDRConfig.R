@@ -22,7 +22,7 @@ GWDRConfig <- setClass("GWDRConfig", slots = c(
 #' @return A list of \linkS4class{GWDRConfig} objects.
 #'
 #' @examples
-#' rep(mgwr_config(36, TRUE, "bisquare"), 4)
+#' rep(gwdr_config(36, TRUE, "bisquare"), 4)
 #'
 #' @name rep-GWDRConfig
 NULL
@@ -47,7 +47,7 @@ setMethod(
     definition = function(x, times = 1) {
         times <- as.integer(floor(times))
         lapply(seq_len(times), function(i) {
-            mgwr_config(
+            gwdr_config(
                 bw = x@bw,
                 adaptive = x@adaptive,
                 kernel = x@kernel
@@ -61,7 +61,7 @@ setMethod(
 #' @describeIn GWDRConfig-class
 #'
 #' @examples
-#' mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")
+#' gwdr_config(36, TRUE, "bisquare", optim_bw = "AIC")
 #'
 #' @export
 gwdr_config <- function(
