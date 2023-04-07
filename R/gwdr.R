@@ -135,6 +135,73 @@ gwdr <- function(
     class(gwdrm) <- "gwdrm"
     gwdrm
 }
+#' Plot the result of basic GWR model.
+#'
+#' @param x A "gwdrm" object.
+#' @param y Ignored.
+#' @param columns Column names to plot.
+#'  If it is missing or non-character value, all coefficient columns are plottd.
+#' @param \dots Additional arguments passing to [sf::plot()].
+#' @method plot gwdrm
+#' @name plot
+#'
+#' @examples
+#' data(LondonHP)
+#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#' plot(m)
+#'
+#' @export
+plot.gwdrm <- function(x, y, ..., columns) {
+    if (!inherits(x, "gwdrm")) {
+        stop("It's not a gwdrm object.")
+    }
+
+    sdf <- sf::st_as_sf(x$SDF)
+    sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
+    if (!missing(columns) && is.character(columns)) {
+        valid_columns <- intersect(columns, sdf_colnames)
+        if (length(valid_columns) > 0) {
+            sdf <- sdf[valid_columns]
+        }
+    } else { ### Select coefficient columns.
+        sdf <- sdf[x$indep_vars]
+    }
+    plot(sdf, ...)
+}
+
+#' Plot the result of basic GWR model.
+#'
+#' @param x A "gwdrm" object.
+#' @param y Ignored.
+#' @param columns Column names to plot.
+#'  If it is missing or non-character value, all coefficient columns are plottd.
+#' @param \dots Additional arguments passing to [sf::plot()].
+#' @method plot gwdrm
+#' @name plot
+#'
+#' @examples
+#' data(LondonHP)
+#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#' plot(m)
+#'
+#' @export
+plot.gwdrm <- function(x, y, ..., columns) {
+    if (!inherits(x, "gwdrm")) {
+        stop("It's not a gwdrm object.")
+    }
+
+    sdf <- sf::st_as_sf(x$SDF)
+    sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
+    if (!missing(columns) && is.character(columns)) {
+        valid_columns <- intersect(columns, sdf_colnames)
+        if (length(valid_columns) > 0) {
+            sdf <- sdf[valid_columns]
+        }
+    } else { ### Select coefficient columns.
+        sdf <- sdf[x$indep_vars]
+    }
+    plot(sdf, ...)
+}
 
 #' Model selection for GWDR model
 #'
