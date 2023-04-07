@@ -1,17 +1,41 @@
 #' Geographically Weighted Density Regression
 #'
+#' @param formula Regresison model.
+#' @param data A `sf` objects.
+#' @param config Dimension-specified weighting configuration.
+#'  It must be a list of `GWDRConfig` objects.
+#'  Its length can be 1 or equal to the number of columns of coordinates in `data`.
+#'  When its length is 1, elements will be duplicated for each column in coordinates.
+#' @param optim_bw Whether optimize bandwidth after selecting models.
+#'  Avaliable values are `no`, `AIC`, and `CV`.
+#'  If `no` is specified, the bandwidth specified by argument `bw`
+#'  is used in calibrating selected models.
+#' @param optim_bw_threshold Threshold of bandwidth optimization.
+#' @param optim_bw_step Step size in bandwidth optimization.
+#' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
+#' @param parallel_method Parallel method.
+#' @param parallel_arg Parallel method argument.
+#' 
+#' @return A `gwdrm` object.
+#'
 #' @examples
 #' data(LondonHP)
+#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
+#'
+#' ### Specific Bandwidth
+#' data(LondonHP)
 #' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
-#'     gwdr_config(0.618, T)
+#'     gwdr_config(0.2, TRUE, "gaussian"),
+#'     gwdr_config(0.2, TRUE, "gaussian")
 #' ))
 #'
 #' ### Optim Bandwidth
 #' data(LondonHP)
 #' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
-#'     gwdr_config(0.618, T)
+#'     gwdr_config(0.618, TRUE, "gaussian")
 #' ), optim_bw = "AIC")
 #'
+#' @importFrom stats model.extract model.matrix terms
 #' @export
 gwdr <- function(
     formula,
@@ -204,6 +228,23 @@ plot.gwdrm <- function(x, y, ..., columns) {
 }
 
 #' Model selection for GWDR model
+#'
+#' @param object A "`gwdrm`" class object.
+#' @param criterion The model-selection method.
+#'  Currently there is only AIC available.
+#' @param threshold The threshold of criterion changes. Default to 3.0.
+#' @param config Dimension-specified weighting configuration.
+#'  If it is omitted, bandwidth settings will be inherited from `object`.
+#'  Otherwise, it must be a list of `GWDRConfig` objects.
+#'  Its length can be 1 or equal to the number of columns of coordinates in `data`.
+#'  When its length is 1, elements will be duplicated for each column in coordinates.
+#' @param optim_bw Whether optimize bandwidth after selecting models.
+#'  Avaliable values are `no`, `AIC`, and `CV`.
+#'  If `no` is specified, the bandwidth specified by argument `bw`
+#'  is used in calibrating selected models.
+#' @param optim_bw_threshold Threshold of bandwidth optimization.
+#' @param optim_bw_step Step size in bandwidth optimization.
+#' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
 #'
 #' @importFrom stats formula
 #' @export

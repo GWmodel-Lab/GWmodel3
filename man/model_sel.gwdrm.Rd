@@ -16,6 +16,31 @@
   ...
 )
 }
+\arguments{
+\item{object}{A "`gwdrm`" class object.}
+
+\item{criterion}{The model-selection method.
+Currently there is only AIC available.}
+
+\item{threshold}{The threshold of criterion changes. Default to 3.0.}
+
+\item{config}{Dimension-specified weighting configuration.
+If it is omitted, bandwidth settings will be inherited from `object`.
+Otherwise, it must be a list of `GWDRConfig` objects.
+Its length can be 1 or equal to the number of columns of coordinates in `data`.
+When its length is 1, elements will be duplicated for each column in coordinates.}
+
+\item{optim_bw}{Whether optimize bandwidth after selecting models.
+Avaliable values are `no`, `AIC`, and `CV`.
+If `no` is specified, the bandwidth specified by argument `bw`
+is used in calibrating selected models.}
+
+\item{optim_bw_threshold}{Threshold of bandwidth optimization.}
+
+\item{optim_bw_step}{Step size in bandwidth optimization.}
+
+\item{optim_bw_max_iter}{Maximum of iteration in bandwidth optimization.}
+}
 \description{
 Model selection for GWDR model
 }

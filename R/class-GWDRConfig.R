@@ -1,6 +1,8 @@
 #' An S4 class to set GWDR configurations
 #'
-#' @slot bw Bandwidth Value
+#' @slot bw Bandwidth value.
+#' @slot adaptive Whether the bandwidth value is adaptive or not.
+#' @slot kernel Kernel function used.
 #'
 #' @exportClass GWDRConfig
 GWDRConfig <- setClass("GWDRConfig", slots = c(
@@ -61,7 +63,7 @@ setMethod(
 #' @describeIn GWDRConfig-class
 #'
 #' @examples
-#' gwdr_config(36, TRUE, "bisquare", optim_bw = "AIC")
+#' gwdr_config(36, TRUE, "bisquare")
 #'
 #' @export
 gwdr_config <- function(

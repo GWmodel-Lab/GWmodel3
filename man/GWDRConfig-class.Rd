@@ -26,10 +26,14 @@ Create an instance of GWDRConfig
 \section{Slots}{
 
 \describe{
-\item{\code{bw}}{Bandwidth Value}
+\item{\code{bw}}{Bandwidth value.}
+
+\item{\code{adaptive}}{Whether the bandwidth value is adaptive or not.}
+
+\item{\code{kernel}}{Kernel function used.}
 }}
 
 \examples{
-gwdr_config(36, TRUE, "bisquare", optim_bw = "AIC")
+gwdr_config(36, TRUE, "bisquare")
 
 }

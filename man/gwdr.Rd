@@ -16,19 +16,52 @@ gwdr(
   parallel_arg = c(0)
 )
 }
+\arguments{
+\item{formula}{Regresison model.}
+
+\item{data}{A `sf` objects.}
+
+\item{config}{Dimension-specified weighting configuration.
+It must be a list of `GWDRConfig` objects.
+Its length can be 1 or equal to the number of columns of coordinates in `data`.
+When its length is 1, elements will be duplicated for each column in coordinates.}
+
+\item{optim_bw}{Whether optimize bandwidth after selecting models.
+Avaliable values are `no`, `AIC`, and `CV`.
+If `no` is specified, the bandwidth specified by argument `bw`
+is used in calibrating selected models.}
+
+\item{optim_bw_threshold}{Threshold of bandwidth optimization.}
+
+\item{optim_bw_step}{Step size in bandwidth optimization.}
+
+\item{optim_bw_max_iter}{Maximum of iteration in bandwidth optimization.}
+
+\item{parallel_method}{Parallel method.}
+
+\item{parallel_arg}{Parallel method argument.}
+}
+\value{
+A `gwdrm` object.
+}
 \description{
 Geographically Weighted Density Regression
 }
 \examples{
 data(LondonHP)
+gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
+
+### Specific Bandwidth
+data(LondonHP)
 gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
-    gwdr_config(0.618, T)
+    gwdr_config(0.2, TRUE, "gaussian"),
+    gwdr_config(0.2, TRUE, "gaussian")
 ))
 
 ### Optim Bandwidth
 data(LondonHP)
 gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
-    gwdr_config(0.618, T)
+    gwdr_config(0.618, TRUE, "gaussian")
 ), optim_bw = "AIC")
 
 }

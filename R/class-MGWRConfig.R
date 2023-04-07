@@ -1,6 +1,20 @@
 #' An S4 class to set Multiscale GWR configurations
 #'
-#' @slot bw Bandwidth Value
+#' @slot bw Bandwidth value.
+#' @slot adaptive Whether the bandwidth value is adaptive or not.
+#' @slot kernel Kernel function used.
+#' @param longlat Whether the coordinates.
+#' @param p Power of the Minkowski distance,
+#'  default to 2, i.e., Euclidean distance.
+#' @param theta Angle in radian to roate the coordinate system, default to 0.
+#' @param centered A logical vector of length equalling to the number of predictors,
+#'  and note intercept is not included;
+#'  if the element is TRUE, the corresponding predictor will be centered.
+#' @param optim_bw Whether optimize bandwidth after selecting models.
+#'  Avaliable values are `no`, `AIC`, and `CV`.
+#'  If `no` is specified, the bandwidth specified by argument `bw`
+#'  is used in calibrating selected models.
+#' @param optim_threshold Threshold of bandwidth optimization.
 #'
 #' @exportClass MGWRConfig
 MGWRConfig <- setClass("MGWRConfig", slots = c(

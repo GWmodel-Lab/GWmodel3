@@ -19,6 +19,25 @@ mgwr_config(
   optim_threshold = 1e-05
 )
 }
+\arguments{
+\item{longlat}{Whether the coordinates.}
+
+\item{p}{Power of the Minkowski distance,
+default to 2, i.e., Euclidean distance.}
+
+\item{theta}{Angle in radian to roate the coordinate system, default to 0.}
+
+\item{centered}{A logical vector of length equalling to the number of predictors,
+and note intercept is not included;
+if the element is TRUE, the corresponding predictor will be centered.}
+
+\item{optim_bw}{Whether optimize bandwidth after selecting models.
+Avaliable values are `no`, `AIC`, and `CV`.
+If `no` is specified, the bandwidth specified by argument `bw`
+is used in calibrating selected models.}
+
+\item{optim_threshold}{Threshold of bandwidth optimization.}
+}
 \description{
 An S4 class to set Multiscale GWR configurations
 
@@ -32,7 +51,11 @@ Create an instance of MGWRConfig
 \section{Slots}{
 
 \describe{
-\item{\code{bw}}{Bandwidth Value}
+\item{\code{bw}}{Bandwidth value.}
+
+\item{\code{adaptive}}{Whether the bandwidth value is adaptive or not.}
+
+\item{\code{kernel}}{Kernel function used.}
 }}
 
 \examples{
