@@ -1,4 +1,4 @@
-#' Geographically Weighted Density Regression
+#' Geographically Weighted Density Regression (GWDR)
 #'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.

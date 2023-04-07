@@ -2,7 +2,7 @@
 % Please edit documentation in R/gwdr.R
 \name{gwdr}
 \alias{gwdr}
-\title{Geographically Weighted Density Regression}
+\title{Geographically Weighted Density Regression (GWDR)}
 \usage{
 gwdr(
   formula,
@@ -45,7 +45,7 @@ is used in calibrating selected models.}
 A `gwdrm` object.
 }
 \description{
-Geographically Weighted Density Regression
+Geographically Weighted Density Regression (GWDR)
 }
 \examples{
 data(LondonHP)
