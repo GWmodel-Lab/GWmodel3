@@ -26,9 +26,9 @@ Create an instance of MGWRConfig
 }
 \section{Functions}{
 \itemize{
-\item \code{mgwr_config}: 
-}}
+\item \code{mgwr_config()}: 
 
+}}
 \section{Slots}{
 
 \describe{

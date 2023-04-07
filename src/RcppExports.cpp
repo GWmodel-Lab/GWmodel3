@@ -504,24 +504,36 @@ BEGIN_RCPP
         break;
     }
     algorithm.fit();
-
-    // Get bandwidth
-    vector<double> bw_value;
-    const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
-    for (size_t i = 0; i < nDim; i++)
-    {
-        bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
-    }
     
     // Return Results
     mat betas = algorithm.betas();
     vec fitted = sum(mx % betas, 1);
     List result_list = List::create(
         Named("betas") = mywrap(betas),
-        Named("diagnostic") = mywrap(algorithm.diagnostic()),
-        Named("bw_value") = wrap(bw_value),
-        Named("fitted") = mywrap(fitted)
+        Named("diagnostic") = mywrap(algorithm.diagnostic())
     );
+    if (optim_bw)
+    {
+        vector<double> bw_value;
+        const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
+        for (size_t i = 0; i < nDim; i++)
+        {
+            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
+        }
+        result_list["bw_value"] = wrap(bw_value);
+    }
+    if (select_model)
+    {
+        vector<size_t> sel_vars = algorithm.selectedVariables();
+        result_list["variables"] = wrap(sel_vars);
+        result_list["model_sel_criterions"] = mywrap(algorithm.indepVarCriterionList());
+        mat x = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = mywrap(GWRBasic::Fitted(x, betas));
+    }
+    else
+    {
+        result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
+    }
 
     rcpp_result_gen = result_list;
     return rcpp_result_gen;

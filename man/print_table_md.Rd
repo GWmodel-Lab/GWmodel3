@@ -63,10 +63,10 @@ In this function, characters are right padded by spaces.
 }
 \section{Functions}{
 \itemize{
-\item \code{matrix2char}: Convert a numeric matrix to character matrix
+\item \code{matrix2char()}: Convert a numeric matrix to character matrix
 according to a format string.
-}}
 
+}}
 \seealso{
 [print.gwrm()].
 

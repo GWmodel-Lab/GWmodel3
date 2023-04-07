@@ -86,7 +86,7 @@
     )
 }
 
-.c_gwr_basic_fit <- function(
+.c_gwdr_fit <- function(
     x, y, coords, bw, adaptive, kernel,
     intercept, hatmatrix, parallel_type, parallel_arg,
     optim_bw = FALSE, optim_bw_criterion = "AIC", optim_threashold = 1e-6,
