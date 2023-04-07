@@ -8,8 +8,8 @@
 \title{An S4 class to set GWDR configurations}
 \usage{
 gwdr_config(
-  bw = NA_real_,
-  adaptive = FALSE,
+  bw = 0.618,
+  adaptive = TRUE,
   kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
 )
 }

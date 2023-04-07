@@ -7,7 +7,7 @@
 gwdr(
   formula,
   data,
-  config = list(mgwr_config()),
+  config = list(gwdr_config()),
   optim_bw = c("no", "AIC", "CV"),
   optim_bw_threshold = 1e-06,
   optim_bw_step = 0.02,
