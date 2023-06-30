@@ -4,7 +4,7 @@
 \alias{rep-GWDRConfig}
 \alias{rep,GWDRConfig-method}
 \alias{rep.int,GWDRConfig,numeric-method}
-\title{Replicate MGWR config}
+\title{Replicate GWDR config}
 \usage{
 \S4method{rep}{GWDRConfig}(x, ...)
 
@@ -21,7 +21,7 @@
 A list of \linkS4class{GWDRConfig} objects.
 }
 \description{
-Replicate MGWR config
+Replicate GWDR config
 }
 \examples{
 rep(gwdr_config(36, TRUE, "bisquare"), 4)

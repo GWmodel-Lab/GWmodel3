@@ -40,6 +40,8 @@ is used in calibrating selected models.}
 \item{optim_bw_step}{Step size in bandwidth optimization.}
 
 \item{optim_bw_max_iter}{Maximum of iteration in bandwidth optimization.}
+
+\item{\dots}{Other parameters. Unused.}
 }
 \description{
 Model selection for GWDR model

@@ -8,7 +8,7 @@ gwr_multiscale(
   formula,
   data,
   config = list(mgwr_config()),
-  criterion = c("dCVR", "CVR"),
+  criterion = c("CVR", "dCVR"),
   hatmatrix = T,
   retry_times = 5,
   max_iterations = 2000,

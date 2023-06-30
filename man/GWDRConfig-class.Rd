@@ -13,6 +13,13 @@ gwdr_config(
   kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
 )
 }
+\arguments{
+\item{bw}{Bandwidth value.}
+
+\item{adaptive}{Whether the bandwidth value is adaptive or not.}
+
+\item{kernel}{Kernel function used.}
+}
 \description{
 An S4 class to set GWDR configurations
 

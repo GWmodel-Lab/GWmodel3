@@ -56,6 +56,10 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/Logger.o
 
 OBJECTS_GWMODEL = \
+	utils.o \
+	gwr_basic.o \
+	gwr_multiscale.o \
+	gwdr.o \
 	RcppExports.o
 
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_GWMODEL)

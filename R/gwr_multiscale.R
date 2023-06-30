@@ -40,12 +40,13 @@
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare")
 #'  ))
 #'
+#' @importFrom methods validObject
 #' @export
 gwr_multiscale <- function(
     formula,
     data,
     config = list(mgwr_config()),
-    criterion = c("dCVR", "CVR"),
+    criterion = c("CVR", "dCVR"),
     hatmatrix = T,
     retry_times = 5,
     max_iterations = 2000,
@@ -144,11 +145,14 @@ gwr_multiscale <- function(
     theta <- sapply(config, function(x) x@theta)
     centered <- sapply(config, function(x) x@centered)
 
-    c_result <- .c_gwr_multiscale_fit(
-        x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
-        optim_bw, optim_bw_criterion, optim_threshold, initial_type, centered,
-        criterion, hatmatrix, has_intercept, retry_times,
-        max_iterations, parallel_method, parallel_arg
+    c_result <- gwr_multiscale_fit(
+        x, y, coords,
+        bw_value, adaptive, enum(kernel, kernel_enums),
+        longlat, p, theta,
+        optim_bw, enum(optim_bw_criterion, mgwr_bw_criterion_enums),
+        optim_threshold, enum(initial_type, mgwr_initial_enums), centered,
+        enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
+        enum_list(parallel_method, parallel_types), parallel_arg
     )
     bw_value <- c_result$bw_value
     betas <- c_result$betas
