@@ -5,3 +5,34 @@ navbar:
   structure:
     left: [intro, reference, articles, tutorials, news]
     right: [search, github]
+reference:
+  - contents:
+      - GWmodel3-package
+  - title: GW regression models
+    contents:
+      - starts_with("gwr")
+      - gwdr
+      - starts_with("model_sel")
+      - matches("gwrm")
+      - matches("gwrmultiscalem")
+      - matches("gwdrm")
+      - ends_with("_config")
+      - ends_with("Config")
+      - matches("coef")
+      - matches("fitted")
+      - matches("predict")
+      - matches("residuals")
+  - title: Print and plot
+    contents:
+      - starts_with("plot")
+      - starts_with("print")
+  - title: Data
+    contents:
+      - DubVoter
+      - EWHP
+      - EWOutline
+      - GeorgiaCensus
+      - GeorgiaCounties
+      - LondonBorough
+      - LondonHP
+      - USelect2004
