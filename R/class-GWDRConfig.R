@@ -78,3 +78,8 @@ gwdr_config <- function(
         kernel = kernel
     )
 }
+
+gwdr_bw_criterion_enums <- c(
+    "CV",
+    "AIC"
+)

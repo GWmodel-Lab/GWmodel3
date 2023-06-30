@@ -89,10 +89,11 @@ gwr_basic <- function(
     }
 
     ### Call solver
-    c_result <- .c_gwr_basic_fit(
-        x, y, coords, bw, adaptive, kernel, longlat, p, theta,
-        hatmatrix, has_intercept, parallel_method, parallel_arg,
-        optim_bw, optim_bw_criterion
+    c_result <- gwr_basic_fit(
+        x, y, coords, bw, adaptive, enum(kernel), longlat, p, theta,
+        hatmatrix, has_intercept,
+        enum_list(parallel_method, parallel_types), parallel_arg,
+        optim_bw, enum(optim_bw_criterion, c("AIC", "CV"))
     )
     if (optim_bw)
         bw <- c_result$bandwidth
@@ -208,8 +209,9 @@ model_sel.gwrm <- function(
 
     ### Calibrate GWR
     c_result <- with(object$args, .c_gwr_basic_fit(
-        x, y, coords, bw_value, adaptive, kernel, longlat, p, theta,
-        hatmatrix, has_intercept, parallel_method, parallel_arg,
+        x, y, coords, bw_value, adaptive, enum(kernel), longlat, p, theta,
+        hatmatrix, has_intercept,
+        enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, optim_bw_criterion,
         select_model = TRUE, select_model_criterion = criterion,
         select_model_threshold = threshold

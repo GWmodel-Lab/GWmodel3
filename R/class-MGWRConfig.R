@@ -133,3 +133,14 @@ mgwr_config <- function(
         optim_threshold = optim_threshold
     )
 }
+
+mgwr_bw_criterion_enums <- c(
+    "CV",
+    "AIC"
+)
+
+mgwr_initial_enums <- c(
+    "Null",
+    "Initial",
+    "Specified"
+)

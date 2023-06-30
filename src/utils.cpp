@@ -4,29 +4,6 @@ using namespace Rcpp;
 using namespace arma;
 using namespace gwm;
 
-inline arma::mat myas(const NumericMatrix& rmat)
-{
-    return arma::mat(rmat.begin(), rmat.nrow(), rmat.ncol());
-}
-
-inline arma::vec myas(const NumericVector& rvec)
-{
-    return arma::vec(rvec.begin(), rvec.size());
-}
-
-inline SEXP mywrap(const arma::mat& amat)
-{
-    RObject x = wrap(amat.begin(), amat.end());
-    x.attr("dim") = Dimension(amat.n_rows, amat.n_cols);
-    return x;
-}
-
-inline SEXP mywrap(const arma::vec& avec)
-{
-    RObject x = wrap(avec.begin(), avec.end());
-    return x;
-}
-
 List mywrap(const RegressionDiagnostic& diagnostic)
 {
     return List::create(

@@ -107,11 +107,12 @@ gwdr <- function(
     adaptive <- sapply(config, function(x) x@adaptive)
     kernel <- sapply(config, function(x) x@kernel)
 
-    c_result <- .c_gwdr_fit(
-        x, y, coords, bw_value, adaptive, kernel,
-        has_intercept, TRUE, parallel_method, parallel_arg,
-        optim_bw, optim_bw_criterion, optim_bw_threshold,
-        optim_bw_step, optim_bw_max_iter
+    c_result <- gwdr_fit(
+        x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
+        has_intercept, TRUE,
+        enum_list(parallel_method, parallel_types), parallel_arg,
+        optim_bw, enum(optim_bw_criterion, gwdr_bw_criterion_enums),
+        optim_bw_threshold, optim_bw_step, optim_bw_max_iter
     )
     betas <- c_result$betas
     fitted <- c_result$fitted

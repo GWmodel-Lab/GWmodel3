@@ -8,7 +8,7 @@ using namespace Rcpp;
 using namespace arma;
 using namespace gwm;
 
-// [[export]]
+// [[Rcpp::export]]
 List gwr_multiscale_fit (
     const NumericMatrix& x,
     const NumericVector& y,
