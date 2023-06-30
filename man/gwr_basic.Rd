@@ -42,7 +42,7 @@ default to 2, i.e., Euclidean distance.}
 
 \item{theta}{Angle in radian to roate the coordinate system, default to 0.}
 
-\item{hatmatrix}{If TRUE, great circle will be caculated}
+\item{hatmatrix}{If TRUE, great circle will be caculated.}
 
 \item{parallel_method}{Parallel method.}
 

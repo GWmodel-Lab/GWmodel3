@@ -3,3 +3,4 @@
 \.vscode
 \.devcontainer
 src/libgwmodel/test
+src/libgwmodel/docs

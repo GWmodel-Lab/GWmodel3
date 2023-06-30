@@ -16,6 +16,30 @@ gwr_multiscale(
   parallel_arg = c(0)
 )
 }
+\arguments{
+\item{formula}{Regresison model.}
+
+\item{data}{A `sf` objects.}
+
+\item{config}{Parameter-specified weighting configuration.
+It must be a list of `MGWRConfig` objects.
+Its length can be 1 or equal to the number of independent variables.
+When its length is 1, elements will be duplicated for independent variable.}
+
+\item{criterion}{Convergence criterion of back-fitting algorithm.}
+
+\item{hatmatrix}{If TRUE, great circle will be caculated.}
+
+\item{retry_times}{The number times of continually optimizing each 
+ parameter-specific bandwidth even though it meets the criterion of convergence,
+for avoiding sub-optimal choice due to illusion of convergence.}
+
+\item{max_iterations}{Maximum number of iterations in the back-fitting procedure.}
+
+\item{parallel_method}{Parallel method.}
+
+\item{parallel_arg}{Parallel method argument.}
+}
 \description{
 Multiscale GWR
 }

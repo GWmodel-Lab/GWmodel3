@@ -1,5 +1,20 @@
 #' Multiscale GWR
 #'
+#' @param formula Regresison model.
+#' @param data A `sf` objects.
+#' @param config Parameter-specified weighting configuration.
+#'  It must be a list of `MGWRConfig` objects.
+#'  Its length can be 1 or equal to the number of independent variables.
+#'  When its length is 1, elements will be duplicated for independent variable.
+#' @param criterion Convergence criterion of back-fitting algorithm.
+#' @param hatmatrix If TRUE, great circle will be caculated.
+#' @param retry_times The number times of continually optimizing each 
+#'  parameter-specific bandwidth even though it meets the criterion of convergence,
+#' for avoiding sub-optimal choice due to illusion of convergence.
+#' @param max_iterations Maximum number of iterations in the back-fitting procedure.
+#' @param parallel_method Parallel method.
+#' @param parallel_arg Parallel method argument.
+#' 
 #' @examples
 #' data(LondonHP)
 #' m <- gwr_multiscale(

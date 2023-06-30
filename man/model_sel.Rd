@@ -56,16 +56,16 @@ Generic method for model auto-selection.
 }
 \section{Functions}{
 \itemize{
-\item \code{model_sel_view_circle}: Create circle view for
+\item \code{model_sel_view_circle()}: Create circle view for
 model combinations in model selection.
 
-\item \code{model_sel_view_value}: Create scatter plot for
+\item \code{model_sel_view_value()}: Create scatter plot for
 model selection criterion values
 
-\item \code{model_sel_view_diff}: Create scatter plot for
+\item \code{model_sel_view_diff()}: Create scatter plot for
 differences of model selection criterion values
-}}
 
+}}
 \examples{
 data(LondonHP)
 model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
