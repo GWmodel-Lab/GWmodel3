@@ -151,7 +151,7 @@ gwr_multiscale <- function(
         optim_bw, enum(optim_bw_criterion, mgwr_bw_criterion_enums),
         optim_threshold, enum(initial_type, mgwr_initial_enums), centered,
         enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
-        parallel_method, enum_list(parallel_arg, parallel_types)
+        enum_list(parallel_method, parallel_types), parallel_arg
     )
     bw_value <- c_result$bw_value
     betas <- c_result$betas

@@ -1,6 +1,6 @@
 data(LondonHP)
 m <- NULL
 
-test_that("Basic GWR: works", {
+test_that("GWDR: works", {
   m <<- expect_no_error(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
 })

@@ -112,7 +112,8 @@ gwdr <- function(
         has_intercept, TRUE,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, gwdr_bw_criterion_enums),
-        optim_bw_threshold, optim_bw_step, optim_bw_max_iter
+        optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
+        select_model = FALSE, select_model_threshold = 3.0
     )
     betas <- c_result$betas
     fitted <- c_result$fitted

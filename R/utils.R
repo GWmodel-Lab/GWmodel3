@@ -24,10 +24,4 @@ parallel_types <- list(
     "cluster" = 8
 )
 
-kernel_enums <- c(
-    "gaussian",
-    "exp",
-    "bisquare",
-    "tricube",
-    "boxcar"
-)
+kernel_enums <- c("gaussian", "exp", "bisquare", "tricube", "boxcar")

@@ -93,7 +93,9 @@ gwr_basic <- function(
         x, y, coords, bw, adaptive, enum(kernel), longlat, p, theta,
         hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
-        optim_bw, enum(optim_bw_criterion, c("AIC", "CV"))
+        optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
+        select_model = FALSE, select_model_criterion = 0,
+        select_model_threshold = 3.0
     )
     if (optim_bw)
         bw <- c_result$bandwidth
@@ -213,7 +215,7 @@ model_sel.gwrm <- function(
         hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, optim_bw_criterion,
-        select_model = TRUE, select_model_criterion = criterion,
+        select_model = TRUE, select_model_criterion = enum(criterion),
         select_model_threshold = threshold
     ))
     if (optim_bw)
