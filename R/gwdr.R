@@ -36,6 +36,7 @@
 #' ), optim_bw = "AIC")
 #'
 #' @importFrom stats model.extract model.matrix terms
+#' @importFrom methods validObject
 #' @export
 gwdr <- function(
     formula,
@@ -247,6 +248,7 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @param optim_bw_threshold Threshold of bandwidth optimization.
 #' @param optim_bw_step Step size in bandwidth optimization.
 #' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
+#' @param \dots Other parameters. Unused.
 #'
 #' @importFrom stats formula
 #' @export
@@ -286,11 +288,12 @@ model_sel.gwdrm <- function(
 
     ### Calibrate GWR
     c_result <- with(object$args, .c_gwdr_fit(
-        x, y, coords, bw_value, adaptive, kernel,
+        x, y, coords, bw_value, adaptive,
+        enum(kernel, kernel_enums),
         has_intercept, hatmatrix = TRUE,
-        parallel_method, parallel_arg,
-        optim_bw, optim_bw_criterion, optim_bw_threshold,
-        optim_bw_step, optim_bw_max_iter,
+        enum_list(parallel_method, parallel_types), parallel_arg,
+        optim_bw, enum(optim_bw_criterion, gwdr_bw_criterion_enums),
+        optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
         select_model = TRUE, select_model_threshold = threshold
     ))
     if (optim_bw)

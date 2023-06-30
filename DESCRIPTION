@@ -26,7 +26,8 @@ Depends:
     R (>= 3.5.0),
 Imports:
     Rcpp (>= 1.0.8),
-    sf
+    sf,
+    methods
 LinkingTo: Rcpp, RcppArmadillo
 NeedsCompilation: yes
 SystemRequirements: GNU make

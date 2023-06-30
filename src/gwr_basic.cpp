@@ -101,7 +101,7 @@ List gwr_basic_fit(
 
 
 // [[Rcpp::export]]
-List gwr_basic_predict(
+NumericMatrix gwr_basic_predict(
     const NumericMatrix& pcoords,
     const NumericMatrix& x,
     const NumericVector& y,

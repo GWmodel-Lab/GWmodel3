@@ -67,7 +67,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_predict
-List gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg);
+NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg);
 RcppExport SEXP _GWmodel3_gwr_basic_predict(SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;

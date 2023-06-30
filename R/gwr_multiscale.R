@@ -40,6 +40,7 @@
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare")
 #'  ))
 #'
+#' @importFrom methods validObject
 #' @export
 gwr_multiscale <- function(
     formula,

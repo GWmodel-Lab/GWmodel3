@@ -210,11 +210,11 @@ model_sel.gwrm <- function(
     }
 
     ### Calibrate GWR
-    c_result <- with(object$args, .c_gwr_basic_fit(
-        x, y, coords, bw_value, adaptive, enum(kernel), longlat, p, theta,
-        hatmatrix, has_intercept,
+    c_result <- with(object$args, gwr_basic_fit(
+        x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
+        longlat, p, theta, hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
-        optim_bw, optim_bw_criterion,
+        optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = TRUE, select_model_criterion = enum(criterion),
         select_model_threshold = threshold
     ))
@@ -482,9 +482,10 @@ predict.gwrm <- function(object, regression_points, ...) {
     pcoords <- as.matrix(pcoords)
 
     ### Predict coefficients
-    c_betas <- with(object$args, .c_gwr_basic_predict(
-        pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta,
-        has_intercept, parallel_method, parallel_arg
+    c_betas <- with(object$args, gwr_basic_predict(
+        pcoords, x, y, coords, bw, adaptive, enum(kernel, kernel_enums),
+        longlat, p, theta, has_intercept, 
+        enum_list(parallel_method, parallel_types), parallel_arg
     ))
 
     result <- as.data.frame(c_betas)

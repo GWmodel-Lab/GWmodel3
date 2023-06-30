@@ -6,3 +6,7 @@ test_that("Basic GWR: works", {
     gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
   )
 })
+
+test_that("Basic GWR: predict", {
+  predict(m, LondonHP)
+})

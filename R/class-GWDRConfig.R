@@ -3,7 +3,7 @@
 #' @slot bw Bandwidth value.
 #' @slot adaptive Whether the bandwidth value is adaptive or not.
 #' @slot kernel Kernel function used.
-#'
+#' 
 #' @exportClass GWDRConfig
 GWDRConfig <- setClass("GWDRConfig", slots = c(
     bw = "numeric",
@@ -15,7 +15,7 @@ GWDRConfig <- setClass("GWDRConfig", slots = c(
     kernel = "gaussian"
 ))
 
-#' Replicate MGWR config
+#' Replicate GWDR config
 #'
 #' @param x A \linkS4class{GWDRConfig} object.
 #' @param \dots Additional arguments.
@@ -60,10 +60,16 @@ setMethod(
 
 #' Create an instance of GWDRConfig
 #'
+#' @param bw Bandwidth value.
+#' @param adaptive Whether the bandwidth value is adaptive or not.
+#' @param kernel Kernel function used.
+#' 
 #' @describeIn GWDRConfig-class
 #'
 #' @examples
 #' gwdr_config(36, TRUE, "bisquare")
+#' 
+#' @importFrom methods new
 #'
 #' @export
 gwdr_config <- function(

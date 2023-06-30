@@ -20,6 +20,12 @@ mgwr_config(
 )
 }
 \arguments{
+\item{bw}{Bandwidth value.}
+
+\item{adaptive}{Whether the bandwidth value is adaptive or not.}
+
+\item{kernel}{Kernel function used.}
+
 \item{longlat}{Whether the coordinates.}
 
 \item{p}{Power of the Minkowski distance,
@@ -56,6 +62,24 @@ Create an instance of MGWRConfig
 \item{\code{adaptive}}{Whether the bandwidth value is adaptive or not.}
 
 \item{\code{kernel}}{Kernel function used.}
+
+\item{\code{longlat}}{Whether the coordinates.}
+
+\item{\code{p}}{Power of the Minkowski distance,
+default to 2, i.e., Euclidean distance.}
+
+\item{\code{theta}}{Angle in radian to roate the coordinate system, default to 0.}
+
+\item{\code{centered}}{A logical vector of length equalling to the number of predictors,
+and note intercept is not included;
+if the element is TRUE, the corresponding predictor will be centered.}
+
+\item{\code{optim_bw}}{Whether optimize bandwidth after selecting models.
+Avaliable values are `no`, `AIC`, and `CV`.
+If `no` is specified, the bandwidth specified by argument `bw`
+is used in calibrating selected models.}
+
+\item{\code{optim_threshold}}{Threshold of bandwidth optimization.}
 }}
 
 \examples{
