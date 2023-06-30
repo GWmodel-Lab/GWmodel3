@@ -7,3 +7,4 @@ src/libgwmodel/docs
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+_cache$

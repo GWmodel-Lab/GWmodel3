@@ -1,0 +1,235 @@
+---
+title: "GWDR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GWDR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Geographically weighted density regression (GWDR), is a model which
+calcaulates a wight for each dimension of coordinates,
+and calibrate regression model with the product of these weights.
+In this page, we mainly introduce the usage of `gwdr()`.
+
+```{r setup, include=FALSE}
+library(sf)
+library(GWmodel3)
+```
+
+# Basics
+
+Let us set the data `LondonHP` as an example, and show how to use `gwdr()`.
+Assume that the `PURCHASE` is the dependent variable, 
+while `FLOORSZ`, `PROF` and `UNEMPLOY` are independent variable, 
+we can calibrate a GWDR model with the following code.
+
+```{r model-calibration, cache=T}
+data(LondonHP)
+m1 <- gwdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP
+)
+m1
+```
+
+Here no additional arguments are set, so the function will apply the follwing configurations:
+
+- Banwdith size for each dimension is 61.8% samples.
+- Adaptive bandwidth for each dimension.
+- Gaussian kernel function for each dimension.
+- No bandwidth optimization.
+
+On most situations, these configurations can ensure the algorithm works.
+To further specify arguments, please turn to [Weighting configurations](#weighting-configurations).
+
+This function returns a object of class name `gwdrm`.
+Through the outputs in console,
+we can get infromation of fomula, data, kernel, bandwidth, coefficient estimates, and diagnostics.
+Besides, it is supported to get more infromation via `coef()` `fitted()` `residuals()`.
+
+```{r coef-fitted-resi}
+head(coef(m1))
+head(fitted(m1))
+head(residuals(m1))
+```
+
+Like other functions, `gwdrm` objects provide a `$SDF` variable 
+which contains coefficient estimates and other sample-wise results.
+
+```{r sdf}
+head(m1$SDF)
+```
+
+We can create maps with this variable.
+There is a `plot()` function provided to preview coefficient estimates easily.
+
+```{r plot-model}
+plot(m1)
+plot(m1, columns = c("FLOORSZ", "UNEMPLOY"))
+```
+
+If the second argument is omitted, all coefficient estimates will be mapped by default.
+Otherwise, only specified variables will be mapped.
+
+# Weighting configurations
+
+## S4 class for dimension-specified weighting configrations
+
+This package provides a S4 class named `GWDRConfig`,
+which is used to set dimension-specified weighting configurations.
+This class contains the following slots:
+
+| Slot       | Type      | Descirption                        |
+| ---------- | --------- | ---------------------------------- |
+| `bw`       | Numeric   | Banwdith size.                     |
+| `adaptive` | Logical   | Whether the bandwidth is adaptive. |
+| `kernel`   | Character | Name of the kernel function.       |
+
+We can use the function `gwdr_config()` to create an object.
+
+```{r}
+gwdr_config(0.618, TRUE, "bisquare")
+```
+
+Replicating via `rep()` is enabled, but only the `times` parameter is supported.
+
+```{r}
+rep(gwdr_config(36, TRUE, "bisquare"), 2)
+```
+
+## Use GWDRConfig to configure arguments
+
+The function `gwdr()` can not only set a uniform configuration,
+but also set each a configuration for dimensions.
+
+### Uniform configuration
+
+To set a uniform configuration for all dimensions, just pass a list of only one `GWDRConfig` object.
+For example, the following code will set the bandwidth size to 10% samples for all dimensions.
+
+```{r, cache=T}
+m2 <- gwdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = list(gwdr_config(0.2))
+)
+m2
+```
+
+Likewise, we can use the `rep()` function, but remember to use a right `times` argument,
+which should be equal to the number of independent variables (including the intercept if it exists).
+
+```r
+m2 <- gwdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = rep(gwdr_config(0.2), times = 2)
+)
+```
+
+### Separate configuration
+
+To set configurations separately for each dimension,
+we need to input a list of `GWDRConfig` objects
+with the same number of elements to that of dimensions.
+
+```{r, cache=T}
+m3 <- gwdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = list(gwdr_config(bw = 0.2, kernel = "bisquare"),
+               gwdr_config(bw = 0.2, kernel = "bisquare"))
+)
+m3
+```
+
+Then the functions `c()` `rep()` can be used to flexiably create such a list.
+
+# Bandwidth Optimization
+
+The bandwidth optimization algorithm for GWDR requires a set of initial values for each parameter.
+Thus, even bandwidth optimization is enabled, it is necessary to set the initial values via the `config` argument.
+We can enable bandwidth optimization with the following codes.
+
+```{r, cahce=T}
+m4 <- gwdr(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+    data = LondonHP,
+    optim_bw = "AIC"
+)
+```
+
+The method for optimizing bandwidth is specified through strings `"AIC"` or `"CV"`.
+If the initial values are not appropriate, the function will use the default initial values instead:
+61.8% samples for adaptive bandwidth, while 61.8% of maximum distance between samples for fixed bandwidth.
+
+# Model Selection
+
+Apply the `model_sel()` function to `gwdrm` objects to select the best model.
+Since version 4.1 of R, the pipe operator `|>` is avaliable.
+We can use the following code to enable model selection.
+
+```{r model-selection, cache=T}
+m5 <- gwdr(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+    data = LondonHP,
+    optim_bw = "AIC"
+) |> model_sel(criterion = "AIC", threshold = 3, optim_bw = "AIC")
+```
+
+Where argument `threshold` is the threshold showing minimum changes of the criterion.
+Currently, only AIC criterion is supported, so the `criterion` here can only be `"AIC"`.
+
+For R of lower version, please use the following form:
+
+```{r, eval=FALSE}
+m5 <- gwdr(
+    PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 + GARAGE1 +
+        TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW + BLDPWW1 +
+        BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
+    LondonHP, optim_bw = "AIC"
+)
+m5 <- model_sel(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
+m5
+```
+
+We can set `config` in `model_sel()` to overwrite the original configurations.
+If it is not set, configurations in the `gwdrm` object will be applied.
+Further, if `optim_bw` is sepcified, bandwidth will be optimized afther the model selection.
+
+The returned object after model selection contains a `$model_sel` variable,
+in which there are all model combinations and corresponding criterions.
+There are three functions to visualize it.
+
+```{r model-selection-view}
+model_sel_view_circle(m5$model_sel, main = "Circle View")
+model_sel_view_value(m5$model_sel, main = "AIC Value")
+model_sel_view_diff(m5$model_sel, main = "Diff of AIC")
+```
+
+They are:
+
+1. Variable combinations.
+2. Criterions for each combination.
+3. Difference of criterions. 
+The improvement in the criterion for each combination compared with the previous one is clearly shown.
+This figure makes it easier to judge which model meets the requirement.
+
+We can also use the universal `plot()` function which will make some modification to layouts.
+
+```{r model-selection-plot}
+plot(m5$model_sel)                  # 等价于 model_sel_view_circle
+plot(m5$model_sel, view = "value")  # 等价于 model_sel_view_value
+plot(m5$model_sel, view = "diff")   # 等价于 model_sel_view_diff
+```
+
+If further modification is required, use other arguments supported by `plot()`.
+

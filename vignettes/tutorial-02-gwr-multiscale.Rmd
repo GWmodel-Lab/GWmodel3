@@ -87,7 +87,7 @@ Otherwise, only specified variables will be mapped.
 This package provides a S4 class named `MGWRConfig`, which is used to set multiscale weighting configurations.
 This class contains the following slots:
 
-| Slot              | Type      | Descirpti                                                                                                                                                        |
+| Slot              | Type      | Descirption                                                                                                                                                      |
 | ----------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `bw`              | Numeric   | Bandwidth.                                                                                                                                                       |
 | `adaptive`        | Logical   | Whether the bandwidth is adaptive                                                                                                                                |
