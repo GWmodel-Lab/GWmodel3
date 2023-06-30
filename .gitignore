@@ -58,3 +58,4 @@ src/Makevars
 *.o
 *.dll
 inst/doc
+docs

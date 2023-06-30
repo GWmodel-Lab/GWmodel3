@@ -4,3 +4,6 @@
 \.devcontainer
 src/libgwmodel/test
 src/libgwmodel/docs
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
