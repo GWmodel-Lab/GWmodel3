@@ -287,7 +287,7 @@ model_sel.gwdrm <- function(
     kernel <- sapply(config, function(x) x@kernel)
 
     ### Calibrate GWR
-    c_result <- with(object$args, .c_gwdr_fit(
+    c_result <- with(object$args, gwdr_fit(
         x, y, coords, bw_value, adaptive,
         enum(kernel, kernel_enums),
         has_intercept, hatmatrix = TRUE,
