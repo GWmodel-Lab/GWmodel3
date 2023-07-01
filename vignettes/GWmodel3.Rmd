@@ -1,5 +1,10 @@
 ---
 title: GWmodel3
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GWmodel3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
 ---
 
 **GWmodel3** is the next generation of the R package for geographically weighted models.
