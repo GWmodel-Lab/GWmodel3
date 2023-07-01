@@ -101,7 +101,7 @@ m2 <- gwr_basic(
     PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 + GARAGE1 +
         TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW + BLDPWW1 +
         BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
-    LondonHP, "AIC", TRUE, parallel_method = "omp"
+    LondonHP, "AIC", TRUE
 )
 m2 <- model_sel(m2, criterion = "AIC", threshold = 10, bw = Inf, optim_bw = "AIC")
 m2
