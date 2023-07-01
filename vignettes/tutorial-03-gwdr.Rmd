@@ -177,7 +177,7 @@ Apply the `model_sel()` function to `gwdrm` objects to select the best model.
 Since version 4.1 of R, the pipe operator `|>` is avaliable.
 We can use the following code to enable model selection.
 
-```{r model-selection, cache=T}
+```{r model-selection, eval=FALSE, cache=T}
 m5 <- gwdr(
     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
     data = LondonHP,
@@ -190,7 +190,7 @@ Currently, only AIC criterion is supported, so the `criterion` here can only be 
 
 For R of lower version, please use the following form:
 
-```{r, eval=FALSE}
+```{r, eval=TRUE}
 m5 <- gwdr(
     PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 + GARAGE1 +
         TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW + BLDPWW1 +
