@@ -57,3 +57,7 @@ src/Makevars
 *.so
 *.o
 *.dll
+inst/doc
+docs
+/doc/
+/Meta/

@@ -1,0 +1,86 @@
+---
+title: GWmodel3
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{GWmodel3}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+**GWmodel3** is the next generation of the R package for geographically weighted models.
+It is built on top of a kernel written by C++ and interfaces for R.
+
+# Build and installation
+
+This package currently support Windows, Linux and macOS.
+Before installing this package, please make sure the library Armadillo and GSL are installed.
+And also install the R package **sf** first.
+The way of installing them vary depends on the OS.
+
+## Windows
+
+To install Armadillo, please install R package **RcppArmadillo** together with **sf** package.
+
+```r
+install.packages(c("RcppArmadillo", "sf"))
+```
+
+For different versions of RTools, there are different ways to install GSL.
+Please check that whether directory `include/gsl/` and files `lib/libgsl.a` and `lib/libgslcblas.a`
+exist in one of the following paths under the installation directory of RTools:
+
+- `usr`
+- `mingw32` or `mingw64`
+- `clang32` or `clang64`
+- `x86_64-w64-mingw32.static.posix`
+
+If they exist, this package can be properly compiled.
+If they don't, please use the [library files](https://www.stats.ox.ac.uk/pub/Rtools/goodies/multilib/local323.zip)
+provided by Professor Ripley.
+Download and uncompress it to the installation directory of R, which is `R_HOME`.
+Make sure the `include` directory is merged with `R_HOME/include`,
+and put the whole `lib` directory under `R_HOME`.
+
+Then use the following command to install this source package.
+
+```powershell
+R.exe CMD INSTALL GWmodel3_3.0-0.tar.gz
+```
+
+## Linux and macOS
+.
+Firstly, install R package **RcppArmadillo** together with **sf** package.
+
+```r
+install.packages(c("RcppArmadillo", "sf"))
+```
+
+Then install GSL via package manager.
+For example, on Ubuntu, use the following command.
+
+```bash
+sudo apt-get install libgsl-dev
+```
+
+Then use the following command to install this source package.
+
+```powershell
+R.exe CMD INSTALL GWmodel3_3.0-0.tar.gz
+```
+
+# Usage
+
+**GWmodel3** provides a set of R interface for the kernel library
+[libgwmodel](https://github.com/GWmodel-Lab/libgwmodel).
+Thus, the usage is different from the original package **GWmodel**.
+To avoid conflicts, use the following code to import this package.
+
+```r
+library(GWmodel3)
+```
+
+For the usage of each function, please turn to their tutorials or documents.
+
+# Report Problems
+
+Please go to the ["Issues" page](https://github.com/GWmodel-Lab/GWmodel3/issues) to submit any issues.

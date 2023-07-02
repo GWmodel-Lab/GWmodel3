@@ -5,7 +5,7 @@
 \alias{residuals.gwdrm}
 \alias{residuals.gwrm}
 \alias{residuals.gwrmultiscalem}
-\title{Get residuals of a basic GWR model.}
+\title{Get residuals of a GWDR model.}
 \usage{
 \method{residuals}{gwdrm}(object, ...)
 
@@ -19,7 +19,7 @@
 \item{\dots}{Additional arguments passing to [residuals()].}
 }
 \description{
-Get residuals of a basic GWR model.
+Get residuals of a GWDR model.
 
 Get residuals of a basic GWR model.
 

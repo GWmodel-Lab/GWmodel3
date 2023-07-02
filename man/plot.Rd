@@ -7,10 +7,8 @@
 \alias{plot.gwrm}
 \alias{plot.gwrmultiscalem}
 \alias{plot.modelselcritl}
-\title{Plot the result of basic GWR model.}
+\title{Plot the result of GWDR model.}
 \usage{
-\method{plot}{gwdrm}(x, y, ..., columns)
-
 \method{plot}{gwdrm}(x, y, ..., columns)
 
 \method{plot}{gwrm}(x, y, ..., columns)
@@ -36,9 +34,7 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 \item{main}{The main title.}
 }
 \description{
-Plot the result of basic GWR model.
-
-Plot the result of basic GWR model.
+Plot the result of GWDR model.
 
 Plot the result of basic GWR model.
 
@@ -47,10 +43,6 @@ Plot the result of basic GWR model.
 Plot model selection criterions (the circle view).
 }
 \examples{
-data(LondonHP)
-m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
-plot(m)
-
 data(LondonHP)
 m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 plot(m)

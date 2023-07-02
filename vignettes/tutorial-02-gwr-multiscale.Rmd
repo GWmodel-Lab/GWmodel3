@@ -1,0 +1,167 @@
+---
+title: "Multiscale GWR"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Multiscale GWR}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this page we mainly introduce the usage of `gwr_multiscale()`.
+
+```{r setup}
+library(sf)
+library(GWmodel3)
+```
+
+# Basics
+
+Let us set the data `LondonHP` as an example, and show how to use `gwr_multiscale()`.
+Assume that the `PURCHASE` is the dependent variable, 
+while `FLOORSZ`, `PROF` and `UNEMPLOY` are independent variable, 
+we can calibrate a multiscale GWR model with the following code.
+
+```{r model-calibration, cache=T}
+data(LondonHP)
+m1 <- gwr_multiscale(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP
+)
+m1
+```
+
+Here no additional arguments are set, so the function will apply the follwing configurations:
+
+- No initial value for bandwidth.
+- Fixed bandwdith.
+- Guassian kernel function.
+- Projective coordinate reference system.
+- Euclidean distance metrics.
+- Centrolized non-intercept independent variables.
+- AIC criterion for bandwidth optimization.
+- A threshold of $10^{-5}$ for bandwidth optimization.
+
+On most situations, these configurations can ensure the algorithm works.
+To further specify arguments, please turn to [Weighting configurations](#weighting-configurations).
+
+This function returns a object of class name `gwrmultiscalem`.
+Through the outputs in console,
+we can get infromation of fomula, data, kernel, bandwidth, coefficient estimates, and diagnostics.
+Besides, it is supported to get more infromation via `coef()` `fitted()` `residuals()`.
+
+```{r coef-fitted-resi}
+head(coef(m1))
+head(fitted(m1))
+head(residuals(m1))
+```
+
+In addition, like the old version, `gwrmultiscalem` objects provide a `$SDF` variable 
+which contains coefficient estimates and other sample-wise results.
+
+```{r sdf}
+head(m1$SDF)
+```
+
+We can create maps with this variable.
+There is a `plot()` function provided to preview coefficient estimates easily.
+
+```{r plot-model}
+plot(m1)
+plot(m1, columns = c("FLOORSZ", "UNEMPLOY"))
+```
+
+If the second argument is omitted, all coefficient estimates will be mapped by default.
+Otherwise, only specified variables will be mapped.
+
+# Weighting configurations
+
+## S4 class for multiscale weighting configrations
+
+This package provides a S4 class named `MGWRConfig`, which is used to set multiscale weighting configurations.
+This class contains the following slots:
+
+| Slot              | Type      | Descirption                                                                                                                                                      |
+| ----------------- | --------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `bw`              | Numeric   | Bandwidth.                                                                                                                                                       |
+| `adaptive`        | Logical   | Whether the bandwidth is adaptive                                                                                                                                |
+| `kernel`          | Character | Name of kernel function.                                                                                                                                         |
+| `longlat`         | Logical   | Whether coordinates are longitudes and latitudes.                                                                                                                |
+| `p`               | Numeric   | The power of Minkowski distance metrics.                                                                                                                         |
+| `theta`           | Numeric   | The angle of Minkowski distance metrics.                                                                                                                         |
+| `centered`        | Logical   | Whether to centrolize variables.                                                                                                                                 |
+| `optim_bw`        | Character | Whether to optimize bandwidth and the criterion's name if yes. Use `"no"` to disable bandwidth optimization; otherwise, set the bandwidth criterion's name here. |
+| `optim_threshold` | numeric   | THe threshold of bandwidth optimization.                                                                                                                         |
+
+We can use the function `mgwr_config()` to create an object.
+
+```{r}
+mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")
+```
+
+Replicating via `rep()` is enabled, but only the `times` parameter is supported.
+
+```{r}
+rep(mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 2)
+```
+
+## Use MGWRConfig to configure arguments
+
+The function `gwr_multiscale()` can not only set a uniform configuration,
+but also set each a configuration for independent variables.
+
+### Uniform configuration
+
+To set a uniform configuration for all varialbes, just pass a list of only one `MGWRConfig` object.
+For example, the following code will set adaptive bandwidth and bi-square kernel for all variables.
+
+```{r, cache=T}
+m2 <- gwr_multiscale(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP,
+  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
+)
+m2
+```
+
+Because the default value for `centered` is `TRUE`,
+the function will change the value for the intercept to `FALSE` to avoid potential issues at runtime.
+
+Likewise, we can use the `rep()` function, but remember to use a right `times` argument,
+which should be equal to the number of independent variables (including the intercept if it exists).
+
+```r
+m2 <- gwr_multiscale(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = rep(mgwr_config(adaptive = TRUE, kernel = "bisquare"), times = 4)
+)
+```
+
+### Separate configuration
+
+To set configurations separately for each variable,
+we need to input a list of `MGWRConfig` objects
+with the same number of elements to that of independent variables (including the intercept if it exists).
+
+```{r, cache=T}
+m3 <- gwr_multiscale(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP,
+  config = list(
+    mgwr_config(bw = 92, adaptive = TRUE, kernel = "bisquare"),
+    mgwr_config(bw = 19, adaptive = TRUE, kernel = "bisquare"),
+    mgwr_config(bw = 51, adaptive = TRUE, kernel = "bisquare"),
+    mgwr_config(bw = 157, adaptive = TRUE, kernel = "bisquare")
+  )
+)
+m3
+```
+
+Then the functions `c()` `rep()` can be used to flexiably create such a list.

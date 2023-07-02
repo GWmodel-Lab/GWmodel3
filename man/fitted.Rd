@@ -5,7 +5,7 @@
 \alias{fitted.gwdrm}
 \alias{fitted.gwrm}
 \alias{fitted.gwrmultiscalem}
-\title{Get fitted values of a basic GWR model.}
+\title{Get fitted values of a GWDR model.}
 \usage{
 \method{fitted}{gwdrm}(object, ...)
 
@@ -19,7 +19,7 @@
 \item{\dots}{Additional arguments passing to [fitted()].}
 }
 \description{
-Get fitted values of a basic GWR model.
+Get fitted values of a GWDR model.
 
 Get fitted values of a basic GWR model.
 

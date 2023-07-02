@@ -17,6 +17,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           submodules: recursive
+      - name: Install Dependencies
+        run: |
+          choco install pandoc
       - name: Setup R
         uses: r-lib/actions/setup-r@v2
         with:
@@ -48,7 +51,7 @@ jobs:
         with:
           r-version: 'release'
       - name: Install Dependencies
-        run: brew install gsl
+        run: brew install gsl pandoc
       - name: Install R Dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:

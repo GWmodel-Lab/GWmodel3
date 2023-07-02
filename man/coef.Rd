@@ -5,7 +5,7 @@
 \alias{coef.gwdrm}
 \alias{coef.gwrm}
 \alias{coef.gwrmultiscalem}
-\title{Get coefficients of a basic GWR model.}
+\title{Get coefficients of a GWDR model.}
 \usage{
 \method{coef}{gwdrm}(object, ...)
 
@@ -19,7 +19,7 @@
 \item{\dots}{Additional arguments passing to [coef()].}
 }
 \description{
-Get coefficients of a basic GWR model.
+Get coefficients of a GWDR model.
 
 Get coefficients of a basic GWR model.
 

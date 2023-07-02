@@ -1,0 +1,6 @@
+*.html
+*.R
+_site
+*_cache
+*_files
+.build.timestamp
