@@ -36,13 +36,11 @@ jobs:
       
       # Install pkgdown
       - name: Install pkgdown
-        run: install.packages("pkgdown", repos = "https://cloud.r-project.org")
-        shell: R -e {0}
+        run: R -e "install.packages('pkgdown', repos = 'https://cloud.r-project.org')"
 
       # Render quarto website
       - name: Render pkgdown site
-        run: pkgdown::build_site()
-        shell: R -e {0}
+        run: R -e "pkgdown::build_site()"
 
       # Upload to artifact
       - name: Upload website
