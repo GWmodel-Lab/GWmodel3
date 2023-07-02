@@ -20,20 +20,21 @@
 #'
 #' @examples
 #' data(LondonHP)
-#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
+#' m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
+#' m1
 #'
 #' ### Specific Bandwidth
-#' data(LondonHP)
-#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' m2 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.2, TRUE, "gaussian"),
 #'     gwdr_config(0.2, TRUE, "gaussian")
 #' ))
+#' m2
 #'
 #' ### Optim Bandwidth
-#' data(LondonHP)
-#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.618, TRUE, "gaussian")
 #' ), optim_bw = "AIC")
+#' m3
 #'
 #' @importFrom stats model.extract model.matrix terms
 #' @importFrom methods validObject
@@ -162,7 +163,7 @@ gwdr <- function(
     class(gwdrm) <- "gwdrm"
     gwdrm
 }
-#' Plot the result of basic GWR model.
+#' Plot the result of GWDR model.
 #'
 #' @param x A "gwdrm" object.
 #' @param y Ignored.
@@ -176,41 +177,7 @@ gwdr <- function(
 #' data(LondonHP)
 #' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #' plot(m)
-#'
-#' @export
-plot.gwdrm <- function(x, y, ..., columns) {
-    if (!inherits(x, "gwdrm")) {
-        stop("It's not a gwdrm object.")
-    }
-
-    sdf <- sf::st_as_sf(x$SDF)
-    sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
-    if (!missing(columns) && is.character(columns)) {
-        valid_columns <- intersect(columns, sdf_colnames)
-        if (length(valid_columns) > 0) {
-            sdf <- sdf[valid_columns]
-        }
-    } else { ### Select coefficient columns.
-        sdf <- sdf[x$indep_vars]
-    }
-    plot(sdf, ...)
-}
-
-#' Plot the result of basic GWR model.
-#'
-#' @param x A "gwdrm" object.
-#' @param y Ignored.
-#' @param columns Column names to plot.
-#'  If it is missing or non-character value, all coefficient columns are plottd.
-#' @param \dots Additional arguments passing to [sf::plot()].
-#' @method plot gwdrm
-#' @name plot
-#'
-#' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
-#' plot(m)
-#'
+#' 
 #' @export
 plot.gwdrm <- function(x, y, ..., columns) {
     if (!inherits(x, "gwdrm")) {
@@ -249,7 +216,12 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @param optim_bw_step Step size in bandwidth optimization.
 #' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
 #' @param \dots Other parameters. Unused.
+#' 
+#' @examples
+#' data(LondonHP)
+#' model_sel(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
 #'
+#' @name model_sel
 #' @importFrom stats formula
 #' @export
 model_sel.gwdrm <- function(
@@ -368,10 +340,11 @@ model_sel.gwdrm <- function(
     object
 }
 
-#' Get coefficients of a basic GWR model.
+#' Get coefficients of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [coef()].
+#' 
 #' @method coef gwdrm
 #' @name coef
 #'
@@ -383,10 +356,11 @@ coef.gwdrm <- function(object, ...) {
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' Get fitted values of a basic GWR model.
+#' Get fitted values of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
+#' 
 #' @method fitted gwdrm
 #' @name fitted
 #' @export
@@ -397,10 +371,11 @@ fitted.gwdrm <- function(object, ...) {
     object$SDF[["yhat"]]
 }
 
-#' Get residuals of a basic GWR model.
+#' Get residuals of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
+#' 
 #' @method residuals gwdrm
 #' @name residuals
 #' @export
@@ -417,6 +392,7 @@ residuals.gwdrm <- function(object, ...) {
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' @return No return.
+#' 
 #' @method print gwdrm
 #' @name print
 #' 

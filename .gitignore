@@ -59,3 +59,5 @@ src/Makevars
 *.dll
 inst/doc
 docs
+/doc/
+/Meta/

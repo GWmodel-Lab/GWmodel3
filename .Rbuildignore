@@ -8,3 +8,5 @@ src/libgwmodel/docs
 ^docs$
 ^pkgdown$
 _cache$
+^doc$
+^Meta$
