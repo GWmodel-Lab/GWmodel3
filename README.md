@@ -24,7 +24,7 @@ devtools::install_github("GWmodel-Lab/GWmodel3")
 ## Getting started
 
 ```R
-library(tidyr)
+library(GWmodel3)
 ```
 
 Now the following models have been implemented in this package:
