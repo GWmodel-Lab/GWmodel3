@@ -18,8 +18,6 @@ List gwr_basic_fit(
     bool optim_bw, size_t optim_bw_criterion,
     bool select_model, size_t select_model_criterion, size_t select_model_threshold
 ) {
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mx = myas(x);
     vec my = myas(y);
@@ -67,6 +65,7 @@ List gwr_basic_fit(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+    algorithm.setTelegram(make_unique<RTelegram>());
     algorithm.fit();
 
     // Return Results
@@ -116,9 +115,6 @@ NumericMatrix gwr_basic_predict(
     size_t parallel_type,
     const IntegerVector& parallel_arg
 ) {
-// Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mpcoords = myas(pcoords);
     mat mx = myas(x);
@@ -163,6 +159,7 @@ NumericMatrix gwr_basic_predict(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+    algorithm.setTelegram(make_unique<RTelegram>());
 
     // Return Results
     mat betas = algorithm.predict(mpcoords);

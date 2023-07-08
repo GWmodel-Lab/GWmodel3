@@ -28,9 +28,6 @@ List gwdr_fit(
     bool select_model,
     size_t select_model_threshold
 ) {
-    // Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     arma::mat mx = myas(x);
     arma::vec my = myas(y);
@@ -84,6 +81,7 @@ List gwdr_fit(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+    algorithm.setTelegram(make_unique<RTelegram>());
     algorithm.fit();
     
     // Return Results

@@ -32,7 +32,7 @@ List mywrap(const VariablesCriterionList& criterion_list)
     );
 }
 
-void r_printer(std::string message, Logger::LogLevel level, std::string fun_name, std::string file_name)
+void RTelegram::print(std::string message, ITelegram::LogLevel level, std::string fun_name, std::string file_name)
 {
     switch (level)
     {
@@ -44,10 +44,11 @@ void r_printer(std::string message, Logger::LogLevel level, std::string fun_name
         break;
     case Logger::LogLevel::LOG_WARNING:
     case Logger::LogLevel::LOG_NOTICE:
+        Rcpp::Rcout << "MSG: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
+        break;
     case Logger::LogLevel::LOG_INFO:
     case Logger::LogLevel::LOG_DEBUG:
     default:
-        Rcpp::Rcout << "MSG: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
         break;
     }
 }

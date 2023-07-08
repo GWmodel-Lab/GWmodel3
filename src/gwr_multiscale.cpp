@@ -32,9 +32,6 @@ List gwr_multiscale_fit (
     size_t parallel_type,
     const IntegerVector& parallel_arg
 ) {
-    // Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mx = myas(x);
     vec my = myas(y);
@@ -105,6 +102,7 @@ List gwr_multiscale_fit (
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+    algorithm.setTelegram(make_unique<RTelegram>());
     algorithm.fit();
 
     // Get bandwidth

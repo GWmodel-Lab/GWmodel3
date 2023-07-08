@@ -9,7 +9,6 @@ SEXP mywrap(const arma::mat& amat);
 SEXP mywrap(const arma::vec& avec);
 Rcpp::List mywrap(const gwm::RegressionDiagnostic& diagnostic);
 Rcpp::List mywrap(const gwm::VariablesCriterionList& criterion_list);
-void r_printer(std::string message, gwm::Logger::LogLevel level, std::string fun_name, std::string file_name);
 
 inline arma::mat myas(const Rcpp::NumericMatrix& rmat)
 {
@@ -33,3 +32,30 @@ inline SEXP mywrap(const arma::vec& avec)
     Rcpp::RObject x = Rcpp::wrap(avec.begin(), avec.end());
     return x;
 }
+
+class RTelegram : public gwm::ITelegram
+{
+public:
+    RTelegram() : ITelegram() {}
+
+    ~RTelegram() {}
+
+    void print(std::string message, ITelegram::LogLevel level, std::string fun_name, std::string file_name) override;
+
+    void progress(std::size_t current, std::size_t total, std::string fun_name, std::string file_name) override
+    {
+        (void)current;
+        (void)total;
+        (void)fun_name;
+        (void)file_name;
+    }
+
+    void progress(double percent, std::string fun_name, std::string file_name) override
+    {
+        (void)percent;
+        (void)fun_name;
+        (void)file_name;
+    }
+
+    bool stop() override { return false; }
+};
