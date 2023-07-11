@@ -16,7 +16,8 @@ List gwr_basic_fit(
     bool hatmatrix, bool intercept,
     size_t parallel_type, const IntegerVector& parallel_arg,
     bool optim_bw, size_t optim_bw_criterion,
-    bool select_model, size_t select_model_criterion, size_t select_model_threshold
+    bool select_model, size_t select_model_criterion, size_t select_model_threshold,
+    const CharacterVector& variable_names, bool verbose
 ) {
     // Convert data types
     mat mx = myas(x);
@@ -65,7 +66,8 @@ List gwr_basic_fit(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    algorithm.setTelegram(make_unique<RTelegram>());
+    if (verbose)
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names)));
     algorithm.fit();
 
     // Return Results

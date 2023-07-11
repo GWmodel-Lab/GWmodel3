@@ -35,6 +35,7 @@ inline SEXP mywrap(const arma::vec& avec)
 
 class RTelegram : public gwm::ITelegram
 {
+
 public:
     RTelegram() : ITelegram() {}
 
@@ -58,4 +59,42 @@ public:
     }
 
     bool stop() override { return false; }
+
+    std::vector<std::string> split(const std::string& s, const char& sep);
+
+    std::string join(std::vector<std::string> ss, std::string delm);
+
+    virtual void parseInfo(std::string message)
+    {
+        Rcpp::Rcout << "MSG: " << message << "\n";
+    }
+};
+
+class GWRBasicTelegram : public RTelegram
+{
+public:
+    enum class InfoTag {
+        Stage,
+        BandwidthCriterion,
+        VariableCriterion,
+    };
+
+    static std::map<std::string, InfoTag> TagDict;
+
+    static std::map<gwm::GWRBasic::BandwidthSelectionCriterionType, std::string> BwCriterionName;
+
+public:
+    GWRBasicTelegram(const gwm::GWRBasic& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
+
+    ~GWRBasicTelegram() {}
+
+    void parseInfo(std::string message) override;
+
+    bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
+
+    bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
+
+private:
+    const gwm::GWRBasic& mAlgorithm;
+    std::vector<std::string> mVariableNames;
 };
