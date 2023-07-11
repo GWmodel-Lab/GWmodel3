@@ -130,20 +130,24 @@ void GWRBasicTelegram::parseInfo(string message)
     InfoTag tag = TagDict[msgs[0]];
     switch (tag) {
     case InfoTag::Stage:
-        Rcout << "* " << msgs[1] << "\n";
+        msgs.erase(msgs.begin());
+        Rcout << "* " << join(msgs, " ") << "\n";
         break;
     case InfoTag::BandwidthCriterion:
         {
             vector<double> bwc;
             bool isTitle = !splitBandwidthCriterion(msgs[1], bwc);
-            if (isTitle) {
+            if (isTitle)
+            {
                 Rcout << "* Selecting Bandwidth" << "\n";
                 Rcout << "** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionCriterion()] << "\n";
-            } else {
+            }
+            else
+            {
                 if (mAlgorithm.spatialWeight().weight<BandwidthWeight>()->adaptive())
-                    Rcout << "** " << (int)bwc[0] << "," << bwc[1];
+                    Rcout << "** " << (int)bwc[0] << "," << bwc[1] << "\n";
                 else
-                    Rcout << "** " << bwc[0] << "," << bwc[1];
+                    Rcout << "** " << bwc[0] << "," << bwc[1] << "\n";
             }
             break;
         }
@@ -155,7 +159,7 @@ void GWRBasicTelegram::parseInfo(string message)
             if (isTitle)
             {
                 Rcout << "* Selecting Variables" << "\n";
-                Rcout << "** Formula,AIC" << "\n";
+                Rcout << "** Variables,AIC" << "\n";
             }
             else
             {
