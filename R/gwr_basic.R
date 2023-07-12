@@ -431,7 +431,9 @@ residuals.gwrm <- function(object, ...) {
 #' @param object A "gwrm" object.
 #' @param regression_points Data of new locations.
 #' @param \dots Additional arguments.
+#' @param verbose Whether to print additional message.
 #' @return A "gwrm" object.
+#' 
 #' @method predict gwrm
 #' @name predict
 #'
@@ -441,7 +443,7 @@ residuals.gwrm <- function(object, ...) {
 #' predict(m, LondonHP)
 #'
 #' @export
-predict.gwrm <- function(object, regression_points, ...) {
+predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
     }
@@ -488,7 +490,7 @@ predict.gwrm <- function(object, regression_points, ...) {
     c_betas <- with(object$args, gwr_basic_predict(
         pcoords, x, y, coords, bw, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta, has_intercept, 
-        enum_list(parallel_method, parallel_types), parallel_arg
+        enum_list(parallel_method, parallel_types), parallel_arg, verbose
     ))
 
     result <- as.data.frame(c_betas)

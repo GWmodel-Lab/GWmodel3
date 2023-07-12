@@ -115,7 +115,8 @@ NumericMatrix gwr_basic_predict(
     double theta,
     bool intercept,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
+    const IntegerVector& parallel_arg,
+    bool verbose
 ) {
     // Convert data types
     mat mpcoords = myas(pcoords);
@@ -161,7 +162,10 @@ NumericMatrix gwr_basic_predict(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    algorithm.setTelegram(make_unique<RTelegram>());
+    if (verbose)
+    {
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm));
+    }
 
     // Return Results
     mat betas = algorithm.predict(mpcoords);

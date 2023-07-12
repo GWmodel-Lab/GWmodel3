@@ -69,8 +69,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_predict
-NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg);
-RcppExport SEXP _GWmodel3_gwr_basic_predict(SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
+NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool verbose);
+RcppExport SEXP _GWmodel3_gwr_basic_predict(SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -87,7 +87,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
-    rcpp_result_gen = Rcpp::wrap(gwr_basic_predict(pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg));
+    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(gwr_basic_predict(pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -126,7 +127,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gwdr_fit", (DL_FUNC) &_GWmodel3_gwdr_fit, 17},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 20},
-    {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 13},
+    {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 21},
     {NULL, NULL, 0}
 };

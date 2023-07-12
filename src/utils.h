@@ -78,20 +78,15 @@ public:
         BandwidthCriterion,
         VariableCriterion,
     };
-
     static std::map<std::string, InfoTag> TagDict;
-
     static std::map<gwm::GWRBasic::BandwidthSelectionCriterionType, std::string> BwCriterionName;
 
 public:
+    GWRBasicTelegram(const gwm::GWRBasic& algorithm) : RTelegram(), mAlgorithm(algorithm) {}
     GWRBasicTelegram(const gwm::GWRBasic& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
-
     ~GWRBasicTelegram() {}
-
     void parseInfo(std::string message) override;
-
     bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
-
     bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
 
 private:
