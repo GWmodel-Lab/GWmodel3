@@ -1,21 +1,21 @@
-#include "GWRBasicTelegram.h"
+#include "GWDRTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
 using namespace gwm;
 
-std::map<std::string, GWRBasicTelegram::InfoTag> GWRBasicTelegram::TagDict = {
+map<string, GWDRTelegram::InfoTag> GWDRTelegram::TagDict = {
     make_pair("#stage", InfoTag::Stage),
     make_pair("#bandwidth-criterion", InfoTag::BandwidthCriterion),
     make_pair("#variable-criterion", InfoTag::VariableCriterion)
 };
 
-std::map<gwm::GWRBasic::BandwidthSelectionCriterionType, std::string> GWRBasicTelegram::BwCriterionName = {
-    make_pair(GWRBasic::BandwidthSelectionCriterionType::AIC, "AIC"),
-    make_pair(GWRBasic::BandwidthSelectionCriterionType::CV, "CV")
+map<GWDR::BandwidthCriterionType, string> GWDRTelegram::BwCriterionName = {
+    make_pair(GWDR::BandwidthCriterionType::AIC, "AIC"),
+    make_pair(GWDR::BandwidthCriterionType::CV, "CV")
 };
 
-void GWRBasicTelegram::parseInfo(string message)
+void GWDRTelegram::parseInfo(string message)
 {
     vector<string> msgs = split(message, ' ');
     InfoTag tag = TagDict[msgs[0]];
@@ -27,20 +27,34 @@ void GWRBasicTelegram::parseInfo(string message)
     case InfoTag::BandwidthCriterion:
         {
             vector<double> bwc;
+            size_t dims = mAlgorithm.spatialWeights().size();
             bool isTitle = !splitBandwidthCriterion(msgs[1], bwc);
             if (isTitle)
             {
                 Rcout << "* Selecting Bandwidth" << "\n";
-                if (mVerbose >= 2) Rcout << "** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionCriterion()] << "\n";
+                if (mVerbose >= 2)
+                {
+                    vector<string> titles;
+                    for (size_t i = 1; i <= dims; i++)
+                    {
+                        titles.push_back(string("Bandwidth") + to_string(i));
+                    }
+                    titles.push_back(BwCriterionName[mAlgorithm.bandwidthCriterionType()]);
+                    Rcout << "** " << join(titles, ",") << "\n";
+                }
             }
             else
             {
                 if (mVerbose >= 2)
                 {
-                    if (mAlgorithm.spatialWeight().weight<BandwidthWeight>()->adaptive())
-                        Rcout << "** " << (int)bwc[0] << "," << bwc[1] << "\n";
-                    else
-                        Rcout << "** " << bwc[0] << "," << bwc[1] << "\n";
+                    vector<string> values;
+                    for (size_t i = 0; i < dims; i++)
+                    {
+                        string v = mAlgorithm.spatialWeights()[i].weight<BandwidthWeight>()->adaptive() ? to_string((int)bwc[i]) : to_string(bwc[i]);
+                        values.push_back(v);
+                    }
+                    values.push_back(to_string(bwc[dims]));
+                    Rcout << "** " << join(values, ",") << "\n";
                 }
             }
             break;
@@ -69,4 +83,17 @@ void GWRBasicTelegram::parseInfo(string message)
     default:
         break;
     }
+}
+
+bool GWDRTelegram::splitBandwidthCriterion(const std::string &s, std::vector<double> &params)
+{
+    istringstream iss(s);
+    string buffer;
+    while (getline(iss, buffer, ','))
+    {
+        if (buffer.find(':', 0) != string::npos)
+            return false;
+        else params.push_back(stod(buffer));
+    }
+    return true;
 }

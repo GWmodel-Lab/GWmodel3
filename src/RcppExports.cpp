@@ -12,8 +12,8 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // gwdr_fit
-List gwdr_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, double optim_threashold, double optim_step, size_t optim_max_iter, bool select_model, size_t select_model_threshold);
-RcppExport SEXP _GWmodel3_gwdr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP interceptSEXP, SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP optim_threasholdSEXP, SEXP optim_stepSEXP, SEXP optim_max_iterSEXP, SEXP select_modelSEXP, SEXP select_model_thresholdSEXP) {
+List gwdr_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, double optim_threashold, double optim_step, size_t optim_max_iter, bool select_model, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
+RcppExport SEXP _GWmodel3_gwdr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP interceptSEXP, SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP optim_threasholdSEXP, SEXP optim_stepSEXP, SEXP optim_max_iterSEXP, SEXP select_modelSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -34,7 +34,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type optim_max_iter(optim_max_iterSEXP);
     Rcpp::traits::input_parameter< bool >::type select_model(select_modelSEXP);
     Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
-    rcpp_result_gen = Rcpp::wrap(gwdr_fit(x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold));
+    Rcpp::traits::input_parameter< const CharacterVector& >::type variable_names(variable_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(gwdr_fit(x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -127,7 +129,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWmodel3_gwdr_fit", (DL_FUNC) &_GWmodel3_gwdr_fit, 17},
+    {"_GWmodel3_gwdr_fit", (DL_FUNC) &_GWmodel3_gwdr_fit, 19},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 20},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 23},

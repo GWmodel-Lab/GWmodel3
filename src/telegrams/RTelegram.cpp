@@ -38,6 +38,17 @@ vector<string> RTelegram::split(const string& s, const char& sep)
     return res;
 }
 
+string RTelegram::join(vector<string> ss, string delm)
+{
+    if (ss.size() <= 0) return string();
+    string res = ss.front();
+    for (auto i = ss.begin() + 1; i != ss.end(); i++)
+    {
+        res += (delm + *i);
+    }
+    return res;
+}
+
 void RTelegram::parseInfo(std::string message)
 {
     vector<string> msgs = split(message, ' ');

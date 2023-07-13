@@ -48,7 +48,8 @@ gwdr <- function(
     optim_bw_step = 0.02,
     optim_bw_max_iter = 1e6,
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0)
+    parallel_arg = c(0),
+    verbose = FALSE
 ) {
     ### Check args
     if (!inherits(config, "list")) {
@@ -115,7 +116,8 @@ gwdr <- function(
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, gwdr_bw_criterion_enums),
         optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
-        select_model = FALSE, select_model_threshold = 3.0
+        select_model = FALSE, select_model_threshold = 3.0,
+        indep_vars, verbose
     )
     betas <- c_result$betas
     fitted <- c_result$fitted
@@ -157,7 +159,8 @@ gwdr <- function(
             optim_bw_max_iter = optim_bw_max_iter,
             has_intercept = has_intercept,
             parallel_method = parallel_method,
-            parallel_arg = parallel_arg
+            parallel_arg = parallel_arg,
+            verbose = verbose
         )
     )
     class(gwdrm) <- "gwdrm"
@@ -266,7 +269,8 @@ model_sel.gwdrm <- function(
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, gwdr_bw_criterion_enums),
         optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
-        select_model = TRUE, select_model_threshold = threshold
+        select_model = TRUE, select_model_threshold = threshold,
+        object$indep_vars, verbose
     ))
     if (optim_bw)
         bw_value <- c_result$bw_value
