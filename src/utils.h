@@ -68,6 +68,8 @@ public:
     {
         Rcpp::Rcout << "MSG: " << message << "\n";
     }
+    bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
+    bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
 };
 
 class GWRBasicTelegram : public RTelegram
@@ -86,10 +88,43 @@ public:
     GWRBasicTelegram(const gwm::GWRBasic& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
     ~GWRBasicTelegram() {}
     void parseInfo(std::string message) override;
-    bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
-    bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
 
 private:
     const gwm::GWRBasic& mAlgorithm;
+    std::vector<std::string> mVariableNames;
+};
+
+class GWRMultiscaleTelegram : public RTelegram
+{
+public:
+    enum class InfoTag {
+        Stage,
+        BandwidthCriterion,
+        InitialBandwidth,
+        Backfitting
+    };
+    static std::map<std::string, InfoTag> TagDict;
+    enum class BackfittingInfoTag {
+        Iteration,
+        VariableBandwidthSelection,
+        BackfittingCriterion,
+        Stage
+    };
+    static std::map<std::string, BackfittingInfoTag> BackfittingTagDict;
+    static std::map<gwm::GWRMultiscale::BandwidthSelectionCriterionType, std::string> BwCriterionName;
+
+public:
+    GWRMultiscaleTelegram(const gwm::GWRMultiscale& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
+    ~GWRMultiscaleTelegram() {}
+    void parseInfo(std::string message) override;
+    void parseBackfittingInfo(std::vector<std::string> messages);
+    bool splitInitialBandwidth(const std::string& s, size_t& variable, double& criterion);
+
+private:
+    const gwm::GWRMultiscale& mAlgorithm;
+    bool mIsInitialBandwidthStage = false;
+    bool mIsBackfittingBandwidth = false;
+    size_t mCurrentIteration;
+    size_t mCurrentVariable;
     std::vector<std::string> mVariableNames;
 };

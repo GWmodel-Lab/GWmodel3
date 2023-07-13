@@ -30,7 +30,9 @@ List gwr_multiscale_fit (
     size_t retry_times,
     size_t max_iterations,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
+    const IntegerVector& parallel_arg,
+    const CharacterVector& variable_names,
+    bool verbose
 ) {
     // Convert data types
     mat mx = myas(x);
@@ -102,7 +104,10 @@ List gwr_multiscale_fit (
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    algorithm.setTelegram(make_unique<RTelegram>());
+    if (verbose)
+    {
+        algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names)));
+    }
     algorithm.fit();
 
     // Get bandwidth

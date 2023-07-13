@@ -51,7 +51,8 @@ gwr_multiscale <- function(
     retry_times = 5,
     max_iterations = 2000,
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0)
+    parallel_arg = c(0),
+    verbose = FALSE
 ) {
     ### Check args
     if (!inherits(config, "list")) {
@@ -152,7 +153,8 @@ gwr_multiscale <- function(
         optim_bw, enum(optim_bw_criterion, mgwr_bw_criterion_enums),
         optim_threshold, enum(initial_type, mgwr_initial_enums), centered,
         enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
-        enum_list(parallel_method, parallel_types), parallel_arg
+        enum_list(parallel_method, parallel_types), parallel_arg,
+        indep_vars, verbose
     )
     bw_value <- c_result$bw_value
     betas <- c_result$betas
