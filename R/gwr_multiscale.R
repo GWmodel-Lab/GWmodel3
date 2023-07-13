@@ -10,10 +10,13 @@
 #' @param hatmatrix If TRUE, great circle will be caculated.
 #' @param retry_times The number times of continually optimizing each 
 #'  parameter-specific bandwidth even though it meets the criterion of convergence,
-#' for avoiding sub-optimal choice due to illusion of convergence.
+#'  for avoiding sub-optimal choice due to illusion of convergence.
 #' @param max_iterations Maximum number of iterations in the back-fitting procedure.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
+#' @param verbose Output information level.
+#'  Can be either `FALSE` or integer values.
+#'  Higher values will leads to more output information.
 #' 
 #' @examples
 #' data(LondonHP)
@@ -154,7 +157,7 @@ gwr_multiscale <- function(
         optim_threshold, enum(initial_type, mgwr_initial_enums), centered,
         enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
         enum_list(parallel_method, parallel_types), parallel_arg,
-        indep_vars, verbose
+        indep_vars, as.integer(verbose)
     )
     bw_value <- c_result$bw_value
     betas <- c_result$betas

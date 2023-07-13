@@ -35,17 +35,20 @@ void GWRMultiscaleTelegram::parseInfo(std::string message)
     }
     case InfoTag::InitialBandwidth:
     {
-        size_t variable;
-        double bw;
-        mIsInitialBandwidthStage = true;
-        if (!splitInitialBandwidth(msgs[1], variable, bw))
+        if (mVerbose >= 2)
         {
-            mCurrentVariable = variable;
-            Rcout << "** Now selecting bandwidth for variable " << mVariableNames[mCurrentVariable] << "\n";
-        }
-        else
-        {
-            Rcout << "** Bandwidth selected for variable " << mVariableNames[mCurrentVariable] << " is " << bw << "\n";
+            size_t variable;
+            double bw;
+            mIsInitialBandwidthStage = true;
+            if (!splitInitialBandwidth(msgs[1], variable, bw))
+            {
+                mCurrentVariable = variable;
+                Rcout << "** Now selecting bandwidth for variable " << mVariableNames[mCurrentVariable] << "\n";
+            }
+            else
+            {
+                Rcout << "** Bandwidth selected for variable " << mVariableNames[mCurrentVariable] << " is " << bw << "\n";
+            }
         }
         break;
     }
@@ -56,12 +59,32 @@ void GWRMultiscaleTelegram::parseInfo(std::string message)
         if (!splitBandwidthCriterion(msgs[1], bwc))
         {
             if (!mIsInitialBandwidthStage)
+            {
                 Rcout << "* Selecting Bandwidth" << "\n";
-            Rcout << (mIsBackfittingBandwidth ? "**** " : "*** ") << "Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+            }
+            if (mIsBackfittingBandwidth)
+            {
+                if (mVerbose >= 4) Rcout << "**** " << "Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+            }
+            else
+            {
+                if (mVerbose >= 3) Rcout << "*** " << "Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+            }
         }
         else
         {
-            Rcout << (mIsInitialBandwidthStage ? "*** " : (mIsBackfittingBandwidth ? "**** " : "** ")) << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+            if (mIsInitialBandwidthStage)
+            {
+                if (mVerbose >= 3) Rcout << "*** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+            }
+            else if (mIsBackfittingBandwidth)
+            {
+                if (mVerbose >= 4) Rcout << "**** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+            }
+            else
+            {
+                if (mVerbose >= 2) Rcout << "** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+            }
         }
         break;
     }
@@ -89,8 +112,11 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
     }
     case BackfittingInfoTag::Iteration:
     {
-        mCurrentIteration = stoul(messages[1]);
-        Rcout << "** Iteration " << mCurrentIteration << "\n";
+        if (mVerbose >= 2)
+        {
+            mCurrentIteration = stoul(messages[1]);
+            Rcout << "** Iteration " << mCurrentIteration << "\n";
+        }
         break;
     }
     case BackfittingInfoTag::VariableBandwidthSelection:
@@ -103,29 +129,32 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
         switch (args.size())
         {
         case 1:
-            Rcout << "*** Now select an optimum bandwidth for the variable " << variable << "\n";
-            Rcout << "**** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+            if (mVerbose >= 3) Rcout << "*** Now select an optimum bandwidth for the variable " << variable << "\n";
+            if (mVerbose >= 4) Rcout << "**** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
             break;
         case 5:
         {
-            double bwi0s = stod(args[1]), bwi1s = stod(args[2]), dbw = stod(args[3]);
-            Rcout << "*** The newly selected bandwidth for variable " << variable 
-                  << " is " << setprecision(bwSizePrecision) << bwi1s 
-                  << " (last is " << bwi0s 
-                  << ", difference is " << setprecision(6) << dbw << ")\n";
-            bool converged = (args[4] == "true");
-            if (!converged)
-                Rcout << "*** The bandwidth for variable " << variable << " will be continually selected in the text iteration\n";
-            else
-                Rcout << "*** The bandwidth for variable " << variable << " seems to be converged and will be kept the same in the following iterations\n";
+            if (mVerbose >= 3)
+            {
+                double bwi0s = stod(args[1]), bwi1s = stod(args[2]), dbw = stod(args[3]);
+                Rcout << "*** The newly selected bandwidth for variable " << variable 
+                    << " is " << setprecision(bwSizePrecision) << bwi1s 
+                    << " (last is " << bwi0s 
+                    << ", difference is " << setprecision(6) << dbw << ")\n";
+                bool converged = (args[4] == "true");
+                if (!converged)
+                    Rcout << "*** The bandwidth for variable " << variable << " will be continually selected in the text iteration\n";
+                else
+                    Rcout << "*** The bandwidth for variable " << variable << " seems to be converged and will be kept the same in the following iterations\n";
+            }
             break;
         }
         case 6:
         {
             size_t times = stoul(args[4]), retry = stoul(args[5]);
-            Rcout << "*** The bandwidth for variable " << variable << " seems to be converted for " << times << " times"
-                  << "It will be continually optimized in the next " << retry << " times\n";
-            Rcout << "** End of iteration " << mCurrentIteration << "\n";
+            if (mVerbose >= 3) 
+                Rcout << "*** The bandwidth for variable " << variable << " seems to be converted for " << times << " times"
+                      << "It will be continually optimized in the next " << retry << " times\n";
             break;
         }
         default:
@@ -137,7 +166,8 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
     {
         double criterionValue = stod(messages[1]);
         string criterionName = (mAlgorithm.criterionType() == GWRMultiscale::BackFittingCriterionType::CVR) ? "change value of RSS (CVR)" : "differential change value of RSS (dCVR)";
-        Rcout << "*** The " << criterionName << " is " << criterionValue << "\n";
+        if (mVerbose >= 3) Rcout << "*** The " << criterionName << " is " << criterionValue << "\n";
+        if (mVerbose >= 3) Rcout << "** End of iteration " << mCurrentIteration << "\n";
         break;
     }
     default:

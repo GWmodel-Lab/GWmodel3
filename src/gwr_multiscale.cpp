@@ -33,7 +33,7 @@ List gwr_multiscale_fit (
     size_t parallel_type,
     const IntegerVector& parallel_arg,
     const CharacterVector& variable_names,
-    bool verbose
+    int verbose
 ) {
     // Convert data types
     mat mx = myas(x);
@@ -105,9 +105,9 @@ List gwr_multiscale_fit (
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    if (verbose)
+    if (verbose > 0)
     {
-        algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names)));
+        algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
     algorithm.fit();
 

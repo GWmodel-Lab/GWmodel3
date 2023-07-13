@@ -24,7 +24,8 @@ public:
     static std::map<gwm::GWRMultiscale::BandwidthSelectionCriterionType, std::string> BwCriterionName;
 
 public:
-    GWRMultiscaleTelegram(const gwm::GWRMultiscale& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
+    GWRMultiscaleTelegram(const gwm::GWRMultiscale& algorithm, std::vector<std::string> varNames, int verbose) : 
+        RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames), mVerbose(verbose) {}
     ~GWRMultiscaleTelegram() {}
     void parseInfo(std::string message) override;
     void parseBackfittingInfo(std::vector<std::string> messages);
@@ -37,6 +38,7 @@ private:
     size_t mCurrentIteration;
     size_t mCurrentVariable;
     std::vector<std::string> mVariableNames;
+    int mVerbose = 1;
 };
 
 #endif  // GWRMULTISCALETELEGRAM
