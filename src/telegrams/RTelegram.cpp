@@ -38,7 +38,17 @@ vector<string> RTelegram::split(const string& s, const char& sep)
     return res;
 }
 
-bool RTelegram::splitBandwidthCriterion(const string& s, vector<double>& params)
+void RTelegram::parseInfo(std::string message)
+{
+    vector<string> msgs = split(message, ' ');
+    if (msgs[0] == "#stage")
+    {
+        msgs.erase(msgs.begin());
+        Rcout << "* " << join(msgs, " ") << "\n";
+    }
+}
+
+bool RTelegram::splitBandwidthCriterion(const string &s, vector<double> &params)
 {
     istringstream iss(s);
     string buffer;
