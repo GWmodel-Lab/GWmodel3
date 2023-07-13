@@ -42,14 +42,17 @@ void GWRBasicTelegram::parseInfo(string message)
             if (isTitle)
             {
                 Rcout << "* Selecting Bandwidth" << "\n";
-                Rcout << "** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionCriterion()] << "\n";
+                if (mVerbose >= 2) Rcout << "** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionCriterion()] << "\n";
             }
             else
             {
-                if (mAlgorithm.spatialWeight().weight<BandwidthWeight>()->adaptive())
-                    Rcout << "** " << (int)bwc[0] << "," << bwc[1] << "\n";
-                else
-                    Rcout << "** " << bwc[0] << "," << bwc[1] << "\n";
+                if (mVerbose >= 2)
+                {
+                    if (mAlgorithm.spatialWeight().weight<BandwidthWeight>()->adaptive())
+                        Rcout << "** " << (int)bwc[0] << "," << bwc[1] << "\n";
+                    else
+                        Rcout << "** " << bwc[0] << "," << bwc[1] << "\n";
+                }
             }
             break;
         }
@@ -61,7 +64,7 @@ void GWRBasicTelegram::parseInfo(string message)
             if (isTitle)
             {
                 Rcout << "* Selecting Variables" << "\n";
-                Rcout << "** Variables,AIC" << "\n";
+                if (mVerbose >= 2) Rcout << "** Variables,AIC" << "\n";
             }
             else
             {
@@ -70,7 +73,7 @@ void GWRBasicTelegram::parseInfo(string message)
                 {
                     return this->mVariableNames[index];
                 });
-                Rcout << "** " << join(vars_name, "+") << "," << criterions << "\n";
+                if (mVerbose >= 2) Rcout << "** " << join(vars_name, "+") << "," << criterions << "\n";
             }
         }
         break;

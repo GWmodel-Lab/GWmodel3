@@ -35,20 +35,17 @@ void GWRMultiscaleTelegram::parseInfo(std::string message)
     }
     case InfoTag::InitialBandwidth:
     {
-        if (mVerbose >= 2)
+        size_t variable;
+        double bw;
+        mIsInitialBandwidthStage = true;
+        if (!splitInitialBandwidth(msgs[1], variable, bw))
         {
-            size_t variable;
-            double bw;
-            mIsInitialBandwidthStage = true;
-            if (!splitInitialBandwidth(msgs[1], variable, bw))
-            {
-                mCurrentVariable = variable;
-                Rcout << "** Now selecting bandwidth for variable " << mVariableNames[mCurrentVariable] << "\n";
-            }
-            else
-            {
-                Rcout << "** Bandwidth selected for variable " << mVariableNames[mCurrentVariable] << " is " << bw << "\n";
-            }
+            mCurrentVariable = variable;
+            if (mVerbose >= 2) Rcout << "** Now selecting bandwidth for variable " << mVariableNames[mCurrentVariable] << "\n";
+        }
+        else
+        {
+            if (mVerbose >= 2) Rcout << "** Bandwidth selected for variable " << mVariableNames[mCurrentVariable] << " is " << bw << "\n";
         }
         break;
     }
@@ -112,11 +109,8 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
     }
     case BackfittingInfoTag::Iteration:
     {
-        if (mVerbose >= 2)
-        {
-            mCurrentIteration = stoul(messages[1]);
-            Rcout << "** Iteration " << mCurrentIteration << "\n";
-        }
+        mCurrentIteration = stoul(messages[1]);
+        if (mVerbose >= 2) Rcout << "** Iteration " << mCurrentIteration << "\n";
         break;
     }
     case BackfittingInfoTag::VariableBandwidthSelection:
@@ -134,14 +128,14 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
             break;
         case 5:
         {
+            double bwi0s = stod(args[1]), bwi1s = stod(args[2]), dbw = stod(args[3]);
+            bool converged = (args[4] == "true");
             if (mVerbose >= 3)
             {
-                double bwi0s = stod(args[1]), bwi1s = stod(args[2]), dbw = stod(args[3]);
                 Rcout << "*** The newly selected bandwidth for variable " << variable 
                     << " is " << setprecision(bwSizePrecision) << bwi1s 
                     << " (last is " << bwi0s 
                     << ", difference is " << setprecision(6) << dbw << ")\n";
-                bool converged = (args[4] == "true");
                 if (!converged)
                     Rcout << "*** The bandwidth for variable " << variable << " will be continually selected in the text iteration\n";
                 else

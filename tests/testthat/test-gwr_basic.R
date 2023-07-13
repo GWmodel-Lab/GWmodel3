@@ -25,9 +25,12 @@ test_that("Basic GWR: predict", {
 
 test_that("Basic GWR: verbose", {
   expect_no_error(
-    model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = TRUE))
+    model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 1))
   )
   expect_no_error(
-    predict(m, LondonHP, verbose = TRUE)
+    model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 2))
+  )
+  expect_no_error(
+    predict(m, LondonHP, verbose = 1)
   )
 })

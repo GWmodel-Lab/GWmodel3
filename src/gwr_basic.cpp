@@ -18,7 +18,7 @@ List gwr_basic_fit(
     size_t parallel_type, const IntegerVector& parallel_arg,
     bool optim_bw, size_t optim_bw_criterion,
     bool select_model, size_t select_model_criterion, size_t select_model_threshold,
-    const CharacterVector& variable_names, bool verbose
+    const CharacterVector& variable_names, int verbose
 ) {
     // Convert data types
     mat mx = myas(x);
@@ -68,7 +68,7 @@ List gwr_basic_fit(
         break;
     }
     if (verbose)
-        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names)));
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     algorithm.fit();
 
     // Return Results
@@ -117,7 +117,7 @@ NumericMatrix gwr_basic_predict(
     bool intercept,
     size_t parallel_type,
     const IntegerVector& parallel_arg,
-    bool verbose
+    int verbose
 ) {
     // Convert data types
     mat mpcoords = myas(pcoords);
@@ -165,7 +165,7 @@ NumericMatrix gwr_basic_predict(
     }
     if (verbose)
     {
-        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm));
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, verbose));
     }
 
     // Return Results

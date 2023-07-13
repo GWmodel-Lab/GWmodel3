@@ -16,8 +16,10 @@ public:
     static std::map<gwm::GWRBasic::BandwidthSelectionCriterionType, std::string> BwCriterionName;
 
 public:
-    GWRBasicTelegram(const gwm::GWRBasic& algorithm) : RTelegram(), mAlgorithm(algorithm) {}
-    GWRBasicTelegram(const gwm::GWRBasic& algorithm, std::vector<std::string> varNames) : RTelegram(), mAlgorithm(algorithm), mVariableNames(varNames) {}
+    GWRBasicTelegram(const gwm::GWRBasic& algorithm, int verbose) : 
+        RTelegram(verbose), mAlgorithm(algorithm) {}
+    GWRBasicTelegram(const gwm::GWRBasic& algorithm, std::vector<std::string> varNames, int verbose) : 
+        RTelegram(verbose), mAlgorithm(algorithm), mVariableNames(varNames) {}
     ~GWRBasicTelegram() {}
     void parseInfo(std::string message) override;
 

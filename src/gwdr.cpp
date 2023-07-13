@@ -82,7 +82,7 @@ List gwdr_fit(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    algorithm.setTelegram(make_unique<RTelegram>());
+    algorithm.setTelegram(make_unique<RTelegram>(0));
     algorithm.fit();
     
     // Return Results

@@ -97,7 +97,7 @@ gwr_basic <- function(
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = FALSE, select_model_criterion = 0,
-        select_model_threshold = 3.0, indep_vars, verbose
+        select_model_threshold = 3.0, indep_vars, as.integer(verbose)
     )
     if (optim_bw)
         bw <- c_result$bandwidth
@@ -490,7 +490,7 @@ predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {
     c_betas <- with(object$args, gwr_basic_predict(
         pcoords, x, y, coords, bw, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta, has_intercept, 
-        enum_list(parallel_method, parallel_types), parallel_arg, verbose
+        enum_list(parallel_method, parallel_types), parallel_arg, as.integer(verbose)
     ))
 
     result <- as.data.frame(c_betas)

@@ -39,7 +39,7 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_fit
-List gwr_basic_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, bool verbose);
+List gwr_basic_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
 RcppExport SEXP _GWmodel3_gwr_basic_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP select_modelSEXP, SEXP select_model_criterionSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -63,13 +63,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type select_model_criterion(select_model_criterionSEXP);
     Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
     Rcpp::traits::input_parameter< const CharacterVector& >::type variable_names(variable_namesSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(gwr_basic_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, hatmatrix, intercept, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 // gwr_basic_predict
-NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool verbose);
+NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, int verbose);
 RcppExport SEXP _GWmodel3_gwr_basic_predict(SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
@@ -87,7 +87,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
-    Rcpp::traits::input_parameter< bool >::type verbose(verboseSEXP);
+    Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
     rcpp_result_gen = Rcpp::wrap(gwr_basic_predict(pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg, verbose));
     return rcpp_result_gen;
 END_RCPP

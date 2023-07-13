@@ -10,7 +10,7 @@ class RTelegram : public gwm::ITelegram
 {
 
 public:
-    RTelegram() : ITelegram() {}
+    RTelegram(int verbose) : mVerbose(verbose) {}
 
     ~RTelegram() {}
 
@@ -43,6 +43,9 @@ public:
     }
     bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
     bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
+
+protected:
+    int mVerbose = 0;
 };
 
 #endif  // RTELEGRAM
