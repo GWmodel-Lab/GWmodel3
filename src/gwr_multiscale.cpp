@@ -2,6 +2,7 @@
 #include <armadillo>
 #include "utils.h"
 #include "gwmodel.h"
+#include "telegrams/GWRMultiscaleTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
