@@ -38,7 +38,6 @@ public:
     std::string join(std::vector<std::string> ss, std::string delm);
 
     virtual void parseInfo(std::string message);
-    bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
     bool splitVariableCriterion(const std::string& s, std::vector<std::size_t>& variables, double& criterion);
 
 protected:

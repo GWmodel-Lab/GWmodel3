@@ -26,21 +26,16 @@ void GWRBasicTelegram::parseInfo(string message)
         break;
     case InfoTag::BandwidthCriterion:
         {
-            vector<double> bwc;
-            bool isTitle = !splitBandwidthCriterion(msgs[1], bwc);
-            if (isTitle)
+            if (msgs[1].rfind("adaptive", 0) == 0 || msgs[1].rfind("fixed", 0) == 0)
             {
                 Rcout << "* Selecting Bandwidth" << "\n";
-                if (mVerbose >= 2) Rcout << "** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionCriterion()] << "\n";
+                if (mVerbose >= 2) Rcout << "** Bandwidth," << BwCriterionName[mBandwidthCriterion] << "\n";
             }
             else
             {
                 if (mVerbose >= 2)
                 {
-                    if (mAlgorithm.spatialWeight().weight<BandwidthWeight>()->adaptive())
-                        Rcout << "** " << (int)bwc[0] << "," << bwc[1] << "\n";
-                    else
-                        Rcout << "** " << bwc[0] << "," << bwc[1] << "\n";
+                    Rcout << "** " << msgs[1] << "\n";
                 }
             }
             break;
@@ -57,12 +52,15 @@ void GWRBasicTelegram::parseInfo(string message)
             }
             else
             {
-                vector<string> vars_name(vars.size());
-                transform(vars.begin(), vars.end(), vars_name.begin(), [this](const size_t index)
+                if (mVerbose >= 2)
                 {
-                    return this->mVariableNames[index];
-                });
-                if (mVerbose >= 2) Rcout << "** " << join(vars_name, "+") << "," << criterions << "\n";
+                    vector<string> vars_name(vars.size());
+                    transform(vars.begin(), vars.end(), vars_name.begin(), [this](const size_t index)
+                    {
+                        return this->mVariableNames[index];
+                    });
+                    Rcout << "** " << join(vars_name, "+") << "," << criterions << "\n";
+                }
             }
         }
         break;

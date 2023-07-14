@@ -24,15 +24,27 @@ public:
     static std::map<gwm::GWRMultiscale::BandwidthSelectionCriterionType, std::string> BwCriterionName;
 
 public:
-    GWRMultiscaleTelegram(const gwm::GWRMultiscale& algorithm, std::vector<std::string> varNames, int verbose) : 
-        RTelegram(verbose), mAlgorithm(algorithm), mVariableNames(varNames) {}
+    GWRMultiscaleTelegram(gwm::GWRMultiscale& algorithm, std::vector<std::string> varNames, int verbose) : 
+        RTelegram(verbose), mVariableNames(varNames)
+    {
+        mBandwidthCriterionType = algorithm.bandwidthSelectionApproach();
+        mBackfittingCriterionType = algorithm.criterionType();
+        auto& sws = algorithm.spatialWeights();
+        mBandwidthType.resize(sws.size());
+        std::transform(sws.cbegin(), sws.cend(), mBandwidthType.begin(), [](const gwm::SpatialWeight& sw)
+        {
+            return sw.weight<gwm::BandwidthWeight>()->adaptive();
+        });
+    }
     ~GWRMultiscaleTelegram() {}
     void parseInfo(std::string message) override;
     void parseBackfittingInfo(std::vector<std::string> messages);
     bool splitInitialBandwidth(const std::string& s, size_t& variable, double& criterion);
 
 private:
-    const gwm::GWRMultiscale& mAlgorithm;
+    std::vector<gwm::GWRMultiscale::BandwidthSelectionCriterionType> mBandwidthCriterionType;
+    std::vector<bool> mBandwidthType;
+    gwm::GWRMultiscale::BackFittingCriterionType mBackfittingCriterionType;
     bool mIsInitialBandwidthStage = false;
     bool mIsBackfittingBandwidth = false;
     size_t mCurrentIteration;

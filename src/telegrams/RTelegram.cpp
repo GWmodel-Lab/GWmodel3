@@ -59,19 +59,6 @@ void RTelegram::parseInfo(std::string message)
     }
 }
 
-bool RTelegram::splitBandwidthCriterion(const string &s, vector<double> &params)
-{
-    istringstream iss(s);
-    string buffer;
-    while (getline(iss, buffer, ','))
-    {
-        if (buffer == "adaptive" || buffer == "fixed" || buffer == "criterion")
-            return false;
-        else params.push_back(stod(buffer));
-    }
-    return true;
-}
-
 bool RTelegram::splitVariableCriterion(const string &s, vector<size_t> &variables, double &criterion)
 {
     istringstream iss(s);

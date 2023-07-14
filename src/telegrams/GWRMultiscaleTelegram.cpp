@@ -51,9 +51,7 @@ void GWRMultiscaleTelegram::parseInfo(std::string message)
     }
     case InfoTag::BandwidthCriterion:
     {
-        vector<double> bwc;
-        int bwSizePrecision = mAlgorithm.spatialWeights()[mCurrentVariable].weight<BandwidthWeight>()->adaptive() ? 0 : 6;
-        if (!splitBandwidthCriterion(msgs[1], bwc))
+        if (msgs[1].rfind("adaptive", 0) == 0 || msgs[1].rfind("fixed", 0) == 0)
         {
             if (!mIsInitialBandwidthStage)
             {
@@ -61,26 +59,26 @@ void GWRMultiscaleTelegram::parseInfo(std::string message)
             }
             if (mIsBackfittingBandwidth)
             {
-                if (mVerbose >= 4) Rcout << "**** " << "Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+                if (mVerbose >= 4) Rcout << "**** " << "Bandwidth," << BwCriterionName[mBandwidthCriterionType[mCurrentVariable]] << "\n";
             }
             else
             {
-                if (mVerbose >= 3) Rcout << "*** " << "Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+                if (mVerbose >= 3) Rcout << "*** " << "Bandwidth," << BwCriterionName[mBandwidthCriterionType[mCurrentVariable]] << "\n";
             }
         }
         else
         {
             if (mIsInitialBandwidthStage)
             {
-                if (mVerbose >= 3) Rcout << "*** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+                if (mVerbose >= 3) Rcout << "*** " << msgs[1] << "\n";
             }
             else if (mIsBackfittingBandwidth)
             {
-                if (mVerbose >= 4) Rcout << "**** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+                if (mVerbose >= 4) Rcout << "**** " << msgs[1] << "\n";
             }
             else
             {
-                if (mVerbose >= 2) Rcout << "** " << setprecision(bwSizePrecision) << bwc[0] << "," << bwc[1] << "\n";
+                if (mVerbose >= 2) Rcout << "** " << msgs[1] << "\n";
             }
         }
         break;
@@ -119,12 +117,12 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
         mCurrentVariable = stoul(args[0]);
         mIsBackfittingBandwidth = true;
         string variable = mVariableNames[mCurrentVariable];
-        int bwSizePrecision = mAlgorithm.spatialWeights()[mCurrentVariable].weight<BandwidthWeight>()->adaptive() ? 0 : 6;
+        int bwSizePrecision = mBandwidthType[mCurrentVariable] ? 0 : 6;
         switch (args.size())
         {
         case 1:
             if (mVerbose >= 3) Rcout << "*** Now select an optimum bandwidth for the variable " << variable << "\n";
-            if (mVerbose >= 4) Rcout << "**** Bandwidth," << BwCriterionName[mAlgorithm.bandwidthSelectionApproach()[mCurrentVariable]] << "\n";
+            if (mVerbose >= 4) Rcout << "**** Bandwidth," << BwCriterionName[mBandwidthCriterionType[mCurrentVariable]] << "\n";
             break;
         case 5:
         {
@@ -159,7 +157,7 @@ void GWRMultiscaleTelegram::parseBackfittingInfo(std::vector<std::string> messag
     case BackfittingInfoTag::BackfittingCriterion:
     {
         double criterionValue = stod(messages[1]);
-        string criterionName = (mAlgorithm.criterionType() == GWRMultiscale::BackFittingCriterionType::CVR) ? "change value of RSS (CVR)" : "differential change value of RSS (dCVR)";
+        string criterionName = (mBackfittingCriterionType == GWRMultiscale::BackFittingCriterionType::CVR) ? "change value of RSS (CVR)" : "differential change value of RSS (dCVR)";
         if (mVerbose >= 3) Rcout << "*** The " << criterionName << " is " << criterionValue << "\n";
         if (mVerbose >= 3) Rcout << "** End of iteration " << mCurrentIteration << "\n";
         break;

@@ -27,19 +27,17 @@ void GWDRTelegram::parseInfo(string message)
     case InfoTag::BandwidthCriterion:
         {
             vector<double> bwc;
-            size_t dims = mAlgorithm.spatialWeights().size();
-            bool isTitle = !splitBandwidthCriterion(msgs[1], bwc);
-            if (isTitle)
+            if (testBandwidthCriterionTitle(msgs[1]))
             {
                 Rcout << "* Selecting Bandwidth" << "\n";
                 if (mVerbose >= 2)
                 {
                     vector<string> titles;
-                    for (size_t i = 1; i <= dims; i++)
+                    for (size_t i = 1; i <= mDims; i++)
                     {
                         titles.push_back(string("Bandwidth") + to_string(i));
                     }
-                    titles.push_back(BwCriterionName[mAlgorithm.bandwidthCriterionType()]);
+                    titles.push_back(BwCriterionName[mBandwidthCriterionType]);
                     Rcout << "** " << join(titles, ",") << "\n";
                 }
             }
@@ -47,14 +45,7 @@ void GWDRTelegram::parseInfo(string message)
             {
                 if (mVerbose >= 2)
                 {
-                    vector<string> values;
-                    for (size_t i = 0; i < dims; i++)
-                    {
-                        string v = mAlgorithm.spatialWeights()[i].weight<BandwidthWeight>()->adaptive() ? to_string((int)bwc[i]) : to_string(bwc[i]);
-                        values.push_back(v);
-                    }
-                    values.push_back(to_string(bwc[dims]));
-                    Rcout << "** " << join(values, ",") << "\n";
+                    Rcout << "** " << msgs[1] << "\n";
                 }
             }
             break;
@@ -85,15 +76,14 @@ void GWDRTelegram::parseInfo(string message)
     }
 }
 
-bool GWDRTelegram::splitBandwidthCriterion(const std::string &s, std::vector<double> &params)
+bool GWDRTelegram::testBandwidthCriterionTitle(const std::string &s)
 {
     istringstream iss(s);
     string buffer;
     while (getline(iss, buffer, ','))
     {
         if (buffer.find(':', 0) != string::npos)
-            return false;
-        else params.push_back(stod(buffer));
+            return true;
     }
-    return true;
+    return false;
 }

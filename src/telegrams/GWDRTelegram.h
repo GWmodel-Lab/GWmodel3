@@ -17,15 +17,33 @@ public:
 
 public:
     GWDRTelegram(const gwm::GWDR& algorithm, int verbose) : 
-        RTelegram(verbose), mAlgorithm(algorithm) {}
+        RTelegram(verbose)
+    {
+        const auto& sws = algorithm.spatialWeights();
+        mDims = sws.size();
+        mBandwidthTypes.resize(mDims);
+        std::transform(sws.cbegin(), sws.cend(), mBandwidthTypes.begin(), [](const gwm::SpatialWeight& sw)
+        {
+            return sw.weight<gwm::BandwidthWeight>()->adaptive();
+        });
+        mBandwidthCriterionType = algorithm.bandwidthCriterionType();
+    }
+
     GWDRTelegram(const gwm::GWDR& algorithm, std::vector<std::string> varNames, int verbose) : 
-        RTelegram(verbose), mAlgorithm(algorithm), mVariableNames(varNames) {}
+        GWDRTelegram(algorithm, verbose)
+    {
+        mVariableNames = varNames;
+    }
+
     ~GWDRTelegram() {}
     void parseInfo(std::string message) override;
-    bool splitBandwidthCriterion(const std::string& s, std::vector<double>& params);
+    bool testBandwidthCriterionTitle(const std::string& s);
 
 private:
-    const gwm::GWDR& mAlgorithm;
+    // const gwm::GWDR& mAlgorithm;
+    std::size_t mDims;
+    gwm::GWDR::BandwidthCriterionType mBandwidthCriterionType;
+    std::vector<bool> mBandwidthTypes;
     std::vector<std::string> mVariableNames;
 };
 
