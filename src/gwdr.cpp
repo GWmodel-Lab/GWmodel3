@@ -2,6 +2,7 @@
 #include <armadillo>
 #include "utils.h"
 #include "gwmodel.h"
+#include "telegrams/GWDRTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -26,11 +27,10 @@ List gwdr_fit(
     double optim_step,
     size_t optim_max_iter,
     bool select_model,
-    size_t select_model_threshold
+    size_t select_model_threshold,
+    const CharacterVector& variable_names,
+    int verbose
 ) {
-    // Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     arma::mat mx = myas(x);
     arma::vec my = myas(y);
@@ -83,6 +83,10 @@ List gwdr_fit(
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+    }
+    if (verbose > 0)
+    {
+        algorithm.setTelegram(make_unique<GWDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
     algorithm.fit();
     

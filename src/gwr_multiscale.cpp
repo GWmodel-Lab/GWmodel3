@@ -2,6 +2,7 @@
 #include <armadillo>
 #include "utils.h"
 #include "gwmodel.h"
+#include "telegrams/GWRMultiscaleTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -30,11 +31,10 @@ List gwr_multiscale_fit (
     size_t retry_times,
     size_t max_iterations,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
+    const IntegerVector& parallel_arg,
+    const CharacterVector& variable_names,
+    int verbose
 ) {
-    // Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mx = myas(x);
     vec my = myas(y);
@@ -104,6 +104,10 @@ List gwr_multiscale_fit (
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+    }
+    if (verbose > 0)
+    {
+        algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
     algorithm.fit();
 

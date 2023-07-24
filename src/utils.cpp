@@ -1,5 +1,9 @@
 #include "utils.h"
+#include <sstream>
+#include <vector>
+#include <queue>
 
+using namespace std;
 using namespace Rcpp;
 using namespace arma;
 using namespace gwm;
@@ -30,24 +34,4 @@ List mywrap(const VariablesCriterionList& criterion_list)
         Named("models") = model_combinations,
         Named("criterions") = model_criterions
     );
-}
-
-void r_printer(std::string message, Logger::LogLevel level, std::string fun_name, std::string file_name)
-{
-    switch (level)
-    {
-    case Logger::LogLevel::LOG_EMERG:
-    case Logger::LogLevel::LOG_ALERT:
-    case Logger::LogLevel::LOG_CRIT:
-    case Logger::LogLevel::LOG_ERR:
-        Rcpp::Rcerr << "ERROR: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
-        break;
-    case Logger::LogLevel::LOG_WARNING:
-    case Logger::LogLevel::LOG_NOTICE:
-    case Logger::LogLevel::LOG_INFO:
-    case Logger::LogLevel::LOG_DEBUG:
-    default:
-        Rcpp::Rcout << "MSG: " << message << " [" << fun_name << "]" << " (in " << file_name << ")\n";
-        break;
-    }
 }

@@ -2,6 +2,7 @@
 #include <armadillo>
 #include "utils.h"
 #include "gwmodel.h"
+#include "telegrams/GWRBasicTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -16,10 +17,9 @@ List gwr_basic_fit(
     bool hatmatrix, bool intercept,
     size_t parallel_type, const IntegerVector& parallel_arg,
     bool optim_bw, size_t optim_bw_criterion,
-    bool select_model, size_t select_model_criterion, size_t select_model_threshold
+    bool select_model, size_t select_model_criterion, size_t select_model_threshold,
+    const CharacterVector& variable_names, int verbose
 ) {
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mx = myas(x);
     vec my = myas(y);
@@ -67,6 +67,8 @@ List gwr_basic_fit(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+    if (verbose)
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     algorithm.fit();
 
     // Return Results
@@ -114,11 +116,9 @@ NumericMatrix gwr_basic_predict(
     double theta,
     bool intercept,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
+    const IntegerVector& parallel_arg,
+    int verbose
 ) {
-// Logger
-    Logger::printer = r_printer;
-
     // Convert data types
     mat mpcoords = myas(pcoords);
     mat mx = myas(x);
@@ -162,6 +162,10 @@ NumericMatrix gwr_basic_predict(
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+    }
+    if (verbose)
+    {
+        algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, verbose));
     }
 
     // Return Results

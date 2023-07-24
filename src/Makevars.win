@@ -51,8 +51,13 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMultiscaleAlgorithm.o \
-	libgwmodel/src/gwmodelpp/VariableForwardSelector.o \
-	libgwmodel/src/gwmodelpp/Logger.o
+	libgwmodel/src/gwmodelpp/VariableForwardSelector.o
+
+OBJECTS_TELEGRAM = \
+	telegrams/RTelegram.o \
+	telegrams/GWRBasicTelegram.o \
+	telegrams/GWRMultiscaleTelegram.o \
+	telegrams/GWDRTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \
@@ -61,5 +66,5 @@ OBJECTS_GWMODEL = \
 	gwdr.o \
 	RcppExports.o
 
-OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_GWMODEL)
+OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
 

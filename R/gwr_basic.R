@@ -18,6 +18,7 @@
 #' @param hatmatrix If TRUE, great circle will be caculated.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
+#' @param verbose Whether to print additional information.
 #'
 #' @return A `gwrm` object.
 #'
@@ -43,8 +44,9 @@ gwr_basic <- function(
     theta = 0.0,
     hatmatrix = TRUE,
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0))
-{
+    parallel_arg = c(0),
+    verbose = FALSE
+) {
     ### Check args
     kernel = match.arg(kernel)
     parallel_method = match.arg(parallel_method)
@@ -95,7 +97,7 @@ gwr_basic <- function(
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = FALSE, select_model_criterion = 0,
-        select_model_threshold = 3.0
+        select_model_threshold = 3.0, indep_vars, as.integer(verbose)
     )
     if (optim_bw)
         bw <- c_result$bandwidth
@@ -144,7 +146,8 @@ gwr_basic <- function(
             parallel_method = parallel_method,
             parallel_arg = parallel_arg,
             optim_bw = optim_bw,
-            optim_bw_criterion = optim_bw_criterion
+            optim_bw_criterion = optim_bw_criterion,
+            verbose = verbose
         ),
         call = mc,
         indep_vars = indep_vars,
@@ -216,7 +219,7 @@ model_sel.gwrm <- function(
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = TRUE, select_model_criterion = enum(criterion),
-        select_model_threshold = threshold
+        select_model_threshold = threshold, object$indep_vars, verbose
     ))
     if (optim_bw)
         bw_value <- c_result$bandwidth
@@ -428,7 +431,9 @@ residuals.gwrm <- function(object, ...) {
 #' @param object A "gwrm" object.
 #' @param regression_points Data of new locations.
 #' @param \dots Additional arguments.
+#' @param verbose Whether to print additional message.
 #' @return A "gwrm" object.
+#' 
 #' @method predict gwrm
 #' @name predict
 #'
@@ -438,7 +443,7 @@ residuals.gwrm <- function(object, ...) {
 #' predict(m, LondonHP)
 #'
 #' @export
-predict.gwrm <- function(object, regression_points, ...) {
+predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
     }
@@ -485,7 +490,7 @@ predict.gwrm <- function(object, regression_points, ...) {
     c_betas <- with(object$args, gwr_basic_predict(
         pcoords, x, y, coords, bw, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta, has_intercept, 
-        enum_list(parallel_method, parallel_types), parallel_arg
+        enum_list(parallel_method, parallel_types), parallel_arg, as.integer(verbose)
     ))
 
     result <- as.data.frame(c_betas)

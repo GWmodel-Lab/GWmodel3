@@ -15,7 +15,8 @@ gwr_basic(
   theta = 0,
   hatmatrix = TRUE,
   parallel_method = c("no", "omp"),
-  parallel_arg = c(0)
+  parallel_arg = c(0),
+  verbose = FALSE
 )
 }
 \arguments{
@@ -47,6 +48,8 @@ default to 2, i.e., Euclidean distance.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{verbose}{Whether to print additional information.}
 }
 \value{
 A `gwrm` object.
