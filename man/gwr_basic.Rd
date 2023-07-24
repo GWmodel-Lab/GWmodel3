@@ -2,6 +2,12 @@
 % Please edit documentation in R/gwr_basic.R
 \name{gwr_basic}
 \alias{gwr_basic}
+\alias{print.gwrm}
+\alias{plot.gwrm}
+\alias{coef.gwrm}
+\alias{fitted.gwrm}
+\alias{residuals.gwrm}
+\alias{predict.gwrm}
 \title{Calibrate a basic GWR model}
 \usage{
 gwr_basic(
@@ -18,6 +24,18 @@ gwr_basic(
   parallel_arg = c(0),
   verbose = FALSE
 )
+
+\method{print}{gwrm}(x, decimal_fmt = "\%.3f", ...)
+
+\method{plot}{gwrm}(x, y, ..., columns)
+
+\method{coef}{gwrm}(object, ...)
+
+\method{fitted}{gwrm}(object, ...)
+
+\method{residuals}{gwrm}(object, ...)
+
+\method{predict}{gwrm}(object, regression_points, verbose = FALSE, ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
@@ -49,14 +67,61 @@ default to 2, i.e., Euclidean distance.}
 
 \item{parallel_arg}{Parallel method argument.}
 
-\item{verbose}{Whether to print additional information.}
+\item{verbose}{Whether to print additional message.}
+
+\item{x}{A "gwrm" object.}
+
+\item{decimal_fmt}{The format string passing to [base::sprintf()].}
+
+\item{\dots}{Additional arguments.}
+
+\item{y}{Ignored.}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{object}{A "gwrm" object.}
+
+\item{regression_points}{Data of new locations.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=print_table_md]{print_table_md}}
+  \describe{
+    \item{\code{col.sep}}{Column seperator. Default to `""`.}
+    \item{\code{header.sep}}{Header seperator. Default to `"-"`.}
+    \item{\code{row.begin}}{Character at the beginning of each row.
+Default to `col.sep`.}
+    \item{\code{row.end}}{Character at the ending of each row.
+Default to `col.sep`.}
+    \item{\code{table.style}}{Name of pre-defined style.
+Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
+  }}
 }
 \value{
 A `gwrm` object.
+
+No return.
+
+A "gwrm" object.
 }
 \description{
 Calibrate a basic GWR model
 }
+\section{Functions}{
+\itemize{
+\item \code{print(gwrm)}: Print description of a `gwrm` object
+
+\item \code{plot(gwrm)}: Plot the result of basic GWR model.
+
+\item \code{coef(gwrm)}: Get coefficients of a basic GWR model.
+
+\item \code{fitted(gwrm)}: Get fitted values of a basic GWR model.
+
+\item \code{residuals(gwrm)}: Get residuals of a basic GWR model.
+
+\item \code{predict(gwrm)}: Predict on new locations.
+
+}}
 \examples{
 data(LondonHP)
 
@@ -65,5 +130,13 @@ gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 
 # Bandwidth Optimization
 gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+
+data(LondonHP)
+m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+plot(m)
+
+data(LondonHP)
+m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 64, TRUE)
+predict(m, LondonHP)
 
 }

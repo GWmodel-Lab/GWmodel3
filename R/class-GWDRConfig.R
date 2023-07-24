@@ -58,13 +58,11 @@ setMethod(
     }
 )
 
-#' Create an instance of GWDRConfig
+#' Create an instance of GWDRConfig.
 #'
 #' @param bw Bandwidth value.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
-#' 
-#' @describeIn GWDRConfig-class
 #'
 #' @examples
 #' gwdr_config(36, TRUE, "bisquare")

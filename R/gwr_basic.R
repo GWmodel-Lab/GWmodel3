@@ -293,14 +293,13 @@ step.gwrm <- function(
     object
 }
 
-#' Print description of a `gwrm` object
+#' @describeIn gwr_basic Print description of a `gwrm` object
 #'
 #' @param x An `hgwrm` object returned by [gwr_basic()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' @return No return.
 #' @method print gwrm
-#' @name print
 #' 
 #' @importFrom stats coef fivenum
 #' @export
@@ -349,7 +348,7 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     cat("\n", fill = T)
 }
 
-#' Plot the result of basic GWR model.
+#' @describeIn gwr_basic Plot the result of basic GWR model.
 #'
 #' @param x A "gwrm" object.
 #' @param y Ignored.
@@ -357,7 +356,6 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
 #' @method plot gwrm
-#' @name plot
 #'
 #' @examples
 #' data(LondonHP)
@@ -383,13 +381,11 @@ plot.gwrm <- function(x, y, ..., columns) {
     plot(sdf, ...)
 }
 
-#' Get coefficients of a basic GWR model.
+#' @describeIn gwr_basic Get coefficients of a basic GWR model.
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [coef()].
 #' @method coef gwrm
-#' @name coef
-#'
 #' @export
 coef.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
@@ -398,12 +394,11 @@ coef.gwrm <- function(object, ...) {
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' Get fitted values of a basic GWR model.
+#' @describeIn gwr_basic Get fitted values of a basic GWR model.
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
 #' @method fitted gwrm
-#' @name fitted
 #' @export
 fitted.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
@@ -412,12 +407,11 @@ fitted.gwrm <- function(object, ...) {
     object$SDF[["yhat"]]
 }
 
-#' Get residuals of a basic GWR model.
+#' @describeIn gwr_basic Get residuals of a basic GWR model.
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
 #' @method residuals gwrm
-#' @name residuals
 #' @export
 residuals.gwrm <- function(object, ...) {
     if (!inherits(object, "gwrm")) {
@@ -426,7 +420,7 @@ residuals.gwrm <- function(object, ...) {
     object$SDF[["residual"]]
 }
 
-#' Predict on new locations.
+#' @describeIn gwr_basic Predict on new locations.
 #'
 #' @param object A "gwrm" object.
 #' @param regression_points Data of new locations.
@@ -435,7 +429,6 @@ residuals.gwrm <- function(object, ...) {
 #' @return A "gwrm" object.
 #' 
 #' @method predict gwrm
-#' @name predict
 #'
 #' @examples
 #' data(LondonHP)

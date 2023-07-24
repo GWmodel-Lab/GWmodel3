@@ -2,6 +2,11 @@
 % Please edit documentation in R/gwdr.R
 \name{gwdr}
 \alias{gwdr}
+\alias{plot.gwdrm}
+\alias{coef.gwdrm}
+\alias{fitted.gwdrm}
+\alias{residuals.gwdrm}
+\alias{print.gwdrm}
 \title{Geographically Weighted Density Regression (GWDR)}
 \usage{
 gwdr(
@@ -16,6 +21,16 @@ gwdr(
   parallel_arg = c(0),
   verbose = FALSE
 )
+
+\method{plot}{gwdrm}(x, y, ..., columns)
+
+\method{coef}{gwdrm}(object, ...)
+
+\method{fitted}{gwdrm}(object, ...)
+
+\method{residuals}{gwdrm}(object, ...)
+
+\method{print}{gwdrm}(x, decimal_fmt = "\%.3f", ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
@@ -41,13 +56,54 @@ is used in calibrating selected models.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{x}{An `gwdrm` object returned by [gwdr()].}
+
+\item{y}{Ignored.}
+
+\item{\dots}{Additional arguments passing to [residuals()].}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{object}{A "gwdrm" object.}
+
+\item{decimal_fmt}{The format string passing to [base::sprintf()].}
+
+\item{...}{
+  Arguments passed on to \code{\link[=print_table_md]{print_table_md}}
+  \describe{
+    \item{\code{col.sep}}{Column seperator. Default to `""`.}
+    \item{\code{header.sep}}{Header seperator. Default to `"-"`.}
+    \item{\code{row.begin}}{Character at the beginning of each row.
+Default to `col.sep`.}
+    \item{\code{row.end}}{Character at the ending of each row.
+Default to `col.sep`.}
+    \item{\code{table.style}}{Name of pre-defined style.
+Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
+  }}
 }
 \value{
 A `gwdrm` object.
+
+No return.
 }
 \description{
 Geographically Weighted Density Regression (GWDR)
 }
+\section{Functions}{
+\itemize{
+\item \code{plot(gwdrm)}: Plot the result of GWDR model.
+
+\item \code{coef(gwdrm)}: Get coefficients of a GWDR model.
+
+\item \code{fitted(gwdrm)}: Get fitted values of a GWDR model.
+
+\item \code{residuals(gwdrm)}: Get residuals of a GWDR model.
+
+\item \code{print(gwdrm)}: Print description of a `gwdrm` object
+
+}}
 \examples{
 data(LondonHP)
 m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
@@ -65,5 +121,9 @@ m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
     gwdr_config(0.618, TRUE, "gaussian")
 ), optim_bw = "AIC")
 m3
+
+data(LondonHP)
+m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+plot(m)
 
 }

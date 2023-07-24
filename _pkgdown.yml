@@ -22,10 +22,9 @@ reference:
       - matches("fitted")
       - matches("predict")
       - matches("residuals")
-  - title: Print and plot
+  - title: Utils
     contents:
-      - starts_with("plot")
-      - starts_with("print")
+      - print_table_md
   - title: Data
     contents:
       - DubVoter

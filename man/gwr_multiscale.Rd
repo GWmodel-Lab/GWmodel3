@@ -2,6 +2,11 @@
 % Please edit documentation in R/gwr_multiscale.R
 \name{gwr_multiscale}
 \alias{gwr_multiscale}
+\alias{print.gwrmultiscalem}
+\alias{plot.gwrmultiscalem}
+\alias{coef.gwrmultiscalem}
+\alias{fitted.gwrmultiscalem}
+\alias{residuals.gwrmultiscalem}
 \title{Multiscale GWR}
 \usage{
 gwr_multiscale(
@@ -16,6 +21,16 @@ gwr_multiscale(
   parallel_arg = c(0),
   verbose = FALSE
 )
+
+\method{print}{gwrmultiscalem}(x, decimal_fmt = "\%.3f", ...)
+
+\method{plot}{gwrmultiscalem}(x, y, ..., columns)
+
+\method{coef}{gwrmultiscalem}(object, ...)
+
+\method{fitted}{gwrmultiscalem}(object, ...)
+
+\method{residuals}{gwrmultiscalem}(object, ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
@@ -44,10 +59,52 @@ for avoiding sub-optimal choice due to illusion of convergence.}
 \item{verbose}{Output information level.
 Can be either `FALSE` or integer values.
 Higher values will leads to more output information.}
+
+\item{x}{A "gwrmultiscalem" object.}
+
+\item{decimal_fmt}{The format string passing to [base::sprintf()].}
+
+\item{\dots}{Additional arguments passing to [residuals()].}
+
+\item{y}{Ignored.}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{object}{A "gwrmultiscalem" object.}
+
+\item{...}{
+  Arguments passed on to \code{\link[=print_table_md]{print_table_md}}
+  \describe{
+    \item{\code{col.sep}}{Column seperator. Default to `""`.}
+    \item{\code{header.sep}}{Header seperator. Default to `"-"`.}
+    \item{\code{row.begin}}{Character at the beginning of each row.
+Default to `col.sep`.}
+    \item{\code{row.end}}{Character at the ending of each row.
+Default to `col.sep`.}
+    \item{\code{table.style}}{Name of pre-defined style.
+Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
+  }}
+}
+\value{
+No return.
 }
 \description{
 Multiscale GWR
 }
+\section{Functions}{
+\itemize{
+\item \code{print(gwrmultiscalem)}: Print description of a `gwrmultiscalem` object
+
+\item \code{plot(gwrmultiscalem)}: Plot the result of basic GWR model.
+
+\item \code{coef(gwrmultiscalem)}: Get coefficients of a multiscale GWR model.
+
+\item \code{fitted(gwrmultiscalem)}: Get fitted values of a basic GWR model.
+
+\item \code{residuals(gwrmultiscalem)}: Get residuals of a basic GWR model.
+
+}}
 \examples{
 data(LondonHP)
 m <- gwr_multiscale(
@@ -72,5 +129,13 @@ m <- gwr_multiscale(
      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
      mgwr_config(adaptive = TRUE, kernel = "bisquare")
  ))
+
+data(LondonHP)
+m <- gwr_multiscale(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = rep(mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
+)
+plot(m)
 
 }

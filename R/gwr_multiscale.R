@@ -209,14 +209,13 @@ gwr_multiscale <- function(
     gwrmultiscalem
 }
 
-#' Print description of a `gwrmultiscalem` object
+#' @describeIn gwr_multiscale Print description of a `gwrmultiscalem` object
 #'
 #' @param x An `gwrmultiscalem` object returned by [gwr_multiscale()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' @return No return.
 #' @method print gwrmultiscalem
-#' @name print
 #'
 #' @importFrom stats coef fivenum
 #' @export
@@ -279,7 +278,7 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
     cat("\n", fill = T)
 }
 
-#' Plot the result of basic GWR model.
+#' @describeIn gwr_multiscale Plot the result of basic GWR model.
 #'
 #' @param x A "gwrmultiscalem" object.
 #' @param y Ignored.
@@ -287,7 +286,6 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
 #' @method plot gwrmultiscalem
-#' @name plot
 #'
 #' @examples
 #' data(LondonHP)
@@ -317,13 +315,11 @@ plot.gwrmultiscalem <- function(x, y, ..., columns) {
     plot(sdf, ...)
 }
 
-#' Get coefficients of a multiscale GWR model.
+#' @describeIn gwr_multiscale Get coefficients of a multiscale GWR model.
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [coef()].
 #' @method coef gwrmultiscalem
-#' @name coef
-#'
 #' @export
 coef.gwrmultiscalem <- function(object, ...) {
     if (!inherits(object, "gwrmultiscalem")) {
@@ -332,12 +328,11 @@ coef.gwrmultiscalem <- function(object, ...) {
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' Get fitted values of a basic GWR model.
+#' @describeIn gwr_multiscale Get fitted values of a basic GWR model.
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [fitted()].
 #' @method fitted gwrmultiscalem
-#' @name fitted
 #' @export
 fitted.gwrmultiscalem <- function(object, ...) {
     if (!inherits(object, "gwrmultiscalem")) {
@@ -346,12 +341,11 @@ fitted.gwrmultiscalem <- function(object, ...) {
     object$SDF[["yhat"]]
 }
 
-#' Get residuals of a basic GWR model.
+#' @describeIn gwr_multiscale Get residuals of a basic GWR model.
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [residuals()].
 #' @method residuals gwrmultiscalem
-#' @name residuals
 #' @export
 residuals.gwrmultiscalem <- function(object, ...) {
     if (!inherits(object, "gwrmultiscalem")) {

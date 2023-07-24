@@ -151,7 +151,7 @@ step_view_diff <- function(object, ymin = -50, ...) {
     }
 }
 
-#' Plot model selection criterions (the circle view).
+#' @describeIn step Plot model selection criterions.
 #' 
 #' @param x An object of `modelselcritl` class.
 #' @param y Ignored.
@@ -160,7 +160,6 @@ step_view_diff <- function(object, ymin = -50, ...) {
 #' @param main The main title.
 #' @param \dots Additional parameters passing to [plot()].
 #' @method plot modelselcritl
-#' @name plot
 #' 
 #' @examples
 #' data(LondonHP)

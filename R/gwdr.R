@@ -166,7 +166,7 @@ gwdr <- function(
     class(gwdrm) <- "gwdrm"
     gwdrm
 }
-#' Plot the result of GWDR model.
+#' @describeIn gwdr Plot the result of GWDR model.
 #'
 #' @param x A "gwdrm" object.
 #' @param y Ignored.
@@ -174,7 +174,6 @@ gwdr <- function(
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
 #' @method plot gwdrm
-#' @name plot
 #'
 #' @examples
 #' data(LondonHP)
@@ -344,14 +343,11 @@ step.gwdrm <- function(
     object
 }
 
-#' Get coefficients of a GWDR model.
+#' @describeIn gwdr Get coefficients of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [coef()].
-#' 
 #' @method coef gwdrm
-#' @name coef
-#'
 #' @export
 coef.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -360,13 +356,11 @@ coef.gwdrm <- function(object, ...) {
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' Get fitted values of a GWDR model.
+#' @describeIn gwdr Get fitted values of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
-#' 
 #' @method fitted gwdrm
-#' @name fitted
 #' @export
 fitted.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -375,13 +369,11 @@ fitted.gwdrm <- function(object, ...) {
     object$SDF[["yhat"]]
 }
 
-#' Get residuals of a GWDR model.
+#' @describeIn gwdr Get residuals of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
-#' 
 #' @method residuals gwdrm
-#' @name residuals
 #' @export
 residuals.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -390,7 +382,7 @@ residuals.gwdrm <- function(object, ...) {
     object$SDF[["residual"]]
 }
 
-#' Print description of a `gwdrm` object
+#' @describeIn gwdr Print description of a `gwdrm` object
 #'
 #' @param x An `gwdrm` object returned by [gwdr()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
@@ -398,8 +390,6 @@ residuals.gwdrm <- function(object, ...) {
 #' @return No return.
 #' 
 #' @method print gwdrm
-#' @name print
-#' 
 #' @importFrom stats coef fivenum
 #' @export
 print.gwdrm <- function(x, decimal_fmt = "%.3f", ...) {

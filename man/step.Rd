@@ -8,6 +8,7 @@
 \alias{step_view_circle}
 \alias{step_view_value}
 \alias{step_view_diff}
+\alias{plot.modelselcritl}
 \title{Model selection for GWDR model}
 \usage{
 \method{step}{gwdrm}(
@@ -40,6 +41,8 @@ step_view_circle(object, ...)
 step_view_value(object, ...)
 
 step_view_diff(object, ymin = -50, ...)
+
+\method{plot}{modelselcritl}(x, y, ..., view = c("circle", "value", "diff"), ymin, main)
 }
 \arguments{
 \item{object}{Geographically Weighted Model}
@@ -66,13 +69,21 @@ is used in calibrating selected models.}
 
 \item{optim_bw_max_iter}{Maximum of iteration in bandwidth optimization.}
 
-\item{\dots}{Other arguments passing to implementation.}
+\item{\dots}{Additional parameters passing to [plot()].}
 
 \item{bw}{The bandwidth used in selecting models.
 If `NA` or missing, the bandwidth value will be derived
 from the `gwrm` object.}
 
-\item{ymin}{The lower boundary of y-axis.}
+\item{ymin}{The lower bound of y-axis.}
+
+\item{x}{An object of `modelselcritl` class.}
+
+\item{y}{Ignored.}
+
+\item{view}{Name of view.}
+
+\item{main}{The main title.}
 }
 \value{
 A `gwrm` object.
@@ -95,6 +106,8 @@ model selection criterion values
 \item \code{step_view_diff()}: Create scatter plot for
 differences of model selection criterion values
 
+\item \code{plot(modelselcritl)}: Plot model selection criterions.
+
 }}
 \examples{
 data(LondonHP)
@@ -103,6 +116,18 @@ step(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
 data(LondonHP)
 step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
           threshold = 100.0)
+
+data(LondonHP)
+m <- gwr_basic(
+  PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2 +
+      GARAGE1 + TYPEDETCH + TPSEMIDTCH + TYPETRRD + TYPEBNGLW +
+      BLDPWW1 +BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
+  LondonHP, bw = "AIC", adaptive = TRUE
+)
+m <- step(m, threshold = 10, bw = Inf, optim_bw = "AIC")
+plot(m$step)
+plot(m$step, view = "value")
+plot(m$step, view = "diff")
 
 }
 \keyword{internal}

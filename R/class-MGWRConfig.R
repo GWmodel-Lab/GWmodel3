@@ -114,8 +114,6 @@ setMethod(
 #'  is used in calibrating selected models.
 #' @param optim_threshold Threshold of bandwidth optimization.
 #'
-#' @describeIn MGWRConfig-class
-#'
 #' @examples
 #' mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")
 #' 
