@@ -209,7 +209,7 @@ gwr_multiscale <- function(
     gwrmultiscalem
 }
 
-#' @describeIn gwr_multiscale Print description of a `gwrmultiscalem` object
+#' Print description of a `gwrmultiscalem` object
 #'
 #' @param x An `gwrmultiscalem` object returned by [gwr_multiscale()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].

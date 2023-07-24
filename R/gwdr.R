@@ -382,7 +382,7 @@ residuals.gwdrm <- function(object, ...) {
     object$SDF[["residual"]]
 }
 
-#' @describeIn gwdr Print description of a `gwdrm` object
+#' Print description of a `gwdrm` object
 #'
 #' @param x An `gwdrm` object returned by [gwdr()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].

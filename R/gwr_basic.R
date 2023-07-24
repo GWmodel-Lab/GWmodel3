@@ -29,7 +29,8 @@
 #' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #'
 #' # Bandwidth Optimization
-#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+#' m1 <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+#' m1
 #'
 #' @importFrom stats model.extract model.matrix terms
 #' @export
@@ -293,7 +294,7 @@ step.gwrm <- function(
     object
 }
 
-#' @describeIn gwr_basic Print description of a `gwrm` object
+#' Print description of a `gwrm` object
 #'
 #' @param x An `hgwrm` object returned by [gwr_basic()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
@@ -358,9 +359,7 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' @method plot gwrm
 #'
 #' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
-#' plot(m)
+#' plot(m1)
 #'
 #' @export
 plot.gwrm <- function(x, y, ..., columns) {
@@ -385,6 +384,10 @@ plot.gwrm <- function(x, y, ..., columns) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [coef()].
+#' 
+#' @examples
+#' coef(m1)
+#' 
 #' @method coef gwrm
 #' @export
 coef.gwrm <- function(object, ...) {
@@ -398,6 +401,10 @@ coef.gwrm <- function(object, ...) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
+#' 
+#' @examples
+#' fitted(m1)
+#' 
 #' @method fitted gwrm
 #' @export
 fitted.gwrm <- function(object, ...) {
@@ -411,6 +418,10 @@ fitted.gwrm <- function(object, ...) {
 #'
 #' @param object A "gwrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
+#' 
+#' @examples
+#' residuals(m1)
+#' 
 #' @method residuals gwrm
 #' @export
 residuals.gwrm <- function(object, ...) {
@@ -431,9 +442,7 @@ residuals.gwrm <- function(object, ...) {
 #' @method predict gwrm
 #'
 #' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 64, TRUE)
-#' predict(m, LondonHP)
+#' predict(m1, LondonHP)
 #'
 #' @export
 predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {

@@ -11,19 +11,18 @@ reference:
   - title: GW regression models
     contents:
       - starts_with("gwr")
-      - gwdr
+      - starts_with("gwdr")
       - starts_with("step")
-      - matches("gwrm")
-      - matches("gwrmultiscalem")
-      - matches("gwdrm")
       - ends_with("_config")
       - ends_with("Config")
       - matches("coef")
       - matches("fitted")
       - matches("predict")
       - matches("residuals")
+      - matches("plot")
   - title: Utils
     contents:
+      - starts_with("print")
       - print_table_md
   - title: Data
     contents:

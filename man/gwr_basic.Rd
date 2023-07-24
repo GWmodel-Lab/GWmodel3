@@ -2,7 +2,6 @@
 % Please edit documentation in R/gwr_basic.R
 \name{gwr_basic}
 \alias{gwr_basic}
-\alias{print.gwrm}
 \alias{plot.gwrm}
 \alias{coef.gwrm}
 \alias{fitted.gwrm}
@@ -24,8 +23,6 @@ gwr_basic(
   parallel_arg = c(0),
   verbose = FALSE
 )
-
-\method{print}{gwrm}(x, decimal_fmt = "\%.3f", ...)
 
 \method{plot}{gwrm}(x, y, ..., columns)
 
@@ -71,11 +68,9 @@ default to 2, i.e., Euclidean distance.}
 
 \item{x}{A "gwrm" object.}
 
-\item{decimal_fmt}{The format string passing to [base::sprintf()].}
+\item{y}{Ignored.}
 
 \item{\dots}{Additional arguments.}
-
-\item{y}{Ignored.}
 
 \item{columns}{Column names to plot.
 If it is missing or non-character value, all coefficient columns are plottd.}
@@ -83,24 +78,9 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 \item{object}{A "gwrm" object.}
 
 \item{regression_points}{Data of new locations.}
-
-\item{...}{
-  Arguments passed on to \code{\link[=print_table_md]{print_table_md}}
-  \describe{
-    \item{\code{col.sep}}{Column seperator. Default to `""`.}
-    \item{\code{header.sep}}{Header seperator. Default to `"-"`.}
-    \item{\code{row.begin}}{Character at the beginning of each row.
-Default to `col.sep`.}
-    \item{\code{row.end}}{Character at the ending of each row.
-Default to `col.sep`.}
-    \item{\code{table.style}}{Name of pre-defined style.
-Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
-  }}
 }
 \value{
 A `gwrm` object.
-
-No return.
 
 A "gwrm" object.
 }
@@ -109,8 +89,6 @@ Calibrate a basic GWR model
 }
 \section{Functions}{
 \itemize{
-\item \code{print(gwrm)}: Print description of a `gwrm` object
-
 \item \code{plot(gwrm)}: Plot the result of basic GWR model.
 
 \item \code{coef(gwrm)}: Get coefficients of a basic GWR model.
@@ -129,14 +107,17 @@ data(LondonHP)
 gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 
 # Bandwidth Optimization
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+m1 <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+m1
 
-data(LondonHP)
-m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
-plot(m)
+plot(m1)
 
-data(LondonHP)
-m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 64, TRUE)
-predict(m, LondonHP)
+coef(m1)
+
+fitted(m1)
+
+residuals(m1)
+
+predict(m1, LondonHP)
 
 }
