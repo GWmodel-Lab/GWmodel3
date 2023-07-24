@@ -13,7 +13,8 @@ gwdr(
   optim_bw_step = 0.02,
   optim_bw_max_iter = 1e+06,
   parallel_method = c("no", "omp"),
-  parallel_arg = c(0)
+  parallel_arg = c(0),
+  verbose = FALSE
 )
 }
 \arguments{

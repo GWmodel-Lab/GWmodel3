@@ -5,12 +5,14 @@
 \alias{predict.gwrm}
 \title{Predict on new locations.}
 \usage{
-\method{predict}{gwrm}(object, regression_points, ...)
+\method{predict}{gwrm}(object, regression_points, verbose = FALSE, ...)
 }
 \arguments{
 \item{object}{A "gwrm" object.}
 
 \item{regression_points}{Data of new locations.}
+
+\item{verbose}{Whether to print additional message.}
 
 \item{\dots}{Additional arguments.}
 }

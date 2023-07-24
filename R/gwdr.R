@@ -222,12 +222,12 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' 
 #' @examples
 #' data(LondonHP)
-#' model_sel(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
+#' step(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
 #'
-#' @name model_sel
+#' @name step
 #' @importFrom stats formula
 #' @export
-model_sel.gwdrm <- function(
+step.gwdrm <- function(
     object,
     criterion = c("AIC"),
     threshold = 3.0,
@@ -338,7 +338,7 @@ model_sel.gwdrm <- function(
     object$args$select_model_criterion <- criterion
     object$args$select_model_threshold <- threshold
     object$diagnostic <- diagnostic
-    object$model_sel <- model_sel_criterions
+    object$step <- model_sel_criterions
     object$indep_vars <- indep_vars
     object$call$formula <- str2lang(formula_up)
     object

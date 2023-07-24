@@ -13,7 +13,8 @@ gwr_multiscale(
   retry_times = 5,
   max_iterations = 2000,
   parallel_method = c("no", "omp"),
-  parallel_arg = c(0)
+  parallel_arg = c(0),
+  verbose = FALSE
 )
 }
 \arguments{
@@ -31,7 +32,7 @@ When its length is 1, elements will be duplicated for independent variable.}
 \item{hatmatrix}{If TRUE, great circle will be caculated.}
 
 \item{retry_times}{The number times of continually optimizing each 
- parameter-specific bandwidth even though it meets the criterion of convergence,
+parameter-specific bandwidth even though it meets the criterion of convergence,
 for avoiding sub-optimal choice due to illusion of convergence.}
 
 \item{max_iterations}{Maximum number of iterations in the back-fitting procedure.}
@@ -39,6 +40,10 @@ for avoiding sub-optimal choice due to illusion of convergence.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{verbose}{Output information level.
+Can be either `FALSE` or integer values.
+Higher values will leads to more output information.}
 }
 \description{
 Multiscale GWR

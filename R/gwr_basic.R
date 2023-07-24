@@ -172,17 +172,17 @@ gwr_basic <- function(
 #'  is used in calibrating selected models.
 #' @param \dots Other parameters.
 #' @return A `gwrm` object.
-#' @method model_sel gwrm
-#' @name model_sel
+#' @method step gwrm
+#' @name step
 #'
 #' @examples
 #' data(LondonHP)
-#' model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
+#' step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
 #'           threshold = 100.0)
 #'
 #' @importFrom stats formula
 #' @export
-model_sel.gwrm <- function(
+step.gwrm <- function(
     object,
     criterion = c("AIC"),
     threshold = 3.0,
@@ -287,7 +287,7 @@ model_sel.gwrm <- function(
     object$args$select_model_criterion <- criterion
     object$args$select_model_threshold <- threshold
     object$diagnostic <- diagnostic
-    object$model_sel <- model_sel_criterions
+    object$step <- model_sel_criterions
     object$indep_vars <- indep_vars
     object$call$formula <- str2lang(formula_up)
     object

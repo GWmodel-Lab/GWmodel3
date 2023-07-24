@@ -15,7 +15,7 @@ test_that("Basic GWR: Bandwidth selection", {
 
 test_that("Basic GWR: Variable selection", {
   m1 <<- expect_no_error(
-    model_sel(m)
+    step(m)
   )
 })
 
@@ -25,10 +25,10 @@ test_that("Basic GWR: predict", {
 
 test_that("Basic GWR: verbose", {
   expect_no_error(
-    model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 1))
+    step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 1))
   )
   expect_no_error(
-    model_sel(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 2))
+    step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 2))
   )
   expect_no_error(
     predict(m, LondonHP, verbose = 1)
