@@ -387,7 +387,6 @@ residuals.gwdrm <- function(object, ...) {
 #' @param x An `gwdrm` object returned by [gwdr()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' @return No return.
 #' 
 #' @method print gwdrm
 #' @importFrom stats coef fivenum

@@ -81,8 +81,6 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 }
 \value{
 A `gwrm` object.
-
-A "gwrm" object.
 }
 \description{
 Calibrate a basic GWR model

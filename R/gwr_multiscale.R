@@ -18,6 +18,8 @@
 #'  Can be either `FALSE` or integer values.
 #'  Higher values will leads to more output information.
 #' 
+#' @return A `gwrmultiscalem` object.
+#' 
 #' @examples
 #' data(LondonHP)
 #' m <- gwr_multiscale(
@@ -214,7 +216,6 @@ gwr_multiscale <- function(
 #' @param x An `gwrmultiscalem` object returned by [gwr_multiscale()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' @return No return.
 #' @method print gwrmultiscalem
 #'
 #' @importFrom stats coef fivenum

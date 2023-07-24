@@ -299,7 +299,7 @@ step.gwrm <- function(
 #' @param x An `hgwrm` object returned by [gwr_basic()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' @return No return.
+#' 
 #' @method print gwrm
 #' 
 #' @importFrom stats coef fivenum
@@ -437,7 +437,6 @@ residuals.gwrm <- function(object, ...) {
 #' @param regression_points Data of new locations.
 #' @param \dots Additional arguments.
 #' @param verbose Whether to print additional message.
-#' @return A "gwrm" object.
 #' 
 #' @method predict gwrm
 #'

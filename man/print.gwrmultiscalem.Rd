@@ -24,9 +24,6 @@ Default to `col.sep`.}
 Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
   }}
 }
-\value{
-No return.
-}
 \description{
 Print description of a `gwrmultiscalem` object
 }

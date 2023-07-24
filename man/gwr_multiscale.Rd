@@ -68,6 +68,9 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 
 \item{object}{A "gwrmultiscalem" object.}
 }
+\value{
+A `gwrmultiscalem` object.
+}
 \description{
 Multiscale GWR
 }
