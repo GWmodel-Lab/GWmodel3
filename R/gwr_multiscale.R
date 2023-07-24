@@ -315,6 +315,10 @@ plot.gwrmultiscalem <- function(x, y, ..., columns) {
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [coef()].
+#'
+#' @examples 
+#' coef(m)
+#'
 #' @method coef gwrmultiscalem
 #' @export
 coef.gwrmultiscalem <- function(object, ...) {
@@ -328,6 +332,10 @@ coef.gwrmultiscalem <- function(object, ...) {
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [fitted()].
+#'
+#' @examples
+#' fitted(m)
+#'
 #' @method fitted gwrmultiscalem
 #' @export
 fitted.gwrmultiscalem <- function(object, ...) {
@@ -341,6 +349,10 @@ fitted.gwrmultiscalem <- function(object, ...) {
 #'
 #' @param object A "gwrmultiscalem" object.
 #' @param \dots Additional arguments passing to [residuals()].
+#'
+#' @examples 
+#' residuals(m)
+#'
 #' @method residuals gwrmultiscalem
 #' @export
 residuals.gwrmultiscalem <- function(object, ...) {

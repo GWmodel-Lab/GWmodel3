@@ -113,4 +113,10 @@ m
 
 plot(m)
 
+coef(m)
+
+fitted(m)
+
+residuals(m)
+
 }
