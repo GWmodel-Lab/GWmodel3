@@ -32,16 +32,16 @@ gwdr(
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
 \item{config}{Dimension-specified weighting configuration.
-It must be a list of `GWDRConfig` objects.
-Its length can be 1 or equal to the number of columns of coordinates in `data`.
+It must be a list of \code{GWDRConfig} objects.
+Its length can be 1 or equal to the number of columns of coordinates in \code{data}.
 When its length is 1, elements will be duplicated for each column in coordinates.}
 
 \item{optim_bw}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
 is used in calibrating selected models.}
 
 \item{optim_bw_threshold}{Threshold of bandwidth optimization.}
@@ -58,7 +58,7 @@ is used in calibrating selected models.}
 
 \item{y}{Ignored.}
 
-\item{\dots}{Additional arguments passing to [residuals()].}
+\item{\dots}{Additional arguments passing to \code{\link[=residuals]{residuals()}}.}
 
 \item{columns}{Column names to plot.
 If it is missing or non-character value, all coefficient columns are plottd.}
@@ -66,7 +66,7 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 \item{object}{A "gwdrm" object.}
 }
 \value{
-A `gwdrm` object.
+A \code{gwdrm} object.
 }
 \description{
 Geographically Weighted Density Regression (GWDR)

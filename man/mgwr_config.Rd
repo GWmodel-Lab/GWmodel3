@@ -35,8 +35,8 @@ and note intercept is not included;
 if the element is TRUE, the corresponding predictor will be centered.}
 
 \item{optim_bw}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
 is used in calibrating selected models.}
 
 \item{optim_threshold}{Threshold of bandwidth optimization.}

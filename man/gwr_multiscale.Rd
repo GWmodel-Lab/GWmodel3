@@ -32,10 +32,10 @@ gwr_multiscale(
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
 \item{config}{Parameter-specified weighting configuration.
-It must be a list of `MGWRConfig` objects.
+It must be a list of \code{MGWRConfig} objects.
 Its length can be 1 or equal to the number of independent variables.
 When its length is 1, elements will be duplicated for independent variable.}
 
@@ -43,7 +43,7 @@ When its length is 1, elements will be duplicated for independent variable.}
 
 \item{hatmatrix}{If TRUE, great circle will be caculated.}
 
-\item{retry_times}{The number times of continually optimizing each 
+\item{retry_times}{The number times of continually optimizing each
 parameter-specific bandwidth even though it meets the criterion of convergence,
 for avoiding sub-optimal choice due to illusion of convergence.}
 
@@ -54,14 +54,14 @@ for avoiding sub-optimal choice due to illusion of convergence.}
 \item{parallel_arg}{Parallel method argument.}
 
 \item{verbose}{Output information level.
-Can be either `FALSE` or integer values.
+Can be either \code{FALSE} or integer values.
 Higher values will leads to more output information.}
 
 \item{x}{A "gwrmultiscalem" object.}
 
 \item{y}{Ignored.}
 
-\item{\dots}{Additional arguments passing to [residuals()].}
+\item{\dots}{Additional arguments passing to \code{\link[=residuals]{residuals()}}.}
 
 \item{columns}{Column names to plot.
 If it is missing or non-character value, all coefficient columns are plottd.}
@@ -69,7 +69,7 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 \item{object}{A "gwrmultiscalem" object.}
 }
 \value{
-A `gwrmultiscalem` object.
+A \code{gwrmultiscalem} object.
 }
 \description{
 Multiscale GWR

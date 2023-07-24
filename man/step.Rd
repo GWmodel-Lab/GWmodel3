@@ -53,14 +53,14 @@ Currently there is only AIC available.}
 \item{threshold}{The threshold of criterion changes. Default to 3.0.}
 
 \item{config}{Dimension-specified weighting configuration.
-If it is omitted, bandwidth settings will be inherited from `object`.
-Otherwise, it must be a list of `GWDRConfig` objects.
-Its length can be 1 or equal to the number of columns of coordinates in `data`.
+If it is omitted, bandwidth settings will be inherited from \code{object}.
+Otherwise, it must be a list of \code{GWDRConfig} objects.
+Its length can be 1 or equal to the number of columns of coordinates in \code{data}.
 When its length is 1, elements will be duplicated for each column in coordinates.}
 
 \item{optim_bw}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
 is used in calibrating selected models.}
 
 \item{optim_bw_threshold}{Threshold of bandwidth optimization.}
@@ -69,15 +69,15 @@ is used in calibrating selected models.}
 
 \item{optim_bw_max_iter}{Maximum of iteration in bandwidth optimization.}
 
-\item{\dots}{Additional parameters passing to [plot()].}
+\item{\dots}{Additional parameters passing to \code{\link[=plot]{plot()}}.}
 
 \item{bw}{The bandwidth used in selecting models.
-If `NA` or missing, the bandwidth value will be derived
-from the `gwrm` object.}
+If \code{NA} or missing, the bandwidth value will be derived
+from the \code{gwrm} object.}
 
 \item{ymin}{The lower bound of y-axis.}
 
-\item{x}{An object of `modelselcritl` class.}
+\item{x}{An object of \code{modelselcritl} class.}
 
 \item{y}{Ignored.}
 
@@ -86,7 +86,7 @@ from the `gwrm` object.}
 \item{main}{The main title.}
 }
 \value{
-A `gwrm` object.
+A \code{gwrm} object.
 }
 \description{
 Model selection for GWDR model

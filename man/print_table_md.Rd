@@ -17,18 +17,18 @@ print_table_md(
 \arguments{
 \item{x}{A character matrix.}
 
-\item{col.sep}{Column seperator. Default to `""`.}
+\item{col.sep}{Column seperator. Default to \code{""}.}
 
-\item{header.sep}{Header seperator. Default to `"-"`.}
+\item{header.sep}{Header seperator. Default to \code{"-"}.}
 
 \item{row.begin}{Character at the beginning of each row.
-Default to `col.sep`.}
+Default to \code{col.sep}.}
 
 \item{row.end}{Character at the ending of each row.
-Default to `col.sep`.}
+Default to \code{col.sep}.}
 
 \item{table.style}{Name of pre-defined style.
-Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
+Possible values are \code{"plain"}, \code{"md"} or \code{"latex"}. Default to \code{"plain"}.}
 
 \item{\dots}{Additional style control arguments.}
 }
@@ -36,13 +36,13 @@ Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
 Print a character matrix as a table.
 }
 \details{
-When `table.style` is specified, `col.sep`, `header.sep`, `row.begin`
-and `row.end` would not take effects.
+When \code{table.style} is specified, \code{col.sep}, \code{header.sep}, \code{row.begin}
+and \code{row.end} would not take effects.
 Because this function will automatically set their values.
-For each possible value of `table.style`, its corresponding style settings
+For each possible value of \code{table.style}, its corresponding style settings
 are shown in the following table.
 \tabular{llll}{
-                  \tab \strong{\code{plain}} \tab \strong{\code{md}} \tab \strong{\code{latex}} \cr
+\tab \strong{\code{plain}} \tab \strong{\code{md}} \tab \strong{\code{latex}} \cr
 \code{col.sep}    \tab \code{""}             \tab \code{"|"}         \tab \code{"&"}            \cr
 \code{header.sep} \tab \code{""}             \tab \code{"-"}         \tab \code{""}             \cr
 \code{row.begin}  \tab \code{""}             \tab \code{"|"}         \tab \code{""}             \cr

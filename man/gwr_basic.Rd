@@ -37,15 +37,17 @@ gwr_basic(
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
 \item{bw}{Either a value to set the size of bandwidth,
 or one of the following characters to set the criterion for
 bandwidth auto-optimization process.
-- `AIC`
-- `CV`
-Note that if `NA` or other non-numeric value is setted,
-this parameter will be reset to `Inf`.}
+\itemize{
+\item \code{AIC}
+\item \code{CV}
+Note that if \code{NA} or other non-numeric value is setted,
+this parameter will be reset to \code{Inf}.
+}}
 
 \item{adaptive}{Whether the bandwidth value is adaptive or not.}
 
@@ -80,7 +82,7 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 \item{regression_points}{Data of new locations.}
 }
 \value{
-A `gwrm` object.
+A \code{gwrm} object.
 }
 \description{
 Calibrate a basic GWR model

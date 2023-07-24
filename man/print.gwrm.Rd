@@ -2,28 +2,28 @@
 % Please edit documentation in R/gwr_basic.R
 \name{print.gwrm}
 \alias{print.gwrm}
-\title{Print description of a `gwrm` object}
+\title{Print description of a \code{gwrm} object}
 \usage{
 \method{print}{gwrm}(x, decimal_fmt = "\%.3f", ...)
 }
 \arguments{
-\item{x}{An `hgwrm` object returned by [gwr_basic()].}
+\item{x}{An \code{hgwrm} object returned by \code{\link[=gwr_basic]{gwr_basic()}}.}
 
-\item{decimal_fmt}{The format string passing to [base::sprintf()].}
+\item{decimal_fmt}{The format string passing to \code{\link[base:sprintf]{base::sprintf()}}.}
 
 \item{...}{
   Arguments passed on to \code{\link[=print_table_md]{print_table_md}}
   \describe{
-    \item{\code{col.sep}}{Column seperator. Default to `""`.}
-    \item{\code{header.sep}}{Header seperator. Default to `"-"`.}
+    \item{\code{col.sep}}{Column seperator. Default to \code{""}.}
+    \item{\code{header.sep}}{Header seperator. Default to \code{"-"}.}
     \item{\code{row.begin}}{Character at the beginning of each row.
-Default to `col.sep`.}
+Default to \code{col.sep}.}
     \item{\code{row.end}}{Character at the ending of each row.
-Default to `col.sep`.}
+Default to \code{col.sep}.}
     \item{\code{table.style}}{Name of pre-defined style.
-Possible values are `"plain"`, `"md"` or `"latex"`. Default to `"plain"`.}
+Possible values are \code{"plain"}, \code{"md"} or \code{"latex"}. Default to \code{"plain"}.}
   }}
 }
 \description{
-Print description of a `gwrm` object
+Print description of a \code{gwrm} object
 }
