@@ -22,13 +22,13 @@
 #' 
 #' @examples
 #' data(LondonHP)
-#' m <- gwr_multiscale(
+#' gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
 #'  data = LondonHP
 #' )
 #'
 #' # Specify more configurations for all variables
-#' m <- gwr_multiscale(
+#' gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
 #'  data = LondonHP,
 #'  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
@@ -44,6 +44,7 @@
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare")
 #'  ))
+#' m
 #'
 #' @importFrom methods validObject
 #' @export
@@ -289,12 +290,6 @@ print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
 #' @method plot gwrmultiscalem
 #'
 #' @examples
-#' data(LondonHP)
-#' m <- gwr_multiscale(
-#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#'  data = LondonHP,
-#'  config = rep(mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC"), 4)
-#' )
 #' plot(m)
 #'
 #' @export
