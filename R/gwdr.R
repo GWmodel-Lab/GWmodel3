@@ -15,6 +15,8 @@
 #' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
+#' @param verbose Whether to print additional information.
+#'  A higher value leads to more information.
 #' 
 #' @return A `gwdrm` object.
 #'

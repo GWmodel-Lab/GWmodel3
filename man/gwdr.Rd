@@ -54,6 +54,9 @@ is used in calibrating selected models.}
 
 \item{parallel_arg}{Parallel method argument.}
 
+\item{verbose}{Whether to print additional information.
+A higher value leads to more information.}
+
 \item{x}{A "gwdrm" object.}
 
 \item{y}{Ignored.}
