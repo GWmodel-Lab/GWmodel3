@@ -87,24 +87,26 @@ Geographically Weighted Density Regression (GWDR)
 }}
 \examples{
 data(LondonHP)
-m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
-m1
+gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
 
 ### Specific Bandwidth
-m2 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
     gwdr_config(0.2, TRUE, "gaussian"),
     gwdr_config(0.2, TRUE, "gaussian")
 ))
-m2
 
 ### Optim Bandwidth
-m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+m <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
     gwdr_config(0.618, TRUE, "gaussian")
 ), optim_bw = "AIC")
-m3
+m
 
-data(LondonHP)
-m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 plot(m)
+
+coef(m)
+
+fitted(m)
+
+residuals(m)
 
 }

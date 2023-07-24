@@ -110,8 +110,7 @@ differences of model selection criterion values
 
 }}
 \examples{
-data(LondonHP)
-step(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
+step(m)
 
 data(LondonHP)
 step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),

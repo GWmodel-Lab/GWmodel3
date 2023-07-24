@@ -22,21 +22,19 @@
 #'
 #' @examples
 #' data(LondonHP)
-#' m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
-#' m1
+#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
 #'
 #' ### Specific Bandwidth
-#' m2 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.2, TRUE, "gaussian"),
 #'     gwdr_config(0.2, TRUE, "gaussian")
 #' ))
-#' m2
 #'
 #' ### Optim Bandwidth
-#' m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' m <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.618, TRUE, "gaussian")
 #' ), optim_bw = "AIC")
-#' m3
+#' m
 #'
 #' @importFrom stats model.extract model.matrix terms
 #' @importFrom methods validObject
@@ -178,8 +176,6 @@ gwdr <- function(
 #' @method plot gwdrm
 #'
 #' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #' plot(m)
 #' 
 #' @export
@@ -222,8 +218,7 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @param \dots Other parameters. Unused.
 #' 
 #' @examples
-#' data(LondonHP)
-#' step(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
+#' step(m)
 #'
 #' @name step
 #' @importFrom stats formula
@@ -349,6 +344,10 @@ step.gwdrm <- function(
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [coef()].
+#' 
+#' @examples
+#' coef(m)
+#' 
 #' @method coef gwdrm
 #' @export
 coef.gwdrm <- function(object, ...) {
@@ -362,6 +361,10 @@ coef.gwdrm <- function(object, ...) {
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
+#'
+#' @examples
+#' fitted(m)
+#'
 #' @method fitted gwdrm
 #' @export
 fitted.gwdrm <- function(object, ...) {
@@ -375,6 +378,10 @@ fitted.gwdrm <- function(object, ...) {
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
+#'
+#' @examples 
+#' residuals(m)
+#'
 #' @method residuals gwdrm
 #' @export
 residuals.gwdrm <- function(object, ...) {
