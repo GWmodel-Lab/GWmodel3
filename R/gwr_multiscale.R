@@ -217,9 +217,10 @@ gwr_multiscale <- function(
 #' @param x An `gwrmultiscalem` object returned by [gwr_multiscale()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' @method print gwrmultiscalem
 #'
+#' @method print gwrmultiscalem
 #' @importFrom stats coef fivenum
+#' @rdname print
 #' @export
 print.gwrmultiscalem <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwrmultiscalem")) {

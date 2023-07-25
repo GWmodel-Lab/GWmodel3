@@ -22,16 +22,16 @@
 #'
 #' @examples
 #' data(LondonHP)
-#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
+#' gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP)
 #'
 #' ### Specific Bandwidth
-#' gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.2, TRUE, "gaussian"),
 #'     gwdr_config(0.2, TRUE, "gaussian")
 #' ))
 #'
 #' ### Optim Bandwidth
-#' m <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' m <- gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
 #'     gwdr_config(0.618, TRUE, "gaussian")
 #' ), optim_bw = "AIC")
 #' m
@@ -218,7 +218,7 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @param \dots Other parameters. Unused.
 #' 
 #' @examples
-#' step(m)
+#' step(m, threshold = 100.0)
 #'
 #' @importFrom stats formula
 #' @export
@@ -398,6 +398,7 @@ residuals.gwdrm <- function(object, ...) {
 #' 
 #' @method print gwdrm
 #' @importFrom stats coef fivenum
+#' @rdname print
 #' @export
 print.gwdrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwdrm")) {

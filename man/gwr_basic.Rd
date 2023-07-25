@@ -122,10 +122,10 @@ Calibrate a basic GWR model
 data(LondonHP)
 
 # Basic usage
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
 
 # Bandwidth Optimization
-m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
 m
 
 step(m, threshold = 100.0, bw = Inf, optim_bw = "AIC")

@@ -13,8 +13,8 @@ reference:
       - starts_with("gwr")
       - starts_with("gwdr")
       - starts_with("step")
+      - ends_with("-class")
       - ends_with("_config")
-      - ends_with("Config")
       - matches("coef")
       - matches("fitted")
       - matches("predict")
@@ -24,6 +24,7 @@ reference:
     contents:
       - starts_with("print")
       - print_table_md
+      - starts_with("rep")
   - title: Data
     contents:
       - DubVoter

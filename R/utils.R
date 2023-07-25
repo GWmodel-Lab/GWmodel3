@@ -27,6 +27,7 @@
 #'
 #' In this function, characters are right padded by spaces.
 #' 
+#' @rdname print
 #' @export 
 print_table_md <- function(x, col.sep = "", header.sep = "",
                            row.begin = "", row.end = "",
@@ -91,6 +92,7 @@ print_table_md <- function(x, col.sep = "", header.sep = "",
 #' @param m A numeric matrix.
 #' @param fmt Format string. Passing to [base::sprintf()].
 #'
+#' @rdname print
 #' @noRd 
 matrix2char <- function(m, fmt = "%.3f") {
     mc <- NULL

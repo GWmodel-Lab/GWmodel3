@@ -26,10 +26,10 @@
 #' data(LondonHP)
 #'
 #' # Basic usage
-#' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+#' gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
 #'
 #' # Bandwidth Optimization
-#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+#' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
 #' m
 #'
 #' @importFrom stats model.extract model.matrix terms
@@ -298,8 +298,8 @@ step.gwrm <- function(
 #' @inheritDotParams print_table_md
 #' 
 #' @method print gwrm
-#' 
 #' @importFrom stats coef fivenum
+#' @rdname print
 #' @export
 print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwrm")) {
