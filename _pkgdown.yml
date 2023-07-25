@@ -11,21 +11,20 @@ reference:
   - title: GW regression models
     contents:
       - starts_with("gwr")
-      - gwdr
-      - starts_with("model_sel")
-      - matches("gwrm")
-      - matches("gwrmultiscalem")
-      - matches("gwdrm")
+      - starts_with("gwdr")
+      - starts_with("step")
+      - ends_with("-class")
       - ends_with("_config")
-      - ends_with("Config")
       - matches("coef")
       - matches("fitted")
       - matches("predict")
       - matches("residuals")
-  - title: Print and plot
+      - matches("plot")
+  - title: Utils
     contents:
-      - starts_with("plot")
       - starts_with("print")
+      - print_table_md
+      - starts_with("rep")
   - title: Data
     contents:
       - DubVoter

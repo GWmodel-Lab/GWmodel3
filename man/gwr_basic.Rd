@@ -2,6 +2,12 @@
 % Please edit documentation in R/gwr_basic.R
 \name{gwr_basic}
 \alias{gwr_basic}
+\alias{step.gwrm}
+\alias{plot.gwrm}
+\alias{coef.gwrm}
+\alias{fitted.gwrm}
+\alias{residuals.gwrm}
+\alias{predict.gwrm}
 \title{Calibrate a basic GWR model}
 \usage{
 gwr_basic(
@@ -18,19 +24,34 @@ gwr_basic(
   parallel_arg = c(0),
   verbose = FALSE
 )
+
+\method{step}{gwrm}(
+  object,
+  ...,
+  criterion = c("AIC"),
+  threshold = 3,
+  bw = NA,
+  optim_bw = c("no", "AIC", "CV")
+)
+
+\method{plot}{gwrm}(x, y, ..., columns)
+
+\method{coef}{gwrm}(object, ...)
+
+\method{fitted}{gwrm}(object, ...)
+
+\method{residuals}{gwrm}(object, ...)
+
+\method{predict}{gwrm}(object, regression_points, verbose = FALSE, ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
-\item{bw}{Either a value to set the size of bandwidth,
-or one of the following characters to set the criterion for
-bandwidth auto-optimization process.
-- `AIC`
-- `CV`
-Note that if `NA` or other non-numeric value is setted,
-this parameter will be reset to `Inf`.}
+\item{bw}{The bandwidth used in selecting models.
+If \code{NA} or missing, the bandwidth value will be derived
+from the \code{gwrm} object.}
 
 \item{adaptive}{Whether the bandwidth value is adaptive or not.}
 
@@ -49,21 +70,74 @@ default to 2, i.e., Euclidean distance.}
 
 \item{parallel_arg}{Parallel method argument.}
 
-\item{verbose}{Whether to print additional information.}
+\item{verbose}{Whether to print additional message.}
+
+\item{object}{A "gwrm" object.}
+
+\item{\dots}{Additional arguments.}
+
+\item{criterion}{The model-selection method.
+Currently there is only AIC available.}
+
+\item{threshold}{The threshold of criterion changes. Default to 3.0.}
+
+\item{optim_bw}{Whether optimize bandwidth after selecting models.
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
+is used in calibrating selected models.}
+
+\item{x}{A "gwrm" object.}
+
+\item{y}{Ignored.}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{regression_points}{Data of new locations.}
 }
 \value{
-A `gwrm` object.
+A \code{gwrm} object.
+
+A \code{gwrm} object.
 }
 \description{
 Calibrate a basic GWR model
 }
+\section{Functions}{
+\itemize{
+\item \code{step(gwrm)}: Model selection for basic GWR model
+
+\item \code{plot(gwrm)}: Plot the result of basic GWR model.
+
+\item \code{coef(gwrm)}: Get coefficients of a basic GWR model.
+
+\item \code{fitted(gwrm)}: Get fitted values of a basic GWR model.
+
+\item \code{residuals(gwrm)}: Get residuals of a basic GWR model.
+
+\item \code{predict(gwrm)}: Predict on new locations.
+
+}}
 \examples{
 data(LondonHP)
 
 # Basic usage
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
+gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
 
 # Bandwidth Optimization
-gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
+m
+
+step(m, threshold = 100.0, bw = Inf, optim_bw = "AIC")
+
+plot(m)
+
+coef(m)
+
+fitted(m)
+
+residuals(m)
+
+predict(m, LondonHP)
 
 }

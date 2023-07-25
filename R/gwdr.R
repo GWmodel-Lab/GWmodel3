@@ -15,26 +15,26 @@
 #' @param optim_bw_max_iter Maximum of iteration in bandwidth optimization.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
+#' @param verbose Whether to print additional information.
+#'  A higher value leads to more information.
 #' 
 #' @return A `gwdrm` object.
 #'
 #' @examples
 #' data(LondonHP)
-#' m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
-#' m1
+#' gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP)
 #'
 #' ### Specific Bandwidth
-#' m2 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
 #'     gwdr_config(0.2, TRUE, "gaussian"),
 #'     gwdr_config(0.2, TRUE, "gaussian")
 #' ))
-#' m2
 #'
 #' ### Optim Bandwidth
-#' m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+#' m <- gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
 #'     gwdr_config(0.618, TRUE, "gaussian")
 #' ), optim_bw = "AIC")
-#' m3
+#' m
 #'
 #' @importFrom stats model.extract model.matrix terms
 #' @importFrom methods validObject
@@ -166,7 +166,7 @@ gwdr <- function(
     class(gwdrm) <- "gwdrm"
     gwdrm
 }
-#' Plot the result of GWDR model.
+#' @describeIn gwdr Plot the result of GWDR model.
 #'
 #' @param x A "gwdrm" object.
 #' @param y Ignored.
@@ -174,11 +174,8 @@ gwdr <- function(
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
 #' @method plot gwdrm
-#' @name plot
 #'
 #' @examples
-#' data(LondonHP)
-#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #' plot(m)
 #' 
 #' @export
@@ -200,7 +197,7 @@ plot.gwdrm <- function(x, y, ..., columns) {
     plot(sdf, ...)
 }
 
-#' Model selection for GWDR model
+#' @describeIn gwdr Model selection for GWDR model
 #'
 #' @param object A "`gwdrm`" class object.
 #' @param criterion The model-selection method.
@@ -221,22 +218,20 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @param \dots Other parameters. Unused.
 #' 
 #' @examples
-#' data(LondonHP)
-#' model_sel(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
+#' step(m, threshold = 100.0)
 #'
-#' @name model_sel
 #' @importFrom stats formula
 #' @export
-model_sel.gwdrm <- function(
+step.gwdrm <- function(
     object,
+    ...,
     criterion = c("AIC"),
     threshold = 3.0,
     config = list(gwdr_config()),
     optim_bw = c("no", "AIC", "CV"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
-    optim_bw_max_iter = 1e6,
-    ...
+    optim_bw_max_iter = 1e6
 ) {
     if (!inherits(object, "gwdrm")) {
         stop("It's not a gwdrm object.")
@@ -338,20 +333,21 @@ model_sel.gwdrm <- function(
     object$args$select_model_criterion <- criterion
     object$args$select_model_threshold <- threshold
     object$diagnostic <- diagnostic
-    object$model_sel <- model_sel_criterions
+    object$step <- model_sel_criterions
     object$indep_vars <- indep_vars
     object$call$formula <- str2lang(formula_up)
     object
 }
 
-#' Get coefficients of a GWDR model.
+#' @describeIn gwdr Get coefficients of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [coef()].
 #' 
+#' @examples
+#' coef(m)
+#' 
 #' @method coef gwdrm
-#' @name coef
-#'
 #' @export
 coef.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -360,13 +356,15 @@ coef.gwdrm <- function(object, ...) {
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' Get fitted values of a GWDR model.
+#' @describeIn gwdr Get fitted values of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
-#' 
+#'
+#' @examples
+#' fitted(m)
+#'
 #' @method fitted gwdrm
-#' @name fitted
 #' @export
 fitted.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -375,13 +373,15 @@ fitted.gwdrm <- function(object, ...) {
     object$SDF[["yhat"]]
 }
 
-#' Get residuals of a GWDR model.
+#' @describeIn gwdr Get residuals of a GWDR model.
 #'
 #' @param object A "gwdrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
-#' 
+#'
+#' @examples 
+#' residuals(m)
+#'
 #' @method residuals gwdrm
-#' @name residuals
 #' @export
 residuals.gwdrm <- function(object, ...) {
     if (!inherits(object, "gwdrm")) {
@@ -395,12 +395,10 @@ residuals.gwdrm <- function(object, ...) {
 #' @param x An `gwdrm` object returned by [gwdr()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
-#' @return No return.
 #' 
 #' @method print gwdrm
-#' @name print
-#' 
 #' @importFrom stats coef fivenum
+#' @rdname print
 #' @export
 print.gwdrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gwdrm")) {

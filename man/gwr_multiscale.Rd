@@ -2,6 +2,10 @@
 % Please edit documentation in R/gwr_multiscale.R
 \name{gwr_multiscale}
 \alias{gwr_multiscale}
+\alias{plot.gwrmultiscalem}
+\alias{coef.gwrmultiscalem}
+\alias{fitted.gwrmultiscalem}
+\alias{residuals.gwrmultiscalem}
 \title{Multiscale GWR}
 \usage{
 gwr_multiscale(
@@ -13,16 +17,25 @@ gwr_multiscale(
   retry_times = 5,
   max_iterations = 2000,
   parallel_method = c("no", "omp"),
-  parallel_arg = c(0)
+  parallel_arg = c(0),
+  verbose = FALSE
 )
+
+\method{plot}{gwrmultiscalem}(x, y, ..., columns)
+
+\method{coef}{gwrmultiscalem}(object, ...)
+
+\method{fitted}{gwrmultiscalem}(object, ...)
+
+\method{residuals}{gwrmultiscalem}(object, ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
 \item{config}{Parameter-specified weighting configuration.
-It must be a list of `MGWRConfig` objects.
+It must be a list of \code{MGWRConfig} objects.
 Its length can be 1 or equal to the number of independent variables.
 When its length is 1, elements will be duplicated for independent variable.}
 
@@ -30,8 +43,8 @@ When its length is 1, elements will be duplicated for independent variable.}
 
 \item{hatmatrix}{If TRUE, great circle will be caculated.}
 
-\item{retry_times}{The number times of continually optimizing each 
- parameter-specific bandwidth even though it meets the criterion of convergence,
+\item{retry_times}{The number times of continually optimizing each
+parameter-specific bandwidth even though it meets the criterion of convergence,
 for avoiding sub-optimal choice due to illusion of convergence.}
 
 \item{max_iterations}{Maximum number of iterations in the back-fitting procedure.}
@@ -39,19 +52,48 @@ for avoiding sub-optimal choice due to illusion of convergence.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{verbose}{Output information level.
+Can be either \code{FALSE} or integer values.
+Higher values will leads to more output information.}
+
+\item{x}{A "gwrmultiscalem" object.}
+
+\item{y}{Ignored.}
+
+\item{\dots}{Additional arguments passing to \code{\link[=residuals]{residuals()}}.}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{object}{A "gwrmultiscalem" object.}
+}
+\value{
+A \code{gwrmultiscalem} object.
 }
 \description{
 Multiscale GWR
 }
+\section{Functions}{
+\itemize{
+\item \code{plot(gwrmultiscalem)}: Plot the result of basic GWR model.
+
+\item \code{coef(gwrmultiscalem)}: Get coefficients of a multiscale GWR model.
+
+\item \code{fitted(gwrmultiscalem)}: Get fitted values of a basic GWR model.
+
+\item \code{residuals(gwrmultiscalem)}: Get residuals of a basic GWR model.
+
+}}
 \examples{
 data(LondonHP)
-m <- gwr_multiscale(
+gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP
 )
 
 # Specify more configurations for all variables
-m <- gwr_multiscale(
+gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP,
  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
@@ -67,5 +109,14 @@ m <- gwr_multiscale(
      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
      mgwr_config(adaptive = TRUE, kernel = "bisquare")
  ))
+m
+
+plot(m)
+
+coef(m)
+
+fitted(m)
+
+residuals(m)
 
 }

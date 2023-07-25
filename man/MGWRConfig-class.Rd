@@ -4,56 +4,10 @@
 \name{MGWRConfig-class}
 \alias{MGWRConfig-class}
 \alias{MGWRConfig}
-\alias{mgwr_config}
 \title{An S4 class to set Multiscale GWR configurations}
-\usage{
-mgwr_config(
-  bw = NA_real_,
-  adaptive = FALSE,
-  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
-  longlat = FALSE,
-  p = 2,
-  theta = 0,
-  centered = TRUE,
-  optim_bw = c("AIC", "CV", "no"),
-  optim_threshold = 1e-05
-)
-}
-\arguments{
-\item{bw}{Bandwidth value.}
-
-\item{adaptive}{Whether the bandwidth value is adaptive or not.}
-
-\item{kernel}{Kernel function used.}
-
-\item{longlat}{Whether the coordinates.}
-
-\item{p}{Power of the Minkowski distance,
-default to 2, i.e., Euclidean distance.}
-
-\item{theta}{Angle in radian to roate the coordinate system, default to 0.}
-
-\item{centered}{A logical vector of length equalling to the number of predictors,
-and note intercept is not included;
-if the element is TRUE, the corresponding predictor will be centered.}
-
-\item{optim_bw}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
-is used in calibrating selected models.}
-
-\item{optim_threshold}{Threshold of bandwidth optimization.}
-}
 \description{
 An S4 class to set Multiscale GWR configurations
-
-Create an instance of MGWRConfig
 }
-\section{Functions}{
-\itemize{
-\item \code{mgwr_config()}: 
-
-}}
 \section{Slots}{
 
 \describe{
@@ -75,14 +29,10 @@ and note intercept is not included;
 if the element is TRUE, the corresponding predictor will be centered.}
 
 \item{\code{optim_bw}}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
 is used in calibrating selected models.}
 
 \item{\code{optim_threshold}}{Threshold of bandwidth optimization.}
 }}
 
-\examples{
-mgwr_config(36, TRUE, "bisquare", optim_bw = "AIC")
-
-}

@@ -2,6 +2,11 @@
 % Please edit documentation in R/gwdr.R
 \name{gwdr}
 \alias{gwdr}
+\alias{plot.gwdrm}
+\alias{step.gwdrm}
+\alias{coef.gwdrm}
+\alias{fitted.gwdrm}
+\alias{residuals.gwdrm}
 \title{Geographically Weighted Density Regression (GWDR)}
 \usage{
 gwdr(
@@ -13,22 +18,44 @@ gwdr(
   optim_bw_step = 0.02,
   optim_bw_max_iter = 1e+06,
   parallel_method = c("no", "omp"),
-  parallel_arg = c(0)
+  parallel_arg = c(0),
+  verbose = FALSE
 )
+
+\method{plot}{gwdrm}(x, y, ..., columns)
+
+\method{step}{gwdrm}(
+  object,
+  ...,
+  criterion = c("AIC"),
+  threshold = 3,
+  config = list(gwdr_config()),
+  optim_bw = c("no", "AIC", "CV"),
+  optim_bw_threshold = 1e-06,
+  optim_bw_step = 0.02,
+  optim_bw_max_iter = 1e+06
+)
+
+\method{coef}{gwdrm}(object, ...)
+
+\method{fitted}{gwdrm}(object, ...)
+
+\method{residuals}{gwdrm}(object, ...)
 }
 \arguments{
 \item{formula}{Regresison model.}
 
-\item{data}{A `sf` objects.}
+\item{data}{A \code{sf} objects.}
 
 \item{config}{Dimension-specified weighting configuration.
-It must be a list of `GWDRConfig` objects.
-Its length can be 1 or equal to the number of columns of coordinates in `data`.
+If it is omitted, bandwidth settings will be inherited from \code{object}.
+Otherwise, it must be a list of \code{GWDRConfig} objects.
+Its length can be 1 or equal to the number of columns of coordinates in \code{data}.
 When its length is 1, elements will be duplicated for each column in coordinates.}
 
 \item{optim_bw}{Whether optimize bandwidth after selecting models.
-Avaliable values are `no`, `AIC`, and `CV`.
-If `no` is specified, the bandwidth specified by argument `bw`
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
 is used in calibrating selected models.}
 
 \item{optim_bw_threshold}{Threshold of bandwidth optimization.}
@@ -40,29 +67,69 @@ is used in calibrating selected models.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{verbose}{Whether to print additional information.
+A higher value leads to more information.}
+
+\item{x}{A "gwdrm" object.}
+
+\item{y}{Ignored.}
+
+\item{\dots}{Additional arguments passing to \code{\link[=residuals]{residuals()}}.}
+
+\item{columns}{Column names to plot.
+If it is missing or non-character value, all coefficient columns are plottd.}
+
+\item{object}{A "gwdrm" object.}
+
+\item{criterion}{The model-selection method.
+Currently there is only AIC available.}
+
+\item{threshold}{The threshold of criterion changes. Default to 3.0.}
 }
 \value{
-A `gwdrm` object.
+A \code{gwdrm} object.
 }
 \description{
 Geographically Weighted Density Regression (GWDR)
 }
+\section{Functions}{
+\itemize{
+\item \code{plot(gwdrm)}: Plot the result of GWDR model.
+
+\item \code{step(gwdrm)}: Model selection for GWDR model
+
+\item \code{coef(gwdrm)}: Get coefficients of a GWDR model.
+
+\item \code{fitted(gwdrm)}: Get fitted values of a GWDR model.
+
+\item \code{residuals(gwdrm)}: Get residuals of a GWDR model.
+
+}}
 \examples{
 data(LondonHP)
-m1 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP)
-m1
+gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP)
 
 ### Specific Bandwidth
-m2 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
     gwdr_config(0.2, TRUE, "gaussian"),
     gwdr_config(0.2, TRUE, "gaussian")
 ))
-m2
 
 ### Optim Bandwidth
-m3 <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
+m <- gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
     gwdr_config(0.618, TRUE, "gaussian")
 ), optim_bw = "AIC")
-m3
+m
+
+plot(m)
+
+step(m, threshold = 100.0)
+
+coef(m)
+
+fitted(m)
+
+residuals(m)
 
 }

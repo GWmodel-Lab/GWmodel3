@@ -3,17 +3,22 @@
 #' @param \dots Other arguments passing to implementation.
 #' 
 #' @export
-model_sel <- function(object, ...) {
-    UseMethod("model_sel")
+step <- function(object, ...) {
+    UseMethod("step")
 }
 
-#' @describeIn model_sel Create circle view for
+#' @rdname step
+#' @export
+#' @keywords internal
+step.default <- function(object, ...) stats::step(object, ...)
+
+#' @describeIn step Create circle view for
 #'  model combinations in model selection.
 #' @importFrom grDevices rainbow
 #' @importFrom graphics legend lines points text
 #' @importFrom stats formula terms
 #' @export
-model_sel_view_circle <- function(object, ...) {
+step_view_circle <- function(object, ...) {
     if (!inherits(object, "modelselcritl")) {
         stop("This function can only be applied on 'modelselcritl' objects.")
     }
@@ -82,11 +87,11 @@ model_sel_view_circle <- function(object, ...) {
     )
 }
 
-#' @describeIn model_sel Create scatter plot for
+#' @describeIn step Create scatter plot for
 #'  model selection criterion values
 #' @importFrom graphics abline
 #' @export 
-model_sel_view_value <- function(object, ...) {
+step_view_value <- function(object, ...) {
     if (!inherits(object, "modelselcritl")) {
         stop("This function can only be applied on 'modelselcritl' objects.")
     }
@@ -108,12 +113,12 @@ model_sel_view_value <- function(object, ...) {
     }
 }
 
-#' @describeIn model_sel Create scatter plot for
+#' @describeIn step Create scatter plot for
 #'  differences of model selection criterion values
 #' @param ymin The lower boundary of y-axis.
 #' @importFrom graphics abline text
 #' @export 
-model_sel_view_diff <- function(object, ymin = -50, ...) {
+step_view_diff <- function(object, ymin = -50, ...) {
     if (!inherits(object, "modelselcritl")) {
         stop("This function can only be applied on 'modelselcritl' objects.")
     }
@@ -146,7 +151,7 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
     }
 }
 
-#' Plot model selection criterions (the circle view).
+#' @describeIn step Plot model selection criterions.
 #' 
 #' @param x An object of `modelselcritl` class.
 #' @param y Ignored.
@@ -155,7 +160,6 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
 #' @param main The main title.
 #' @param \dots Additional parameters passing to [plot()].
 #' @method plot modelselcritl
-#' @name plot
 #' 
 #' @examples
 #' data(LondonHP)
@@ -165,10 +169,10 @@ model_sel_view_diff <- function(object, ymin = -50, ...) {
 #'       BLDPWW1 +BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
 #'   LondonHP, bw = "AIC", adaptive = TRUE
 #' )
-#' m <- model_sel(m, threshold = 10, bw = Inf, optim_bw = "AIC")
-#' plot(m$model_sel)
-#' plot(m$model_sel, view = "value")
-#' plot(m$model_sel, view = "diff")
+#' m <- step(m, threshold = 10, bw = Inf, optim_bw = "AIC")
+#' plot(m$step)
+#' plot(m$step, view = "value")
+#' plot(m$step, view = "diff")
 #' 
 #' @importFrom graphics par
 #' @export 
@@ -187,11 +191,11 @@ plot.modelselcritl <- function(
     if (view == "circle") {
         if (missing(main)) {
             op <- par(mai = c(0, 0, 0, 0), omi = c(0, 0, 0, 0))
-            model_sel_view_circle(x, ...)
+            step_view_circle(x, ...)
             par(op)
         } else {
             op <- par(mai = c(0, 0, 1, 0), omi = c(0, 0, 0, 0))
-            model_sel_view_circle(x, main = main, ...)
+            step_view_circle(x, main = main, ...)
             par(op)
         }
     } else if (view == "value") {
@@ -199,7 +203,7 @@ plot.modelselcritl <- function(
         if (!missing(main)) {
             view_args$main <- main
         }
-        do.call(model_sel_view_value, view_args)
+        do.call(step_view_value, view_args)
     } else {
         view_args <- list(x, ...)
         if (!missing(ymin)) {
@@ -208,6 +212,6 @@ plot.modelselcritl <- function(
         if (!missing(main)) {
             view_args$main <- main
         }
-        do.call(model_sel_view_diff, view_args)
+        do.call(step_view_diff, view_args)
     }
 }

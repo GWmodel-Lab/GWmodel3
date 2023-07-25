@@ -4,32 +4,10 @@
 \name{GWDRConfig-class}
 \alias{GWDRConfig-class}
 \alias{GWDRConfig}
-\alias{gwdr_config}
 \title{An S4 class to set GWDR configurations}
-\usage{
-gwdr_config(
-  bw = 0.618,
-  adaptive = TRUE,
-  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
-)
-}
-\arguments{
-\item{bw}{Bandwidth value.}
-
-\item{adaptive}{Whether the bandwidth value is adaptive or not.}
-
-\item{kernel}{Kernel function used.}
-}
 \description{
 An S4 class to set GWDR configurations
-
-Create an instance of GWDRConfig
 }
-\section{Functions}{
-\itemize{
-\item \code{gwdr_config()}: 
-
-}}
 \section{Slots}{
 
 \describe{
@@ -40,7 +18,3 @@ Create an instance of GWDRConfig
 \item{\code{kernel}}{Kernel function used.}
 }}
 
-\examples{
-gwdr_config(36, TRUE, "bisquare")
-
-}

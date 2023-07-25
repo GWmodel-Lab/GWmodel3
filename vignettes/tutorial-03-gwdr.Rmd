@@ -173,7 +173,7 @@ If the initial values are not appropriate, the function will use the default ini
 
 # Model Selection
 
-Apply the `model_sel()` function to `gwdrm` objects to select the best model.
+Apply the `step()` function to `gwdrm` objects to select the best model.
 Since version 4.1 of R, the pipe operator `|>` is avaliable.
 We can use the following code to enable model selection.
 
@@ -182,7 +182,7 @@ m5 <- gwdr(
     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
     data = LondonHP,
     optim_bw = "AIC"
-) |> model_sel(criterion = "AIC", threshold = 3, optim_bw = "AIC")
+) |> step(criterion = "AIC", threshold = 3, optim_bw = "AIC")
 ```
 
 Where argument `threshold` is the threshold showing minimum changes of the criterion.
@@ -195,22 +195,22 @@ m5 <- gwdr(
     PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2,
     LondonHP, optim_bw = "AIC"
 )
-m5 <- model_sel(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
+m5 <- step(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
 m5
 ```
 
-We can set `config` in `model_sel()` to overwrite the original configurations.
+We can set `config` in `step()` to overwrite the original configurations.
 If it is not set, configurations in the `gwdrm` object will be applied.
 Further, if `optim_bw` is sepcified, bandwidth will be optimized afther the model selection.
 
-The returned object after model selection contains a `$model_sel` variable,
+The returned object after model selection contains a `$step` variable,
 in which there are all model combinations and corresponding criterions.
 There are three functions to visualize it.
 
 ```{r model-selection-view}
-model_sel_view_circle(m5$model_sel, main = "Circle View")
-model_sel_view_value(m5$model_sel, main = "AIC Value")
-model_sel_view_diff(m5$model_sel, main = "Diff of AIC")
+step_view_circle(m5$step, main = "Circle View")
+step_view_value(m5$step, main = "AIC Value")
+step_view_diff(m5$step, main = "Diff of AIC")
 ```
 
 They are:
@@ -224,9 +224,9 @@ This figure makes it easier to judge which model meets the requirement.
 We can also use the universal `plot()` function which will make some modification to layouts.
 
 ```{r model-selection-plot}
-plot(m5$model_sel)                  # 等价于 model_sel_view_circle
-plot(m5$model_sel, view = "value")  # 等价于 model_sel_view_value
-plot(m5$model_sel, view = "diff")   # 等价于 model_sel_view_diff
+plot(m5$step)                  # 等价于 step_view_circle
+plot(m5$step, view = "value")  # 等价于 step_view_value
+plot(m5$step, view = "diff")   # 等价于 step_view_diff
 ```
 
 If further modification is required, use other arguments supported by `plot()`.

@@ -93,7 +93,7 @@ or read it from console output.
 
 # Model Selection
 
-In this package, there is a generic function called `model_sel()`.
+In this package, there is a generic function called `step()`.
 We we apply it to `gwrm` objects, it can select variables, just like the `stepAIC()` in **MASS**.
 
 ```{r}
@@ -103,7 +103,7 @@ m2 <- gwr_basic(
         BLDPOSTW + BLD60S + BLD70S + BLD80S + CENTHEAT,
     LondonHP, "AIC", TRUE
 )
-m2 <- model_sel(m2, criterion = "AIC", threshold = 10, bw = Inf, optim_bw = "AIC")
+m2 <- step(m2, criterion = "AIC", threshold = 10, bw = Inf, optim_bw = "AIC")
 m2
 ```
 
@@ -121,22 +121,22 @@ There are two arguments: `bw` and `optim_bw`. This is the way to use them:
 It seems to be complicated, but it is easy to use.
 On most occassions, set paramters like the example above.
 
-The returned object after model selection contains a `$model_sel` variable,
+The returned object after model selection contains a `$step` variable,
 in which there are all model combinations and corresponding criterions.
 There are three functions to visualize it.
 
 ```{r model-sel-vis}
-model_sel_view_circle(m2$model_sel, main = "Circle View")
-model_sel_view_value(m2$model_sel, main = "AIC Value")
-model_sel_view_diff(m2$model_sel, main = "Diff of AIC")
+step_view_circle(m2$step, main = "Circle View")
+step_view_value(m2$step, main = "AIC Value")
+step_view_diff(m2$step, main = "Diff of AIC")
 ```
 
 We can also use the universal `plot()` function which will make some modification to layouts.
 
 ```{r model-sel-plot}
-plot(m2$model_sel, main = "Circle View")                 # model_sel_view_circle
-plot(m2$model_sel, main = "AIC Value", view = "value")   # model_sel_view_value
-plot(m2$model_sel, main = "Diff of AIC", view = "diff")  # model_sel_view_diff
+plot(m2$step, main = "Circle View")                 # step_view_circle
+plot(m2$step, main = "AIC Value", view = "value")   # step_view_value
+plot(m2$step, main = "Diff of AIC", view = "diff")  # step_view_diff
 ```
 
 If further modification is required, use other arguments supported by `plot()`.
