@@ -27,7 +27,6 @@
 #'
 #' In this function, characters are right padded by spaces.
 #' 
-#' @rdname print
 #' @export 
 print_table_md <- function(x, col.sep = "", header.sep = "",
                            row.begin = "", row.end = "",

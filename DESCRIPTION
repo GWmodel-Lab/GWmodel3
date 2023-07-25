@@ -3,9 +3,18 @@ Type: Package
 Title: Modelling Spatial Data with Geographically Weighted Models
 Version: 3.0-0
 Date: 2022-11-19
-Author: Binbin Lu[aut], Paul Harris[aut], Martin Charlton[aut],
-    Chris Brunsdon[aut], Tomoki Nakaya[aut], Daisuke Murakami[aut],
-    Isabella Gollini[ctb], Yigong Hu[ctb], Fiona H Evans[ctb]
+Authors@R: c(
+    person("Binbin", "Lu", role = c("aut", "cre"), email = "binbinlu@whu.edu.cn", comment = c(ORCID = "0000-0001-7847-7560")),
+    person("Yigong", "Hu", role = c("aut"), email = "yigong.hu@bristol.ac.uk", comment = c(ORCID = "0000-0002-9553-6275")),
+    person("Haotian", "Zhang", role = c("ctb")),
+    person("Guangyu", "Ou", role = c("ctb")),
+    person("Paul", "Harris", role = c("ctb")),
+    person("Martin", "Charlton", role = c("ctb")),
+    person("Chris", "Brunsdon", role = c("ctb")),
+    person("Tomoki", "Nakaya", role = c("ctb")),
+    person("Daisuke", "Murakami", role = c("ctb")),
+    person("Isabella", "Gollini", role = ("ctb")),
+    person("Fiona H", "Evans", role = ("ctb")))
 Maintainer: Binbin Lu <binbinlu@whu.edu.cn>
 Description: Techniques from a particular branch of spatial statistics, termed
     geographically-weighted (GW) models. GW models suit situations when
