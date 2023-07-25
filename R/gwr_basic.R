@@ -29,8 +29,8 @@
 #' gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 #'
 #' # Bandwidth Optimization
-#' m1 <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
-#' m1
+#' m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+#' m
 #'
 #' @importFrom stats model.extract model.matrix terms
 #' @export
@@ -158,7 +158,7 @@ gwr_basic <- function(
     gwrm
 }
 
-#' Model selection for basic GWR model
+#' @describeIn gwr_basic Model selection for basic GWR model
 #'
 #' @param object A "`gwrm`" class object.
 #' @param criterion The model-selection method.
@@ -174,22 +174,19 @@ gwr_basic <- function(
 #' @param \dots Other parameters.
 #' @return A `gwrm` object.
 #' @method step gwrm
-#' @name step
 #'
 #' @examples
-#' data(LondonHP)
-#' step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, 'AIC', TRUE),
-#'           threshold = 100.0)
+#' step(m, threshold = 100.0, bw = Inf, optim_bw = "AIC")
 #'
 #' @importFrom stats formula
 #' @export
 step.gwrm <- function(
     object,
+    ...,
     criterion = c("AIC"),
     threshold = 3.0,
     bw = NA,
-    optim_bw = c("no", "AIC", "CV"),
-    ...
+    optim_bw = c("no", "AIC", "CV")
 ) {
     if (!inherits(object, "gwrm")) {
         stop("It's not a gwrm object.")
@@ -359,7 +356,7 @@ print.gwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' @method plot gwrm
 #'
 #' @examples
-#' plot(m1)
+#' plot(m)
 #'
 #' @export
 plot.gwrm <- function(x, y, ..., columns) {
@@ -386,7 +383,7 @@ plot.gwrm <- function(x, y, ..., columns) {
 #' @param \dots Additional arguments passing to [coef()].
 #' 
 #' @examples
-#' coef(m1)
+#' coef(m)
 #' 
 #' @method coef gwrm
 #' @export
@@ -403,7 +400,7 @@ coef.gwrm <- function(object, ...) {
 #' @param \dots Additional arguments passing to [fitted()].
 #' 
 #' @examples
-#' fitted(m1)
+#' fitted(m)
 #' 
 #' @method fitted gwrm
 #' @export
@@ -420,7 +417,7 @@ fitted.gwrm <- function(object, ...) {
 #' @param \dots Additional arguments passing to [residuals()].
 #' 
 #' @examples
-#' residuals(m1)
+#' residuals(m)
 #' 
 #' @method residuals gwrm
 #' @export
@@ -441,7 +438,7 @@ residuals.gwrm <- function(object, ...) {
 #' @method predict gwrm
 #'
 #' @examples
-#' predict(m1, LondonHP)
+#' predict(m, LondonHP)
 #'
 #' @export
 predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {

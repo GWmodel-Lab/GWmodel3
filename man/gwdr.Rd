@@ -3,6 +3,7 @@
 \name{gwdr}
 \alias{gwdr}
 \alias{plot.gwdrm}
+\alias{step.gwdrm}
 \alias{coef.gwdrm}
 \alias{fitted.gwdrm}
 \alias{residuals.gwdrm}
@@ -23,6 +24,18 @@ gwdr(
 
 \method{plot}{gwdrm}(x, y, ..., columns)
 
+\method{step}{gwdrm}(
+  object,
+  ...,
+  criterion = c("AIC"),
+  threshold = 3,
+  config = list(gwdr_config()),
+  optim_bw = c("no", "AIC", "CV"),
+  optim_bw_threshold = 1e-06,
+  optim_bw_step = 0.02,
+  optim_bw_max_iter = 1e+06
+)
+
 \method{coef}{gwdrm}(object, ...)
 
 \method{fitted}{gwdrm}(object, ...)
@@ -35,7 +48,8 @@ gwdr(
 \item{data}{A \code{sf} objects.}
 
 \item{config}{Dimension-specified weighting configuration.
-It must be a list of \code{GWDRConfig} objects.
+If it is omitted, bandwidth settings will be inherited from \code{object}.
+Otherwise, it must be a list of \code{GWDRConfig} objects.
 Its length can be 1 or equal to the number of columns of coordinates in \code{data}.
 When its length is 1, elements will be duplicated for each column in coordinates.}
 
@@ -67,6 +81,11 @@ A higher value leads to more information.}
 If it is missing or non-character value, all coefficient columns are plottd.}
 
 \item{object}{A "gwdrm" object.}
+
+\item{criterion}{The model-selection method.
+Currently there is only AIC available.}
+
+\item{threshold}{The threshold of criterion changes. Default to 3.0.}
 }
 \value{
 A \code{gwdrm} object.
@@ -77,6 +96,8 @@ Geographically Weighted Density Regression (GWDR)
 \section{Functions}{
 \itemize{
 \item \code{plot(gwdrm)}: Plot the result of GWDR model.
+
+\item \code{step(gwdrm)}: Model selection for GWDR model
 
 \item \code{coef(gwdrm)}: Get coefficients of a GWDR model.
 
@@ -102,6 +123,8 @@ m <- gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, list(
 m
 
 plot(m)
+
+step(m)
 
 coef(m)
 

@@ -197,7 +197,7 @@ plot.gwdrm <- function(x, y, ..., columns) {
     plot(sdf, ...)
 }
 
-#' Model selection for GWDR model
+#' @describeIn gwdr Model selection for GWDR model
 #'
 #' @param object A "`gwdrm`" class object.
 #' @param criterion The model-selection method.
@@ -220,19 +220,18 @@ plot.gwdrm <- function(x, y, ..., columns) {
 #' @examples
 #' step(m)
 #'
-#' @name step
 #' @importFrom stats formula
 #' @export
 step.gwdrm <- function(
     object,
+    ...,
     criterion = c("AIC"),
     threshold = 3.0,
     config = list(gwdr_config()),
     optim_bw = c("no", "AIC", "CV"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
-    optim_bw_max_iter = 1e6,
-    ...
+    optim_bw_max_iter = 1e6
 ) {
     if (!inherits(object, "gwdrm")) {
         stop("It's not a gwdrm object.")

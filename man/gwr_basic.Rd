@@ -2,6 +2,7 @@
 % Please edit documentation in R/gwr_basic.R
 \name{gwr_basic}
 \alias{gwr_basic}
+\alias{step.gwrm}
 \alias{plot.gwrm}
 \alias{coef.gwrm}
 \alias{fitted.gwrm}
@@ -24,6 +25,15 @@ gwr_basic(
   verbose = FALSE
 )
 
+\method{step}{gwrm}(
+  object,
+  ...,
+  criterion = c("AIC"),
+  threshold = 3,
+  bw = NA,
+  optim_bw = c("no", "AIC", "CV")
+)
+
 \method{plot}{gwrm}(x, y, ..., columns)
 
 \method{coef}{gwrm}(object, ...)
@@ -39,15 +49,9 @@ gwr_basic(
 
 \item{data}{A \code{sf} objects.}
 
-\item{bw}{Either a value to set the size of bandwidth,
-or one of the following characters to set the criterion for
-bandwidth auto-optimization process.
-\itemize{
-\item \code{AIC}
-\item \code{CV}
-Note that if \code{NA} or other non-numeric value is setted,
-this parameter will be reset to \code{Inf}.
-}}
+\item{bw}{The bandwidth used in selecting models.
+If \code{NA} or missing, the bandwidth value will be derived
+from the \code{gwrm} object.}
 
 \item{adaptive}{Whether the bandwidth value is adaptive or not.}
 
@@ -68,20 +72,32 @@ default to 2, i.e., Euclidean distance.}
 
 \item{verbose}{Whether to print additional message.}
 
+\item{object}{A "gwrm" object.}
+
+\item{\dots}{Additional arguments.}
+
+\item{criterion}{The model-selection method.
+Currently there is only AIC available.}
+
+\item{threshold}{The threshold of criterion changes. Default to 3.0.}
+
+\item{optim_bw}{Whether optimize bandwidth after selecting models.
+Avaliable values are \code{no}, \code{AIC}, and \code{CV}.
+If \code{no} is specified, the bandwidth specified by argument \code{bw}
+is used in calibrating selected models.}
+
 \item{x}{A "gwrm" object.}
 
 \item{y}{Ignored.}
 
-\item{\dots}{Additional arguments.}
-
 \item{columns}{Column names to plot.
 If it is missing or non-character value, all coefficient columns are plottd.}
-
-\item{object}{A "gwrm" object.}
 
 \item{regression_points}{Data of new locations.}
 }
 \value{
+A \code{gwrm} object.
+
 A \code{gwrm} object.
 }
 \description{
@@ -89,6 +105,8 @@ Calibrate a basic GWR model
 }
 \section{Functions}{
 \itemize{
+\item \code{step(gwrm)}: Model selection for basic GWR model
+
 \item \code{plot(gwrm)}: Plot the result of basic GWR model.
 
 \item \code{coef(gwrm)}: Get coefficients of a basic GWR model.
@@ -107,17 +125,19 @@ data(LondonHP)
 gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
 
 # Bandwidth Optimization
-m1 <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
-m1
+m <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 'AIC', TRUE)
+m
 
-plot(m1)
+step(m, threshold = 100.0, bw = Inf, optim_bw = "AIC")
 
-coef(m1)
+plot(m)
 
-fitted(m1)
+coef(m)
 
-residuals(m1)
+fitted(m)
 
-predict(m1, LondonHP)
+residuals(m)
+
+predict(m, LondonHP)
 
 }
