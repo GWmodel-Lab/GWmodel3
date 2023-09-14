@@ -38,7 +38,7 @@ Please find vignettes for more information.
 
 ## Related work
 
-From version 3.0, **GWmodel** is based on a pure C++ library --- [libgwmodel](https://github.com/GWmodel-Lab/libgwmdoel).
+From version 3.0, **GWmodel** is based on a pure C++ library --- [libgwmodel](https://github.com/GWmodel-Lab/libgwmodel).
 This library implements all models, and **GWmodel** just calls this package by translating inputs and outputs.
 Besides, **GWmodel** also provides some handy functions for the convenience of R users.
 
