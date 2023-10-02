@@ -67,5 +67,16 @@ OBJECTS_GWMODEL = \
 	gwdr.o \
 	RcppExports.o
 
+
+### [Begin] Configure gwmodelcuda
+CUDA_ENABLED = $(ENABLE_CUDA)
+ifeq ($(CUDA_ENABLED),1)
+ifdef CUDA_PATH
+PKG_CXXFLAGS += -DENABLE_CUDA_SHARED
+PKG_LIBS += -L"." -lgwmodelcuda
+endif
+endif
+### [End]
+
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
 
