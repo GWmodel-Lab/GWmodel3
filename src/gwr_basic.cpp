@@ -272,8 +272,11 @@ List gwr_basic_fit_cuda(
             distanceType = gwm::Distance::DistanceType::MinkwoskiDistance;
         }
     }
+    if (verbose > 0) Rcout << "** CUDA create task ...";
     auto algorithm = GpuTask_Create(mcoords.n_rows, mx.n_cols, distanceType);
+    if (verbose > 0) Rcout << " done\n";
     // Set data
+    if (verbose > 0) Rcout << "** CUDA set data ...";
     for (size_t j = 0; j < mx.n_cols; j++)
     {
         for (size_t i = 0; i < mx.n_rows; i++)
@@ -291,8 +294,8 @@ List gwr_basic_fit_cuda(
         {
             algorithm->setCoords(i, j, mcoords(i, j));
         }
-        
     }
+    if (verbose > 0) Rcout << " done\n";
     // Set distance and weights
     switch (distanceType)
     {
@@ -319,14 +322,17 @@ List gwr_basic_fit_cuda(
         algorithm->enableVariablesOptimization(select_model_threshold);
     }
 
+    if (verbose > 0) Rcout << "** CUDA fit ...";
     if (!algorithm->fit(intercept)) {
         throw std::runtime_error("CUDA did not work successfully.");
     }
+    if (verbose > 0) Rcout << " done\n";
 
     // Get data
     size_t sRows = algorithm->sRows();
     mat betas(size(mx)), betasSE(size(mx)), sHat(sRows, mx.n_rows);
     vec sTrace(2);
+    if (verbose > 0) Rcout << "** CUDA get beta ...";
     for (size_t j = 0; j < mx.n_cols; j++)
     {
         for (size_t i = 0; i < mx.n_rows; i++)
@@ -335,6 +341,7 @@ List gwr_basic_fit_cuda(
             betasSE(i, j) = algorithm->betasSE(i, j);
         }
     }
+    if (verbose > 0) Rcout << " done\n";
     sTrace(0) = algorithm->shat1();
     sTrace(1) = algorithm->shat2();
     for (size_t j = 0; j < mx.n_rows; j++)
@@ -365,11 +372,14 @@ List gwr_basic_fit_cuda(
 
     if (optim_bw)
     {
+        if (verbose > 0) Rcout << "** CUDA get bw ...";
         result_list["bandwidth"] = wrap(algorithm->optimizedBandwidth());
+        if (verbose > 0) Rcout << " done\n";
     }
 
     if (select_model)
     {
+        if (verbose > 0) Rcout << "** CUDA get select model ...";
         vector<size_t> sel_vars(algorithm->selectedVarSize());
         for (size_t i = 0; i < sel_vars.size(); i++)
         {
@@ -391,13 +401,16 @@ List gwr_basic_fit_cuda(
         result_list["model_sel_criterions"] = mywrap(criterions);
         mat sx = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
         result_list["fitted"] = mywrap(GWRBasic::Fitted(sx, betas));
+        if (verbose > 0) Rcout << " done\n";
     }
     else
     {
         result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
     }
 
+    if (verbose > 0) Rcout << "** CUDA delete ...";
     GpuTask_Del(algorithm);
+    if (verbose > 0) Rcout << " done\n";
 
     return result_list;
     
