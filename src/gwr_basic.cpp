@@ -24,6 +24,16 @@ List gwr_basic_fit_cuda(
     const CharacterVector& variable_names, int verbose
 );
 
+NumericMatrix gwr_basic_predict_cuda(
+    const NumericMatrix& pcoords,
+    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+    double bw, bool adaptive, size_t kernel, 
+    bool longlat, double p, double theta,
+    bool intercept,
+    int gpuID, int groupSize,
+    int verbose
+);
+
 // [[Rcpp::export]]
 List gwr_basic_fit(
     const NumericMatrix& x,
@@ -56,6 +66,7 @@ int verbose
     // If parallel type is CUDA, redirect to the specific function
     if (ParallelType(size_t(parallel_type)) == ParallelType::CUDA)
     {
+        if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
         return gwr_basic_fit_cuda(
             x, y, coords,
             bw, adaptive, kernel,
@@ -115,6 +126,13 @@ int verbose
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
 #endif
+#ifdef ENABLE_CUDA
+    case ParallelType::CUDA:
+        if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
+        algorithm.setPrallelType(ParallelType::CUDA);
+        algorithm.setGPUId(vpar_args[0]);
+        algorithm.setGroupSize(vpar_args[1]);
+#endif // ENABLE_CUDA
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
@@ -179,11 +197,30 @@ NumericMatrix gwr_basic_predict(
     int verbose
 ) {
     // Convert data types
+    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
+
+#ifdef ENABLE_CUDA_SHARED
+    // [For Windows]
+    // If parallel type is CUDA, redirect to the specific function
+    if (ParallelType(size_t(parallel_type)) == ParallelType::CUDA)
+    {
+        if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
+        return gwr_basic_predict_cuda(
+            pcoords,
+            x, y, coords,
+            bw, adaptive, kernel,
+            longlat, p, theta,
+            intercept,
+            vpar_args[0], vpar_args[1],
+            verbose
+        );
+    }
+#endif // ENABLE_CUDA_SHARED
+
     mat mpcoords = myas(pcoords);
     mat mx = myas(x);
     vec my = myas(y);
     mat mcoords = myas(coords);
-    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
 
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
@@ -218,6 +255,13 @@ NumericMatrix gwr_basic_predict(
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
 #endif
+#ifdef ENABLE_CUDA
+    case ParallelType::CUDA:
+        if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
+        algorithm.setPrallelType(ParallelType::CUDA);
+        algorithm.setGPUId(vpar_args[0]);
+        algorithm.setGroupSize(vpar_args[1]);
+#endif // ENABLE_CUDA
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
@@ -273,7 +317,7 @@ List gwr_basic_fit_cuda(
         }
     }
     if (verbose > 0) Rcout << "** CUDA create task ...";
-    auto algorithm = GpuTask_Create(mcoords.n_rows, mx.n_cols, distanceType);
+    auto algorithm = GWRBasicGpuTaskFit_Create(mcoords.n_rows, mx.n_cols, distanceType);
     if (verbose > 0) Rcout << " done\n";
     // Set data
     if (verbose > 0) Rcout << "** CUDA set data ...";
@@ -409,10 +453,121 @@ List gwr_basic_fit_cuda(
     }
 
     if (verbose > 0) Rcout << "** CUDA delete ...";
-    GpuTask_Del(algorithm);
+    GWRBasicGpuTask_Del(algorithm);
     if (verbose > 0) Rcout << " done\n";
 
     return result_list;
+    
+#else
+    throw std::logic_error("Not supported.");
+#endif // ENABLE_CUDA_SHARED
+}
+
+NumericMatrix gwr_basic_predict_cuda(
+    const NumericMatrix& pcoords,
+    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+    double bw, bool adaptive, size_t kernel, 
+    bool longlat, double p, double theta,
+    bool intercept,
+    int gpuID, int groupSize,
+    int verbose
+) {
+#ifdef ENABLE_CUDA_SHARED
+    mat mpcoords = myas(pcoords);
+    mat mx = myas(x);
+    vec my = myas(y);
+    mat mcoords = myas(coords);
+    
+    int distanceType = 0;
+    if (longlat)
+    {
+        distanceType = gwm::Distance::DistanceType::CRSDistance;
+    }
+    else
+    {
+        if (p == 2.0 && theta == 0.0)
+        {
+            distanceType = gwm::Distance::DistanceType::CRSDistance;
+        }
+        else
+        {
+            distanceType = gwm::Distance::DistanceType::MinkwoskiDistance;
+        }
+    }
+    if (verbose > 0) Rcout << "** CUDA create task ...";
+    auto algorithm = GWRBasicGpuTaskPredict_Create(mcoords.n_rows, mx.n_cols, distanceType, mpcoords.n_rows);
+    if (verbose > 0) Rcout << " done\n";
+
+    // Set data
+    if (verbose > 0) Rcout << "** CUDA set data ...";
+    for (size_t j = 0; j < mx.n_cols; j++)
+    {
+        for (size_t i = 0; i < mx.n_rows; i++)
+        {
+            algorithm->setX(i, j, mx(i, j));
+        }
+    }
+    for (size_t i = 0; i < my.n_rows; i++)
+    {
+        algorithm->setY(i, my(i));
+    }
+    for (size_t j = 0; j < mcoords.n_cols; j++)
+    {
+        for (size_t i = 0; i < mcoords.n_rows; i++)
+        {
+            algorithm->setCoords(i, j, mcoords(i, j));
+        }
+    }
+    for (size_t j = 0; j < mpcoords.n_cols; j++)
+    {
+        for (size_t i = 0; i < mpcoords.n_rows; i++)
+        {
+            algorithm->setPredictLocations(i, j, mpcoords(i, j));
+        }
+    }
+    
+    if (verbose > 0) Rcout << " done\n";
+    // Set distance and weights
+    switch (distanceType)
+    {
+    case gwm::Distance::DistanceType::CRSDistance:
+        algorithm->setCRSDistanceGergraphic(longlat);
+        break;
+    case gwm::Distance::DistanceType::MinkwoskiDistance:
+        algorithm->setMinkwoskiDistancePoly(p);
+        algorithm->setMinkwoskiDistanceTheta(theta);
+        break;
+    default:
+        algorithm->setCRSDistanceGergraphic(false);
+        break;
+    }
+    algorithm->setBandwidthSize(bw);
+    algorithm->setBandwidthAdaptive(adaptive);
+    algorithm->setBandwidthKernel(kernel);
+
+    if (verbose > 0) Rcout << "** CUDA predict ...";
+    if (!algorithm->predict(intercept)) {
+        throw std::runtime_error("CUDA did not work successfully.");
+    }
+    if (verbose > 0) Rcout << " done\n";
+
+    // Get data
+    mat betas(size(mx));
+    if (verbose > 0) Rcout << "** CUDA get beta ...";
+    for (size_t j = 0; j < mx.n_cols; j++)
+    {
+        for (size_t i = 0; i < mx.n_rows; i++)
+        {
+            betas(i, j) = algorithm->betas(i, j);
+        }
+    }
+    if (verbose > 0) Rcout << " done\n";
+
+    if (verbose > 0) Rcout << "** CUDA delete ...";
+    GWRBasicGpuTask_Del(algorithm);
+    if (verbose > 0) Rcout << " done\n";
+
+    return mywrap(betas);
     
 #else
     throw std::logic_error("Not supported.");

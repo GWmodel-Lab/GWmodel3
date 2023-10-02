@@ -53,12 +53,14 @@ test_that("Basic GWR: verbose", {
 
 test_that("Basic GWR: CUDA", {
   if (Sys.getenv("CUDA_PATH") == "") {
-    expect_error(
-      gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64))
-    )
+    expect_error({
+      m_cuda <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64))
+      predict(m_cuda, LondonHP)
+    })
   } else {
-    expect_no_error(
-      expect_error(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64)))
-    )
+    expect_no_error({
+      m_cuda <- gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64))
+      predict(m_cuda, LondonHP)
+    })
   }
 })
