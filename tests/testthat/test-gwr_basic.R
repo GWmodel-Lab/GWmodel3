@@ -50,3 +50,15 @@ test_that("Basic GWR: verbose", {
     predict(m, LondonHP, verbose = 1)
   )
 })
+
+test_that("Basic GWR: CUDA", {
+  if (Sys.getenv("CUDA_PATH") == "") {
+    expect_error(
+      gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64))
+    )
+  } else {
+    expect_no_error(
+      expect_error(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, parallel_method = "cuda", parallel_arg = c(0, 64)))
+    )
+  }
+})
