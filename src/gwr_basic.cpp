@@ -126,12 +126,14 @@ int verbose
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
 #endif
-#ifdef ENABLE_CUDA
     case ParallelType::CUDA:
+#ifdef ENABLE_CUDA
         if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
         algorithm.setPrallelType(ParallelType::CUDA);
         algorithm.setGPUId(vpar_args[0]);
         algorithm.setGroupSize(vpar_args[1]);
+#else  // ENABLE_CUDA
+        throw std::logic_error("Method not implemented.");
 #endif // ENABLE_CUDA
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
@@ -255,12 +257,14 @@ NumericMatrix gwr_basic_predict(
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
 #endif
-#ifdef ENABLE_CUDA
     case ParallelType::CUDA:
+#ifdef ENABLE_CUDA
         if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
         algorithm.setPrallelType(ParallelType::CUDA);
         algorithm.setGPUId(vpar_args[0]);
         algorithm.setGroupSize(vpar_args[1]);
+#else  // ENABLE_CUDA
+        throw std::logic_error("Method not implemented.");
 #endif // ENABLE_CUDA
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
