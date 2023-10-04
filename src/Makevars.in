@@ -69,3 +69,35 @@ OBJECTS_GWMODEL = \
 	RcppExports.o
 
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
+
+### [Begin] Configure CUDA
+ENABLE_CUDA = @ENABLE_CUDA@
+ifeq ($(ENABLE_CUDA),1)
+NVCC=@NVCC@
+CUDA_DEFS = @CUDA_DEFS@
+CUDA_LIBS = @CUDA_LIBS@
+CUDA_INCL = @CUDA_INCL@
+CU_ARGS = -std=c++14 -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant -DNDEBUG
+CU_INCL = ${R_INCL}
+CU_ARCH = \
+-gencode arch=compute_35,code=sm_35 \
+-gencode arch=compute_37,code=sm_37 \
+-gencode arch=compute_52,code=sm_52 \
+-gencode arch=compute_60,code=sm_60 \
+-gencode arch=compute_61,code=sm_61 \
+-gencode arch=compute_70,code=sm_70 \
+-gencode arch=compute_75,code=sm_75
+
+PKG_CXXFLAGS += $(CUDA_DEFS) -I$(CUDA_INCL)
+PKG_LIBS += $(CUDA_LIBS)
+GWmodel_CUDA_LIB_PATH = @GWmodel_CUDA_LIB_PATH@
+OBJECTS_CUDA = \
+	libgwmodel/src/libgwmodel/src/gwmodelpp/spatialweight/cuda/BandwidthWeightKernel.o
+	libgwmodel/src/libgwmodel/src/gwmodelpp/spatialweight/cuda/CRSDistanceKernel.o
+
+OBJECTS += OBJECTS_CUDA
+
+$(OBJECTS_CUDA): %.o: %.cu
+	$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) -I${CUDA_INCL} $< -c
+endif
+### [End]
