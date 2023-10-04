@@ -1,0 +1,138 @@
+---
+title: "High-performance Computing in GW modelling"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{other-01-hpc}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Geographically weighted modelling methods can be time consuming, especially when the data size is quite large.
+To solve this problem, this package provided some techniques to speed up the computing:
+
+- Multithreading based on OpenMP
+- GPU comoputing based on NVIDIA CUDA computing toolkit
+
+Currently, almost all algorithms have a serial implementation and one or two high-performance implementation.
+
+| Algorithm      | Multithreading | GPU computing |
+| -------------- | -------------- | ------------- |
+| Basic GWR      | o              | o             |
+| Multiscale GWR | o              |               |
+| GWDR           | o              |               |
+
+All the parallelizable algorithms take two parameters to control parallelization: `parallel_method` and `parallel_arg`.
+The `parallel_method` is used to pick a high-performance implementation.
+The valid options are `"omp"` and `"cuda"`, representing multithreading and GPU computing respectively.
+The `parallel_arg` is used to pass arguments.
+Different parallel methods needs different arguments.
+
+However, not all platform support both techniques, and some platform may have limited performance.
+When users choosed unsupported method, it will fall back to the serial implementation.
+Please refer to the table below for additional information regarding platform support.
+
+| Platform               | Multithreading | GPU computing |
+| ---------------------- | -------------- | ------------- |
+| Windows                | o              | o\*            |
+| macOS (Apple Sillicon) |                |               |
+| Linux                  | o              | o             |
+
+\*On Windows, GPU computing is supported through an additional library called "GWmodelCUDA", which is built with MSVC.
+This is because CUDA does not support the MinGW compiler, which is used to compile R packages.
+To enable GPU computing, please mannually build the package following the instructions bellow.
+
+# Mutlithreading
+
+Multithreading implementation is automatically enabled in package on CRAN.
+To use multithreading implementation, users need to specify number of threads through `parallel_arg`.
+The number of threads needs to be determined according to power of the CPU.
+
+```r
+gwr_basic(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP, bw = 64, adaptive = TRUE,
+  parallel_method = "omp", parallel_arg = 8
+)
+```
+
+# GPU Computing
+
+## Usage
+
+The usage of GPU computing is quite similar to that of multithreading.
+Users needs to set `parallel_method="cuda"` and pass a integer vector of 2 elements through `parallel_arg`.
+The first element indicates which GPU is used (index starting from 0),
+and the second element --- group size --- indicates how many samples are solved together.
+The group size needs to be selected according to the memory size of the selected GPU.
+A larger group size will consume more GPU memory.
+However, experience shows that this number only has a slight effect on efficiency.
+So set it to 64 will be apporiate for most GPUs.
+
+```r
+gwr_basic(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP, bw = 64, adaptive = TRUE,
+  parallel_method = "cuda", parallel_arg = c(0, 64)
+)
+```
+
+## Setup
+
+To enable GPU computing, users need to setup the package mannually.
+
+### For Windows
+
+1.  Download the source codes of this package from [GitHub](https://github.com/GWmodel-Lab/GWmodel3).
+2.  Download the pre-compiled `gwmodelcuda.dll` with the bundled dynamic loaded libraries and put them into the `src` folder within the package's source code.
+3.  Add an environment `ENABLE_CUDA` with value `1`.
+4.  Run the following code in command promopt or powershell to build and install the package.
+
+        R.exe CMD INSTALL GWmodel3
+
+If the installation is unsuccessful, please make sure that you are using the lastest R and Rtools, or mannually install the GSL library.
+
+The `gwmodelcuda.dll` is able to be built by yourself following the steps bellow.
+
+1.  Install CMake and CUDA.
+2.  Get dependencies: armadillo, GSl, openblas, catch2 (via conda, vcpkg, and any other ways).
+3.  Download the source codes of [libgwmodel](https://github.com/GWmodel-Lab/libgwmodel)
+4.  Make a new directory `build` (or any name as you like) and configure the project with the following command within the new directory
+
+        cmake .. \
+          -DENALBE_CUDA=ON \
+          -DUSE_CUDA_SHARED=ON \
+          -DCMAKE_CUDA_ARCHITECTURES=75 \
+          -DWITH_TESTS=OFF
+
+    Note the value of `CMAKE_CUDA_ARCHITECTURES` varies on different GPUs.
+    Please find the official document for more information.
+5.  Build the library
+
+        cmake --build . --config Release --target gwmodelcuda
+
+6.  Copy the library file at `src/Release/gwmodelcuda.lib` and dynamic load libraries under `bin/Release` to the `src` directory of GWmodel3.
+
+### For Linux
+
+It would be quite easier to setup CUDA on Linux.
+Install the package withe the following configure argument: `--enable-cuda=yes`.
+After getting source package of [GWmodel3](https://github.com/GWmodel-Lab/GWmodel3), users can install this package with the fowllowing commands.
+
+```bash
+R CMD INSTALL GWmodel3 --configure-args=--enable-cuda=yes
+```
+
+Or install via the **remotes** package:
+
+```r
+remotes::install_github("GWmodel-Lab/GWmodel3", build_opts = c("--configure-args=--enable-cuda=yes"))
+```
+
+Before installing the package, make sure that the environment variable `CUDA_HOME` is defined as the path to the CUDA toolkit.
