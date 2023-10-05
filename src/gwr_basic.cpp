@@ -129,7 +129,7 @@ int verbose
     case ParallelType::CUDA:
 #ifdef ENABLE_CUDA
         if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
-        algorithm.setPrallelType(ParallelType::CUDA);
+        algorithm.setParallelType(ParallelType::CUDA);
         algorithm.setGPUId(vpar_args[0]);
         algorithm.setGroupSize(vpar_args[1]);
 #else  // ENABLE_CUDA
@@ -260,7 +260,7 @@ NumericMatrix gwr_basic_predict(
     case ParallelType::CUDA:
 #ifdef ENABLE_CUDA
         if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
-        algorithm.setPrallelType(ParallelType::CUDA);
+        algorithm.setParallelType(ParallelType::CUDA);
         algorithm.setGPUId(vpar_args[0]);
         algorithm.setGroupSize(vpar_args[1]);
 #else  // ENABLE_CUDA

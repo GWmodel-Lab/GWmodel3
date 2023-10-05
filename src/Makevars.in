@@ -31,9 +31,6 @@ ifneq ($(strip $(OPENMP_CXXFLAGS)),)
 LIBGWMODEL_CXXFLAGS += -DENABLE_OPENMP
 endif
 
-PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DRCPP_USE_GLOBAL_ROSTREAM
-PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_LIBS)
-
 OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/BandwidthWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CRSDistance.o \
@@ -68,7 +65,10 @@ OBJECTS_GWMODEL = \
 	gwdr.o \
 	RcppExports.o
 
-OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
+OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
+
+PKG_CXXFLAGS = $(SHLIB_OPENMP_CXXFLAGS) $(LIBGWMODEL_CXXFLAGS) $(GSL_CFLAGS) -DRCPP_USE_GLOBAL_ROSTREAM
+PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_LIBS)
 
 ### [Begin] Configure CUDA
 ENABLE_CUDA = @ENABLE_CUDA@
@@ -80,24 +80,44 @@ CUDA_INCL = @CUDA_INCL@
 CU_ARGS = -std=c++14 -Xcompiler -fPIC -Xcudafe --diag_suppress=boolean_controlling_expr_is_constant -DNDEBUG
 CU_INCL = ${R_INCL}
 CU_ARCH = \
--gencode arch=compute_35,code=sm_35 \
--gencode arch=compute_37,code=sm_37 \
 -gencode arch=compute_52,code=sm_52 \
 -gencode arch=compute_60,code=sm_60 \
 -gencode arch=compute_61,code=sm_61 \
 -gencode arch=compute_70,code=sm_70 \
 -gencode arch=compute_75,code=sm_75
 
-PKG_CXXFLAGS += $(CUDA_DEFS) -I$(CUDA_INCL)
+LIBGWMODEL_CXXFLAGS += -I./libgwmodel/include/gwmodelpp/utils
+PKG_CXXFLAGS += -I./libgwmodel/include/gwmodelpp/utils $(CUDA_DEFS) -I$(CUDA_INCL)
 PKG_LIBS += $(CUDA_LIBS)
 GWmodel_CUDA_LIB_PATH = @GWmodel_CUDA_LIB_PATH@
-OBJECTS_CUDA = \
-	libgwmodel/src/libgwmodel/src/gwmodelpp/spatialweight/cuda/BandwidthWeightKernel.o
-	libgwmodel/src/libgwmodel/src/gwmodelpp/spatialweight/cuda/CRSDistanceKernel.o
-
-OBJECTS += OBJECTS_CUDA
-
-$(OBJECTS_CUDA): %.o: %.cu
-	$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) -I${CUDA_INCL} $< -c
+OBJECTS_CUDA_CU = \
+	libgwmodel/src/gwmodelpp/spatialweight/cuda/BandwidthWeightKernel.o \
+	libgwmodel/src/gwmodelpp/spatialweight/cuda/CRSDistanceKernel.o
+OBJECTS_CUDA_CXX = \
+	libgwmodel/src/gwmodelpp/utils/cumat.o \
+	libgwmodel/src/gwmodelpp/utils/CudaUtils.o
+else
+OBJECTS_CUDA_CU = 
+OBJECTS_CUDA_CXX = 
 endif
 ### [End]
+
+OBJECTS = ${OBJECTS_CUDA_CU} ${OBJECTS_CUDA_CXX} ${OBJECTS_CXX}
+
+.PHONY: all clean
+
+all : GWmodel3.so
+
+GWmodel3.so : ${OBJECTS}
+
+${OBJECTS_CXX}: %.o: %.cpp
+
+ifeq ($(ENABLE_CUDA),1)
+$(OBJECTS_CUDA_CU): %.o: %.cu
+	$(NVCC) $(CU_ARCH) $(CU_ARGS) $(CU_INCL) $(LIBGWMODEL_CXXFLAGS) -I${CUDA_INCL} -c $< -o $@
+
+$(OBJECTS_CUDA_CXX): %.o: %.cpp
+endif
+
+clean :
+	rm -rf *.o Makevars
