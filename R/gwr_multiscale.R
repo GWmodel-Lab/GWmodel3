@@ -75,15 +75,17 @@ gwr_multiscale <- function(
     }
     parallel_method <- match.arg(parallel_method)
     criterion <- match.arg(criterion)
+    attr(data, "na.action") <- getOption("na.action")
 
     ### Extract coords
+    data <- do.call(na.action(data), args = list(data))
     coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
     if (is.null(coords) || nrow(coords) != nrow(data))
         stop("Missing coordinates.")
 
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
-    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data), na.action = getOption("na.action"))
+    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data))
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
