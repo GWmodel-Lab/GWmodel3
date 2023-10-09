@@ -59,15 +59,11 @@ gwr_basic <- function(
 
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
-    mt <- match(c("formula", "data"), names(mc), 0L)
-    mf <- mc[c(1L, mt)]
-    mf$drop.unused.levels <- TRUE
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
+    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data), na.action = getOption("na.action"))
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
-    dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
+    dep_var <- as.character(attr(terms(mf), "variables")[[2]])
     has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
