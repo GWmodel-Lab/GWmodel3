@@ -69,8 +69,15 @@ List gwr_basic_fit(
     }
     if (verbose)
         algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
-    algorithm.fit();
-
+    try
+    {
+        algorithm.fit();
+    }
+    catch(const std::exception& e)
+    {
+        stop(e.what());
+    }
+    
     // Return Results
     mat betas = algorithm.betas();
     List result_list = List::create(
@@ -169,7 +176,15 @@ NumericMatrix gwr_basic_predict(
     }
 
     // Return Results
-    mat betas = algorithm.predict(mpcoords);
+    mat betas;
+    try
+    {
+        betas = algorithm.predict(mpcoords);
+    }
+    catch(const std::exception& e)
+    {
+        stop(e.what());
+    }
 
     return mywrap(betas);
 }
