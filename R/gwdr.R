@@ -74,15 +74,11 @@ gwdr <- function(
 
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
-    mt <- match(c("formula", "data"), names(mc), 0L)
-    mf <- mc[c(1L, mt)]
-    mf$drop.unused.levels <- TRUE
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
+    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data), na.action = getOption("na.action"))
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
-    dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
+    dep_var <- as.character(attr(terms(mf), "variables")[[2]])
     has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
@@ -110,7 +106,7 @@ gwdr <- function(
     adaptive <- sapply(config, function(x) x@adaptive)
     kernel <- sapply(config, function(x) x@kernel)
 
-    c_result <- gwdr_fit(
+    c_result <- tryCatch(gwdr_fit(
         x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
         has_intercept, TRUE,
         enum_list(parallel_method, parallel_types), parallel_arg,
@@ -118,7 +114,9 @@ gwdr <- function(
         optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
         select_model = FALSE, select_model_threshold = 3.0,
         indep_vars, verbose
-    )
+    ), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
     betas <- c_result$betas
     fitted <- c_result$fitted
     diagnostic <- c_result$diagnostic

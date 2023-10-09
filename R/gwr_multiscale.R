@@ -83,15 +83,11 @@ gwr_multiscale <- function(
 
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
-    mt <- match(c("formula", "data"), names(mc), 0L)
-    mf <- mc[c(1L, mt)]
-    mf$drop.unused.levels <- TRUE
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
+    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data), na.action = getOption("na.action"))
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
-    dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
+    dep_var <- as.character(attr(terms(mf), "variables")[[2]])
     has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
@@ -152,7 +148,7 @@ gwr_multiscale <- function(
     theta <- sapply(config, function(x) x@theta)
     centered <- sapply(config, function(x) x@centered)
 
-    c_result <- gwr_multiscale_fit(
+    c_result <- tryCatch(gwr_multiscale_fit(
         x, y, coords,
         bw_value, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta,
@@ -161,7 +157,9 @@ gwr_multiscale <- function(
         enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
         enum_list(parallel_method, parallel_types), parallel_arg,
         indep_vars, as.integer(verbose)
-    )
+    ), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
     bw_value <- c_result$bw_value
     betas <- c_result$betas
     fitted <- c_result$fitted

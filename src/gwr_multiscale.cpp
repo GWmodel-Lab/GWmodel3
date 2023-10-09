@@ -109,8 +109,15 @@ List gwr_multiscale_fit (
     {
         algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
-    algorithm.fit();
-
+    try
+    {
+        algorithm.fit();
+    }
+    catch(const std::exception& e)
+    {
+        stop(e.what());
+    }
+    
     // Get bandwidth
     vector<double> bw_value;
     const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
