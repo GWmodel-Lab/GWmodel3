@@ -32,7 +32,7 @@
 #' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
 #' m
 #'
-#' @importFrom stats model.extract model.matrix terms
+#' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export
 gwr_basic <- function(
     formula,

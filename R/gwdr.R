@@ -36,7 +36,7 @@
 #' ), optim_bw = "AIC")
 #' m
 #'
-#' @importFrom stats model.extract model.matrix terms
+#' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @importFrom methods validObject
 #' @export
 gwdr <- function(

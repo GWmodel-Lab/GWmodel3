@@ -47,6 +47,7 @@
 #' m
 #'
 #' @importFrom methods validObject
+#' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export
 gwr_multiscale <- function(
     formula,
