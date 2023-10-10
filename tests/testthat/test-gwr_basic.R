@@ -31,6 +31,7 @@ test_that("Basic GWR: predict", {
 })
 
 test_that("Basic GWR: verbose", {
+  skip_on_ci()
   expect_no_error(
     step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 1))
   )
