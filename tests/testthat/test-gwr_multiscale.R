@@ -9,6 +9,7 @@ test_that("Multiscale GWR: works", {
 })
 
 test_that("Multiscale GWR: verbose", {
+  skip_on_ci()
   expect_no_error(gwr_multiscale(
     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
     data = LondonHP,

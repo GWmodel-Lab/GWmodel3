@@ -88,8 +88,15 @@ List gwdr_fit(
     {
         algorithm.setTelegram(make_unique<GWDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
-    algorithm.fit();
-    
+    try
+    {
+        algorithm.fit();
+    }
+    catch(const std::exception& e)
+    {
+        stop(e.what());
+    }
+        
     // Return Results
     mat betas = algorithm.betas();
     vec fitted = sum(mx % betas, 1);

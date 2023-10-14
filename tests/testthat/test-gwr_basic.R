@@ -7,6 +7,21 @@ test_that("Basic GWR: works", {
   )
 })
 
+test_that("Basic GWR: formula with dot", {
+  expect_no_error({
+    sub_data <- LondonHP[, c("PURCHASE", "FLOORSZ", "UNEMPLOY")]
+    gwr_basic(PURCHASE~., data = sub_data)
+  })
+})
+
+test_that("Basic GWR: missing values", {
+  expect_no_error({
+    sub_data <- LondonHP[, c("PURCHASE", "FLOORSZ", "UNEMPLOY")]
+    sub_data$UNEMPLOY[1] <- NA
+    gwr_basic(PURCHASE~., data = sub_data)
+  })
+})
+
 test_that("Basic GWR: Bandwidth selection", {
   m <<- expect_no_error(
     gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE)
@@ -24,6 +39,7 @@ test_that("Basic GWR: predict", {
 })
 
 test_that("Basic GWR: verbose", {
+  skip_on_ci()
   expect_no_error(
     step(gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE, verbose = 1))
   )

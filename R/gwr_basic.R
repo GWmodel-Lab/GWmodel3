@@ -32,7 +32,7 @@
 #' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
 #' m
 #'
-#' @importFrom stats model.extract model.matrix terms
+#' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export
 gwr_basic <- function(
     formula,
@@ -51,23 +51,21 @@ gwr_basic <- function(
     ### Check args
     kernel = match.arg(kernel)
     parallel_method = match.arg(parallel_method)
+    attr(data, "na.action") <- getOption("na.action")
 
     ### Extract coords
+    data <- do.call(na.action(data), args = list(data))
     coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
     if (is.null(coords) || nrow(coords) != nrow(data))
         stop("Missing coordinates.")
 
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
-    mt <- match(c("formula", "data"), names(mc), 0L)
-    mf <- mc[c(1L, mt)]
-    mf$drop.unused.levels <- TRUE
-    mf[[1L]] <- as.name("model.frame")
-    mf <- eval(mf, parent.frame())
+    mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data))
     mt <- attr(mf, "terms")
     y <- model.extract(mf, "response")
     x <- model.matrix(mt, mf)
-    dep_var <- as.character(attr(terms(formula(formula)), "variables")[[2]])
+    dep_var <- as.character(attr(terms(mf), "variables")[[2]])
     has_intercept <- attr(terms(mf), "intercept") == 1
     indep_vars <- colnames(x)
     indep_vars[which(indep_vars == "(Intercept)")] <- "Intercept"
@@ -92,14 +90,16 @@ gwr_basic <- function(
     }
 
     ### Call solver
-    c_result <- gwr_basic_fit(
+    c_result <- tryCatch(gwr_basic_fit(
         x, y, coords, bw, adaptive, enum(kernel), longlat, p, theta,
         hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = FALSE, select_model_criterion = 0,
         select_model_threshold = 3.0, indep_vars, as.integer(verbose)
-    )
+    ), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
     if (optim_bw)
         bw <- c_result$bandwidth
     betas <- c_result$betas
@@ -211,14 +211,16 @@ step.gwrm <- function(
     }
 
     ### Calibrate GWR
-    c_result <- with(object$args, gwr_basic_fit(
+    c_result <- tryCatch(with(object$args, gwr_basic_fit(
         x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta, hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = TRUE, select_model_criterion = enum(criterion),
         select_model_threshold = threshold, object$indep_vars, verbose
-    ))
+    )), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
     if (optim_bw)
         bw_value <- c_result$bandwidth
     betas <- c_result$betas
@@ -485,11 +487,13 @@ predict.gwrm <- function(object, regression_points, verbose = FALSE, ...) {
     pcoords <- as.matrix(pcoords)
 
     ### Predict coefficients
-    c_betas <- with(object$args, gwr_basic_predict(
+    c_betas <- tryCatch(with(object$args, gwr_basic_predict(
         pcoords, x, y, coords, bw, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta, has_intercept, 
         enum_list(parallel_method, parallel_types), parallel_arg, as.integer(verbose)
-    ))
+    )), error = function(e) {
+        stop("Error:", conditionMessage(e))
+    })
 
     result <- as.data.frame(c_betas)
     colnames(result) <- object$indep_vars
