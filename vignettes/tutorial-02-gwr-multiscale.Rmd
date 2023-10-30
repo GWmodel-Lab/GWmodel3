@@ -174,7 +174,7 @@ gwr_multiscale(
   formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
   data = LondonHP,
   config = list(
-    FLOORSZ = mgwr_config(bw = 92, adaptive = TRUE, kernel = "bisquare"),
+    FLOORSZ = mgwr_config(bw = 19, adaptive = TRUE, kernel = "bisquare"),
     .default = mgwr_config(adaptive = TRUE, kernel = "bisquare")
   )
 )
