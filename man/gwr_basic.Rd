@@ -19,7 +19,7 @@ gwr_basic(
   longlat = FALSE,
   p = 2,
   theta = 0,
-  optim_bw_range = c(NA_real_, NA_real_),
+  optim_bw_range = c(0, Inf),
   hatmatrix = TRUE,
   parallel_method = c("no", "omp"),
   parallel_arg = c(0),

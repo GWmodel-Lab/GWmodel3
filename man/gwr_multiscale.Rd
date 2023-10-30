@@ -13,7 +13,7 @@ gwr_multiscale(
   data,
   config = list(mgwr_config()),
   criterion = c("CVR", "dCVR"),
-  optim_bw_range = c(NA_real_, NA_real_),
+  optim_bw_range = c(0, Inf),
   hatmatrix = T,
   retry_times = 5,
   max_iterations = 2000,
