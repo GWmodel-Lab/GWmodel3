@@ -101,10 +101,24 @@ gwr_multiscale <- function(
     if (has_intercept && indep_vars[1] != "Intercept") {
         stop("Please put Intercept to the first column.")
     }
-    if (length(config) == 1) {
-        config <- rep(config, times = ncol(x))
-    } else if (length(config) != ncol(x)) {
-        stop("The length of config mush be equal to the number of independent variables.")
+
+    ### Extract config
+    if (is.null(names(config))) {
+        #### When configs are not specified by names, deal with it in the old way
+        if (length(config) == 1) {
+            config <- rep(config, times = ncol(x))
+        } else if (length(config) != ncol(x)) {
+            stop("The length of config mush be equal to the number of independent variables.")
+        }
+    } else {
+        #### When configs are specified by names, match it with parameters
+        if (all(indep_vars %in% names(config))) {
+            config <- config[indep_vars]
+        } else if (".default" %in% names(config)) {
+            config <- ifelse(indep_vars %in% names(config), config[indep_vars], config[".default"])
+        } else {
+            stop("Either specific configs for all variables, or provide a default config naming '.default'!")
+        }
     }
     if (has_intercept) {
         config[[1]]@centered <- FALSE
