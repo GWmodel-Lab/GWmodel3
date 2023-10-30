@@ -15,6 +15,8 @@
 #' @param p Power of the Minkowski distance,
 #'  default to 2, i.e., Euclidean distance.
 #' @param theta Angle in radian to roate the coordinate system, default to 0.
+#' @param optim_bw_range Bounds on bandwidth optimization, a vector of two numeric elements.
+#'  Set to `NA_real_` to enable default values selected by the algorithm.
 #' @param hatmatrix If TRUE, great circle will be caculated.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
@@ -43,6 +45,7 @@ gwr_basic <- function(
     longlat = FALSE,
     p = 2.0,
     theta = 0.0,
+    optim_bw_range = c(0, Inf),
     hatmatrix = TRUE,
     parallel_method = c("no", "omp"),
     parallel_arg = c(0),
@@ -92,6 +95,7 @@ gwr_basic <- function(
     ### Call solver
     c_result <- tryCatch(gwr_basic_fit(
         x, y, coords, bw, adaptive, enum(kernel), longlat, p, theta,
+        optim_bw_range[1], optim_bw_range[2],
         hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
@@ -142,6 +146,8 @@ gwr_basic <- function(
             longlat = longlat,
             p = p,
             theta = theta,
+            optim_bw_lower = optim_bw_range[1],
+            optim_bw_upper = optim_bw_range[2],
             hatmatrix = hatmatrix,
             has_intercept = has_intercept,
             parallel_method = parallel_method,
@@ -213,7 +219,7 @@ step.gwrm <- function(
     ### Calibrate GWR
     c_result <- tryCatch(with(object$args, gwr_basic_fit(
         x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
-        longlat, p, theta, hatmatrix, has_intercept,
+        longlat, p, theta, optim_bw_lower, optim_bw_upper, hatmatrix, has_intercept,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw, enum(optim_bw_criterion, c("AIC", "CV")),
         select_model = TRUE, select_model_criterion = enum(criterion),

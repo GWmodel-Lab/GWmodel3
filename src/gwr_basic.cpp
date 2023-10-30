@@ -11,14 +11,28 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gwr_basic_fit(
-    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
-    double bw, bool adaptive, size_t kernel, 
-    bool longlat, double p, double theta,
-    bool hatmatrix, bool intercept,
-    size_t parallel_type, const IntegerVector& parallel_arg,
-    bool optim_bw, size_t optim_bw_criterion,
-    bool select_model, size_t select_model_criterion, size_t select_model_threshold,
-    const CharacterVector& variable_names, int verbose
+    const NumericMatrix& x,
+    const NumericVector& y,
+    const NumericMatrix& coords,
+    double bw,
+    bool adaptive,
+    size_t kernel,
+    bool longlat,
+    double p,
+    double theta,
+    double optim_bw_lower,
+    double optim_bw_upper,
+    bool hatmatrix,
+    bool intercept,
+    size_t parallel_type,
+    const IntegerVector& parallel_arg,
+    bool optim_bw,
+    size_t optim_bw_criterion,
+    bool select_model,
+    size_t select_model_criterion,
+    size_t select_model_threshold,
+    const CharacterVector& variable_names,
+int verbose
 ) {
     // Convert data types
     mat mx = myas(x);
@@ -45,13 +59,17 @@ List gwr_basic_fit(
         }
     }
     SpatialWeight spatial(&bandwidth, distance);
-    
+
     // Make Algorithm Object
     GWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
     algorithm.setIsAutoselectIndepVars(select_model);
     algorithm.setIndepVarSelectionThreshold(select_model_threshold);
     algorithm.setIsAutoselectBandwidth(optim_bw);
     algorithm.setBandwidthSelectionCriterion(GWRBasic::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
+    if (optim_bw_lower > 0.0)
+        algorithm.setGoldenLowerBounds(optim_bw_lower);
+    if (optim_bw_upper < R_PosInf)
+        algorithm.setGoldenUpperBounds(optim_bw_upper);
     switch (ParallelType(size_t(parallel_type)))
     {
     case ParallelType::SerialOnly:
@@ -77,7 +95,7 @@ List gwr_basic_fit(
     {
         stop(e.what());
     }
-    
+
     // Return Results
     mat betas = algorithm.betas();
     List result_list = List::create(
@@ -152,7 +170,7 @@ NumericMatrix gwr_basic_predict(
         }
     }
     SpatialWeight spatial(&bandwidth, distance);
-    
+
     // Make Algorithm Object
     GWRBasic algorithm(mx, my, mcoords, spatial, false, intercept);
     switch (ParallelType(size_t(parallel_type)))

@@ -19,6 +19,7 @@ gwr_basic(
   longlat = FALSE,
   p = 2,
   theta = 0,
+  optim_bw_range = c(0, Inf),
   hatmatrix = TRUE,
   parallel_method = c("no", "omp"),
   parallel_arg = c(0),
@@ -63,6 +64,9 @@ from the \code{gwrm} object.}
 default to 2, i.e., Euclidean distance.}
 
 \item{theta}{Angle in radian to roate the coordinate system, default to 0.}
+
+\item{optim_bw_range}{Bounds on bandwidth optimization, a vector of two numeric elements.
+Set to \code{NA_real_} to enable default values selected by the algorithm.}
 
 \item{hatmatrix}{If TRUE, great circle will be caculated.}
 
