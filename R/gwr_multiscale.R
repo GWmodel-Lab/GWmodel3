@@ -4,8 +4,7 @@
 #' @param data A `sf` objects.
 #' @param config Parameter-specified weighting configuration.
 #'  It must be a list of `MGWRConfig` objects.
-#'  Its length can be 1 or equal to the number of independent variables.
-#'  When its length is 1, elements will be duplicated for independent variable.
+#'  Please find more details in the details section.
 #' @param criterion Convergence criterion of back-fitting algorithm.
 #' @param optim_bw_range Bounds on bandwidth optimization, a vector of two numeric elements.
 #'  Set to `NA_real_` to enable default values selected by the algorithm.
@@ -22,6 +21,33 @@
 #' 
 #' @return A `gwrmultiscalem` object.
 #' 
+#' @details
+#' ## Configuration specification
+#' 
+#' In the multiscale GWR model,
+#' spatial weighting parameters can be specified for each parameter.
+#' There are several ways to make it easy and flexible.
+#' No matter in which way, the `config` parameter needs to be a list
+#' of `MGWRConfig` elements.
+#' 
+#' When the `config` list is not named, its length needs to be either 1
+#' or the number of independent variables (including the intercept if any).
+#' For the `config` of length 1,
+#' its only value will be applied for every independent variable.
+#' For the `config` that as long as independent variables,
+#' its values are mapped to variables by position.
+#' In other cases, an error will occur to prevent further process.
+#' 
+#' When the `config` list is named, the names can contain independent-variable names
+#' or a special character `".default"`.
+#' The function will look up config for each parameter according to its name
+#' in the `config` list.
+#' If `".default"` can be found in the list,
+#' once names of some parameters are missing in the `config`,
+#' the function will use the value of name `".default"` instead.
+#' However, if not all names can be found in `config` and the `".default"` name is missing,
+#' an error will occur to prevent further process.
+#' 
 #' @examples
 #' data(LondonHP)
 #' gwr_multiscale(
@@ -30,14 +56,15 @@
 #' )
 #'
 #' # Specify more configurations for all variables
-#' gwr_multiscale(
+#' m <- gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
 #'  data = LondonHP,
 #'  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
 #' )
+#' m
 #'
 #' # Specify more configurations for each variables
-#' m <- gwr_multiscale(
+#' gwr_multiscale(
 #'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
 #'  data = LondonHP,
 #'  config = list(
@@ -46,7 +73,15 @@
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
 #'      mgwr_config(adaptive = TRUE, kernel = "bisquare")
 #'  ))
-#' m
+#' 
+#' # Specify configurations by variable names
+#' gwr_multiscale(
+#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+#'  data = LondonHP,
+#'  config = list(
+#'      FLOORSZ = mgwr_config(bw = 20, adaptive = TRUE, kernel = "bisquare"),
+#'      .default = mgwr_config(adaptive = TRUE, kernel = "bisquare")
+#'  ))
 #'
 #' @importFrom methods validObject
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
