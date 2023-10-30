@@ -37,8 +37,7 @@ gwr_multiscale(
 
 \item{config}{Parameter-specified weighting configuration.
 It must be a list of \code{MGWRConfig} objects.
-Its length can be 1 or equal to the number of independent variables.
-When its length is 1, elements will be duplicated for independent variable.}
+Please find more details in the details section.}
 
 \item{criterion}{Convergence criterion of back-fitting algorithm.}
 
@@ -78,6 +77,34 @@ A \code{gwrmultiscalem} object.
 \description{
 Multiscale GWR
 }
+\details{
+\subsection{Configuration specification}{
+
+In the multiscale GWR model,
+spatial weighting parameters can be specified for each parameter.
+There are several ways to make it easy and flexible.
+No matter in which way, the \code{config} parameter needs to be a list
+of \code{MGWRConfig} elements.
+
+When the \code{config} list is not named, its length needs to be either 1
+or the number of independent variables (including the intercept if any).
+For the \code{config} of length 1,
+its only value will be applied for every independent variable.
+For the \code{config} that as long as independent variables,
+its values are mapped to variables by position.
+In other cases, an error will occur to prevent further process.
+
+When the \code{config} list is named, the names can contain independent-variable names
+or a special character \code{".default"}.
+The function will look up config for each parameter according to its name
+in the \code{config} list.
+If \code{".default"} can be found in the list,
+once names of some parameters are missing in the \code{config},
+the function will use the value of name \code{".default"} instead.
+However, if not all names can be found in \code{config} and the \code{".default"} name is missing,
+an error will occur to prevent further process.
+}
+}
 \section{Functions}{
 \itemize{
 \item \code{plot(gwrmultiscalem)}: Plot the result of basic GWR model.
@@ -97,14 +124,15 @@ gwr_multiscale(
 )
 
 # Specify more configurations for all variables
-gwr_multiscale(
+m <- gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP,
  config = list(mgwr_config(adaptive = TRUE, kernel = "bisquare"))
 )
+m
 
 # Specify more configurations for each variables
-m <- gwr_multiscale(
+gwr_multiscale(
  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
  data = LondonHP,
  config = list(
@@ -113,7 +141,15 @@ m <- gwr_multiscale(
      mgwr_config(adaptive = TRUE, kernel = "bisquare"),
      mgwr_config(adaptive = TRUE, kernel = "bisquare")
  ))
-m
+
+# Specify configurations by variable names
+gwr_multiscale(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+ data = LondonHP,
+ config = list(
+     FLOORSZ = mgwr_config(bw = 20, adaptive = TRUE, kernel = "bisquare"),
+     .default = mgwr_config(adaptive = TRUE, kernel = "bisquare")
+ ))
 
 plot(m)
 
