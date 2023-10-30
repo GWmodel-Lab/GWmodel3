@@ -41,8 +41,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_fit
-List gwr_basic_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
-RcppExport SEXP _GWmodel3_gwr_basic_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP select_modelSEXP, SEXP select_model_criterionSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
+List gwr_basic_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, double optim_bw_lower, double optim_bw_upper, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
+RcppExport SEXP _GWmodel3_gwr_basic_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bw_lowerSEXP, SEXP optim_bw_upperSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP select_modelSEXP, SEXP select_model_criterionSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -55,6 +55,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_bw_lower(optim_bw_lowerSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_bw_upper(optim_bw_upperSEXP);
     Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
@@ -66,7 +68,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< size_t >::type select_model_threshold(select_model_thresholdSEXP);
     Rcpp::traits::input_parameter< const CharacterVector& >::type variable_names(variable_namesSEXP);
     Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(gwr_basic_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, hatmatrix, intercept, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose));
+    rcpp_result_gen = Rcpp::wrap(gwr_basic_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw_lower, optim_bw_upper, hatmatrix, intercept, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -95,8 +97,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_multiscale_fit
-List gwr_multiscale_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const LogicalVector& optim_bw, const IntegerVector& optim_bw_criterion, const NumericVector& threashold, const IntegerVector& initial_type, const LogicalVector& centered, size_t criterion, bool hatmatrix, bool intercept, size_t retry_times, size_t max_iterations, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
-RcppExport SEXP _GWmodel3_gwr_multiscale_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP threasholdSEXP, SEXP initial_typeSEXP, SEXP centeredSEXP, SEXP criterionSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP retry_timesSEXP, SEXP max_iterationsSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
+List gwr_multiscale_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const LogicalVector& optim_bw, const IntegerVector& optim_bw_criterion, const NumericVector& threashold, const IntegerVector& initial_type, const LogicalVector& centered, double optim_bw_lower, double optim_bw_upper, size_t criterion, bool hatmatrix, bool intercept, size_t retry_times, size_t max_iterations, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
+RcppExport SEXP _GWmodel3_gwr_multiscale_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP threasholdSEXP, SEXP initial_typeSEXP, SEXP centeredSEXP, SEXP optim_bw_lowerSEXP, SEXP optim_bw_upperSEXP, SEXP criterionSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP retry_timesSEXP, SEXP max_iterationsSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -114,6 +116,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const NumericVector& >::type threashold(threasholdSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type initial_type(initial_typeSEXP);
     Rcpp::traits::input_parameter< const LogicalVector& >::type centered(centeredSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_bw_lower(optim_bw_lowerSEXP);
+    Rcpp::traits::input_parameter< double >::type optim_bw_upper(optim_bw_upperSEXP);
     Rcpp::traits::input_parameter< size_t >::type criterion(criterionSEXP);
     Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
@@ -123,16 +127,16 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
     Rcpp::traits::input_parameter< const CharacterVector& >::type variable_names(variable_namesSEXP);
     Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
-    rcpp_result_gen = Rcpp::wrap(gwr_multiscale_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw, optim_bw_criterion, threashold, initial_type, centered, criterion, hatmatrix, intercept, retry_times, max_iterations, parallel_type, parallel_arg, variable_names, verbose));
+    rcpp_result_gen = Rcpp::wrap(gwr_multiscale_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw, optim_bw_criterion, threashold, initial_type, centered, optim_bw_lower, optim_bw_upper, criterion, hatmatrix, intercept, retry_times, max_iterations, parallel_type, parallel_arg, variable_names, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gwdr_fit", (DL_FUNC) &_GWmodel3_gwdr_fit, 19},
-    {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 20},
+    {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
-    {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 23},
+    {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},
     {NULL, NULL, 0}
 };
 

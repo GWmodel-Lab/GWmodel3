@@ -7,6 +7,8 @@
 #'  Its length can be 1 or equal to the number of independent variables.
 #'  When its length is 1, elements will be duplicated for independent variable.
 #' @param criterion Convergence criterion of back-fitting algorithm.
+#' @param optim_bw_range Bounds on bandwidth optimization, a vector of two numeric elements.
+#'  Set to `NA_real_` to enable default values selected by the algorithm.
 #' @param hatmatrix If TRUE, great circle will be caculated.
 #' @param retry_times The number times of continually optimizing each 
 #'  parameter-specific bandwidth even though it meets the criterion of convergence,
@@ -54,6 +56,7 @@ gwr_multiscale <- function(
     data,
     config = list(mgwr_config()),
     criterion = c("CVR", "dCVR"),
+    optim_bw_range = c(0, Inf),
     hatmatrix = T,
     retry_times = 5,
     max_iterations = 2000,
@@ -157,6 +160,7 @@ gwr_multiscale <- function(
         longlat, p, theta,
         optim_bw, enum(optim_bw_criterion, mgwr_bw_criterion_enums),
         optim_threshold, enum(initial_type, mgwr_initial_enums), centered,
+        optim_bw_range[1], optim_bw_range[2],
         enum(criterion), hatmatrix, has_intercept, retry_times, max_iterations,
         enum_list(parallel_method, parallel_types), parallel_arg,
         indep_vars, as.integer(verbose)
@@ -200,6 +204,8 @@ gwr_multiscale <- function(
             optim_bw_criterion = optim_bw_criterion,
             optim_threshold = optim_threshold,
             initial_type = initial_type,
+            optim_bw_lower = optim_bw_range[1],
+            optim_bw_upper = optim_bw_range[2],
             centered = centered,
             criterion = criterion,
             hatmatrix = hatmatrix,

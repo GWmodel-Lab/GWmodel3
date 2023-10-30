@@ -25,6 +25,8 @@ List gwr_multiscale_fit (
     const NumericVector& threashold,
     const IntegerVector& initial_type,
     const LogicalVector& centered,
+    double optim_bw_lower,
+    double optim_bw_upper,
     size_t criterion,
     bool hatmatrix,
     bool intercept,
@@ -86,6 +88,10 @@ List gwr_multiscale_fit (
     algorithm.setBandwidthInitilize(bandwidthInitialize);
     algorithm.setBandwidthSelectionApproach(bandwidthSelectionApproach);
     algorithm.setBandwidthSelectThreshold(vthreshold);
+    if (optim_bw_lower > 0.0)
+        algorithm.setGoldenLowerBounds(optim_bw_lower);
+    if (optim_bw_upper < R_PosInf)
+        algorithm.setGoldenUpperBounds(optim_bw_upper);
     algorithm.setCriterionType(GWRMultiscale::BackFittingCriterionType(size_t(criterion)));
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setBandwidthSelectRetryTimes(retry_times);

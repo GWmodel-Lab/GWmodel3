@@ -13,6 +13,7 @@ gwr_multiscale(
   data,
   config = list(mgwr_config()),
   criterion = c("CVR", "dCVR"),
+  optim_bw_range = c(NA_real_, NA_real_),
   hatmatrix = T,
   retry_times = 5,
   max_iterations = 2000,
@@ -40,6 +41,9 @@ Its length can be 1 or equal to the number of independent variables.
 When its length is 1, elements will be duplicated for independent variable.}
 
 \item{criterion}{Convergence criterion of back-fitting algorithm.}
+
+\item{optim_bw_range}{Bounds on bandwidth optimization, a vector of two numeric elements.
+Set to \code{NA_real_} to enable default values selected by the algorithm.}
 
 \item{hatmatrix}{If TRUE, great circle will be caculated.}
 
