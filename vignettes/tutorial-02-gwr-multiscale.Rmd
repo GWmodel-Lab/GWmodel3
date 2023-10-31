@@ -165,3 +165,20 @@ m3
 ```
 
 Then the functions `c()` `rep()` can be used to flexiably create such a list.
+
+Alternatively, you can use a named list to set parameter-specific configuration.
+The name `".default"` can be used to configure variables that are not explicitly specified.
+
+```{r, cache=T}
+gwr_multiscale(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP,
+  config = list(
+    FLOORSZ = mgwr_config(bw = 19, adaptive = TRUE, kernel = "bisquare"),
+    .default = mgwr_config(adaptive = TRUE, kernel = "bisquare")
+  )
+)
+```
+
+Note that if `".default"` is missing, all variables need to be assigned a configuration by names.
+In other words, all variables need to appear in the names of `config` object, including the intercept if exists.
