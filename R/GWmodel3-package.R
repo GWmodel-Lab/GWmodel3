@@ -22,6 +22,7 @@
 #'  \doi{10.1080/10095020.2014.917453}
 #' 
 #' @useDynLib GWmodel3, .registration = TRUE
+#' @import sf
 #' @importFrom Rcpp evalCpp
 #' @keywords internal
 "_PACKAGE"
