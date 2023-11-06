@@ -9,29 +9,34 @@ reference:
   - contents:
       - GWmodel3-package
   - title: GW regression models
-    contents:
-      - starts_with("gwr")
-      - starts_with("gwdr")
-      - starts_with("step")
-      - ends_with("-class")
-      - ends_with("_config")
-      - matches("coef")
-      - matches("fitted")
-      - matches("predict")
-      - matches("residuals")
-      - matches("plot")
+  - subtitle: Basic GWR
+  - contents:
+    - starts_with("gwr_basic")
+  - subtitle: Multiscale GWR
+  - contents:
+    - starts_with("gwr_multiscale")
+    - starts_with("MGWRConfig")
+    - ends_with("MGWRConfig")
+    - starts_with("mgwr")
+  - subtitle: Density GWR
+  - contents:
+    - starts_with("gwdr")
+    - starts_with("GWDRConfig")
+    - ends_with("GWDRConfig")
+    - starts_with("gwdr")
   - title: Utils
-    contents:
-      - starts_with("print")
-      - print_table_md
-      - starts_with("rep")
+  - contents:
+    - print_table_md
+    - starts_with("print")
+    - starts_with("step_view")
+    - ends_with("modelselcritl")
   - title: Data
-    contents:
-      - DubVoter
-      - EWHP
-      - EWOutline
-      - GeorgiaCensus
-      - GeorgiaCounties
-      - LondonBorough
-      - LondonHP
-      - USelect2004
+  - contents:
+    - DubVoter
+    - EWHP
+    - EWOutline
+    - GeorgiaCensus
+    - GeorgiaCounties
+    - LondonBorough
+    - LondonHP
+    - USelect2004
