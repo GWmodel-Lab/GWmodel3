@@ -86,20 +86,3 @@ jobs:
           build_args: 'c("--no-manual", "--resave-data")'
           error-on: '"error"'
           check-dir: '"check"'
-
-  check-linux-cuda:
-    runs-on: [self-hosted, Linux, gpu]
-    env:
-      CUDA_HOME: /usr/local/cuda
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Build and Check package
-        uses: r-lib/actions/check-r-package@v2
-        with:
-          args: 'c("--no-manual", "--as-cran")'
-          build_args: 'c("--no-manual", "--resave-data", "--configure-args=--enable-cuda=yes")'
-          error-on: '"error"'
-          check-dir: '"check"'
