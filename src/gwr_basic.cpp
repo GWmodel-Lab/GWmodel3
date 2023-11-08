@@ -370,11 +370,11 @@ List gwr_basic_fit_cuda(
         algorithm->enableVariablesOptimization(select_model_threshold);
     }
 
-    if (verbose > 0) Rcout << "** CUDA fit ...";
+    if (verbose > 0) Rcout << "** CUDA fit begin\n";
     if (!algorithm->fit(intercept)) {
         throw std::runtime_error("CUDA did not work successfully.");
     }
-    if (verbose > 0) Rcout << " done\n";
+    if (verbose > 0) Rcout << "** CUDA fit finished\n";
 
     // Get data
     size_t sRows = algorithm->sRows();
