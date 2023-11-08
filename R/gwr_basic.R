@@ -23,6 +23,16 @@
 #' @param verbose Whether to print additional information.
 #'
 #' @return A `gwrm` object.
+#' 
+#' @details
+#' ## Parallelization
+#' 
+#' Two parallel methods are provided to speed up basic GWR algorithm:
+#' 
+#' - Multithreading (`omp`)
+#' - NVIDIA GPU Computing (`cuda`)
+#' 
+#' See the vignettes about parallelization to learn more about this topic.
 #'
 #' @examples
 #' data(LondonHP)
@@ -33,6 +43,8 @@
 #' # Bandwidth Optimization
 #' m <- gwr_basic(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
 #' m
+#' 
+#' @seealso `browseVignettes("")`
 #'
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export
@@ -47,7 +59,7 @@ gwr_basic <- function(
     theta = 0.0,
     optim_bw_range = c(0, Inf),
     hatmatrix = TRUE,
-    parallel_method = c("no", "omp"),
+    parallel_method = c("no", "omp", "cuda"),
     parallel_arg = c(0),
     verbose = FALSE
 ) {

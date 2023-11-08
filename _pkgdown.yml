@@ -5,6 +5,21 @@ navbar:
   structure:
     left: [intro, reference, articles, tutorials, news]
     right: [search, github]
+  components:
+    articles:
+      text: Articles
+      menu:
+      - text: Tutorials
+      - text: Basic GWR
+        href: articles/tutorial-01-gwr-basic.html
+      - text: Multiscale GWR
+        href: articles/tutorial-02-gwr-multiscale.html
+      - text: Multiscale GWR
+        href: articles/tutorial-03-gwdr.html
+      - text: -------
+      - text: Others
+      - text: High-performance Computing
+        href: articles/other-01-hpc.html
 reference:
   - contents:
       - GWmodel3-package

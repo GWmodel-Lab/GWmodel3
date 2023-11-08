@@ -21,7 +21,7 @@ gwr_basic(
   theta = 0,
   optim_bw_range = c(0, Inf),
   hatmatrix = TRUE,
-  parallel_method = c("no", "omp"),
+  parallel_method = c("no", "omp", "cuda"),
   parallel_arg = c(0),
   verbose = FALSE
 )

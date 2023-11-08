@@ -61,3 +61,4 @@ inst/doc
 docs
 /doc/
 /Meta/
+*.lib
