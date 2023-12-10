@@ -84,6 +84,24 @@ NVCC="${CUDA_HOME}/bin/nvcc"
 AC_MSG_RESULT(building the cuda include path)
 CUDA_INCL="${CUDA_HOME}/include"
 
+ENABLE_MPI=1
+AC_ARG_ENABLE([mpi], [AS_HELP_STRING([--enable-mpi],[install mpi (default no)])],
+[ case "${enableval}" in
+    yes) ENABLE_MPI=1 ;;
+    no)  ENABLE_MPI=0 ;;
+    *)   AC_MSG_ERROR(bad value ${enableval} for --enable-mpi) ;;
+esac])
+
+if test ${ENABLE_MPI} -eq 1; then
+    AC_PATH_PROG([MPICC], [mpicc])
+
+    if test "${MPICC}" != ""; then
+        MPI_CFLAGS=`${MPICC} -showme:compile`
+        MPI_LIBS=`${MPICC} -showme:link`
+    else
+        AC_MSG_ERROR([mpicc not found, is MPI installed?])
+    fi
+fi
 
 AC_SUBST(GWmodel_CUDA_LIB_PATH,["~/.cache/GWmodel"])
 
@@ -94,6 +112,9 @@ AC_SUBST(NVCC)
 AC_SUBST(PKG_LIBS)
 AC_SUBST(CUDA_INCL)
 AC_SUBST(ENABLE_CUDA)
+AC_SUBST(ENABLE_MPI)
+AC_SUBST(MPI_CFLAGS)
+AC_SUBST(MPI_LIBS)
 
 AC_CONFIG_FILES([src/Makevars])
 AC_OPENMP

@@ -615,12 +615,16 @@ PACKAGE_URL=''
 ac_subst_vars='LTLIBOBJS
 LIBOBJS
 OPENMP_CXXFLAGS
+MPI_LIBS
+MPI_CFLAGS
+ENABLE_MPI
 ENABLE_CUDA
 CUDA_INCL
 PKG_LIBS
 NVCC
 CU_INCL
 GWmodel_CUDA_LIB_PATH
+MPICC
 CUDA_LIBS
 TARGET_CUDA_LIB
 CUDA_DEFS
@@ -679,6 +683,7 @@ ac_subst_files=''
 ac_user_opts='
 enable_option_checking
 enable_cuda
+enable_mpi
 enable_openmp
 '
       ac_precious_vars='build_alias
@@ -1310,6 +1315,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-cuda           install cuda (default no)
+  --enable-mpi            install mpi (default no)
   --disable-openmp        do not use OpenMP
 
 Some influential environment variables:
@@ -3038,6 +3044,72 @@ NVCC="${CUDA_HOME}/bin/nvcc"
 printf "%s\n" "building the cuda include path" >&6; }
 CUDA_INCL="${CUDA_HOME}/include"
 
+ENABLE_MPI=1
+# Check whether --enable-mpi was given.
+if test ${enable_mpi+y}
+then :
+  enableval=$enable_mpi;  case "${enableval}" in
+    yes) ENABLE_MPI=1 ;;
+    no)  ENABLE_MPI=0 ;;
+    *)   as_fn_error $? "bad value ${enableval} for --enable-mpi" "$LINENO" 5 ;;
+esac
+fi
+
+
+if test ${ENABLE_MPI} -eq 1; then
+    # Extract the first word of "mpicc", so it can be a program name with args.
+set dummy mpicc; ac_word=$2
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
+printf %s "checking for $ac_word... " >&6; }
+if test ${ac_cv_path_MPICC+y}
+then :
+  printf %s "(cached) " >&6
+else $as_nop
+  case $MPICC in
+  [\\/]* | ?:[\\/]*)
+  ac_cv_path_MPICC="$MPICC" # Let the user override the test with a path.
+  ;;
+  *)
+  as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
+for as_dir in $PATH
+do
+  IFS=$as_save_IFS
+  case $as_dir in #(((
+    '') as_dir=./ ;;
+    */) ;;
+    *) as_dir=$as_dir/ ;;
+  esac
+    for ac_exec_ext in '' $ac_executable_extensions; do
+  if as_fn_executable_p "$as_dir$ac_word$ac_exec_ext"; then
+    ac_cv_path_MPICC="$as_dir$ac_word$ac_exec_ext"
+    printf "%s\n" "$as_me:${as_lineno-$LINENO}: found $as_dir$ac_word$ac_exec_ext" >&5
+    break 2
+  fi
+done
+  done
+IFS=$as_save_IFS
+
+  ;;
+esac
+fi
+MPICC=$ac_cv_path_MPICC
+if test -n "$MPICC"; then
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $MPICC" >&5
+printf "%s\n" "$MPICC" >&6; }
+else
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: no" >&5
+printf "%s\n" "no" >&6; }
+fi
+
+
+
+    if test "${MPICC}" != ""; then
+        MPI_CFLAGS=`${MPICC} -showme:compile`
+        MPI_LIBS=`${MPICC} -showme:link`
+    else
+        as_fn_error $? "mpicc not found, is MPI installed?" "$LINENO" 5
+    fi
+fi
 
 GWmodel_CUDA_LIB_PATH="~/.cache/GWmodel"
 
@@ -3045,6 +3117,9 @@ GWmodel_CUDA_LIB_PATH="~/.cache/GWmodel"
 
 { printf "%s\n" "$as_me:${as_lineno-$LINENO}: Building Makevars" >&5
 printf "%s\n" "$as_me: Building Makevars" >&6;}
+
+
+
 
 
 
