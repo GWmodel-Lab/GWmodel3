@@ -1,0 +1,8 @@
+library(sf)
+library(GWmodel3, lib.loc = "../../../Rlibrary.tmp")
+library(Rmpi)
+# data(LondonHP)
+# gwr_basic(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, verbose = 2)
+data(wuhan.hp, package = "hgwrr")
+gwr_basic(Price ~ d.PrimarySchool + BuildingArea + Fee, wuhan.hp, bw = 512, adaptive = T, verbose = 2)
+invisible(mpi.finalize())
