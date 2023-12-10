@@ -172,10 +172,12 @@ enum_list <- function(x, labels, default = labels[[1]]) {
 }
 
 parallel_types <- list(
-    "none" = 1,
+    "no" = 1,
     "omp" = 2,
     "cuda" = 4,
-    "cluster" = 8
+    "mpi.no" = 9,
+    "mpi.omp" = 10,
+    "mpi.cuda" = 12
 )
 
 kernel_enums <- c("gaussian", "exp", "bisquare", "tricube", "boxcar")
