@@ -8,7 +8,9 @@
 #include "gwmodelcuda/IGWRBasicGpuTask.h"
 #endif // ENABLE_CUDA_SHARED
 
+#ifdef ENABLE_MPI
 #include "mpi.h"
+#endif // ENABLE_MPI
 
 using namespace std;
 using namespace Rcpp;
@@ -155,7 +157,6 @@ int verbose
         throw std::logic_error("Method not implemented.");
 #endif // ENABLE_CUDA
     default:
-        algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
 #ifdef ENABLE_MPI

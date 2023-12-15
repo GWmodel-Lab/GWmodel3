@@ -4,6 +4,10 @@
 #include "gwmodel.h"
 #include "telegrams/GWRMultiscaleTelegram.h"
 
+#ifdef ENABLE_MPI
+#include <mpi.h>
+#endif // ENABLE_MPI
+
 using namespace std;
 using namespace Rcpp;
 using namespace arma;
@@ -91,25 +95,39 @@ List gwr_multiscale_fit (
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setBandwidthSelectRetryTimes(retry_times);
     algorithm.setMaxIteration(max_iterations);
+    algorithm.setParallelType(ParallelType(parallel_type));
     switch (ParallelType(size_t(parallel_type)))
     {
-    case ParallelType::SerialOnly:
-        algorithm.setParallelType(ParallelType::SerialOnly);
-        break;
-#ifdef _OPENMP
     case ParallelType::OpenMP:
+#ifdef ENABLE_MPI
+    case ParallelType::MPI_MP:
+#endif // ENABLE_MPI
+#ifdef _OPENMP
         algorithm.setParallelType(ParallelType::OpenMP);
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
+#else
+        throw std::logic_error("OpenMP method not implemented.");
 #endif
     default:
-        algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+#ifdef ENABLE_MPI
+    if (algorithm.parallelType() & ParallelType::MPI)
+    {
+        Rcout << "MPI mode\n";
+        algorithm.setWorkerId(iProcess);
+        algorithm.setWorkerNum(nProcess);
+    }
+#endif // ENABLE_MPI
+
+    MYMPI_MASTER_BEGIN
     if (verbose > 0)
     {
         algorithm.setTelegram(make_unique<GWRMultiscaleTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
+    MYMPI_MASTER_END
+
     try
     {
         algorithm.fit();
@@ -118,7 +136,10 @@ List gwr_multiscale_fit (
     {
         stop(e.what());
     }
+
+    List result_list;
     
+    MYMPI_MASTER_BEGIN
     // Get bandwidth
     vector<double> bw_value;
     const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
@@ -136,6 +157,10 @@ List gwr_multiscale_fit (
         Named("bw_value") = wrap(bw_value),
         Named("fitted") = fitted
     );
+    MYMPI_MASTER_END
+
+    if (parallel_type & ParallelType::MPI)
+        result_list["mpi_rank"] = iProcess;
 
     return result_list;
 }
