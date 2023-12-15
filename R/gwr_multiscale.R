@@ -115,6 +115,15 @@ gwr_multiscale <- function(
     parallel_method <- match.arg(parallel_method)
     criterion <- match.arg(criterion)
     attr(data, "na.action") <- getOption("na.action")
+    is_mpi_workers <- F
+    if (is.loaded("mpi_initialize")) {
+        if (requireNamespace("Rmpi", quietly = TRUE)) {
+            if (Rmpi::mpi.comm.size(0) > 1) {
+                parallel_method <- paste0("mpi.", parallel_method)
+                is_mpi_workers <- Rmpi::mpi.comm.rank(0) > 0
+            }
+        }
+    }
 
     ### Extract coords
     data <- do.call(na.action(data), args = list(data))
@@ -216,6 +225,10 @@ gwr_multiscale <- function(
     ), error = function (e) {
         stop("Error:", conditionMessage(e))
     })
+    if (is_mpi_workers) {
+        return(NULL)
+    }
+
     bw_value <- c_result$bw_value
     betas <- c_result$betas
     fitted <- c_result$fitted

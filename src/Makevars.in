@@ -109,6 +109,7 @@ MPI_CFLAGS = @MPI_CFLAGS@
 MPI_LIBS = @MPI_LIBS@
 PKG_CXXFLAGS += ${MPI_CFLAGS} -DENABLE_MPI
 PKG_LIBS += ${MPI_LIBS}
+OBJECTS_CXX += libgwmodel/src/gwmodelpp/utils/armampi.o
 endif
 ### [End]
 
