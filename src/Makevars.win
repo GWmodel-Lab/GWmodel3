@@ -65,6 +65,7 @@ OBJECTS_GWMODEL = \
 	gwr_basic.o \
 	gwr_multiscale.o \
 	gwdr.o \
+	gwss.o \
 	RcppExports.o
 
 
