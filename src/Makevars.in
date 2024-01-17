@@ -63,6 +63,7 @@ OBJECTS_GWMODEL = \
 	gwr_basic.o \
 	gwr_multiscale.o \
 	gwdr.o \
+	gwss.o \
 	RcppExports.o
 
 OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
