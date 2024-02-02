@@ -39,6 +39,9 @@ reference:
     - starts_with("GWDRConfig")
     - ends_with("GWDRConfig")
     - starts_with("gwdr")
+  - subtitle: GWSS
+  - contents:
+    - starts_with("gwss")
   - title: Utils
   - contents:
     - print_table_md
