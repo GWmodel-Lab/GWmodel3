@@ -2,7 +2,7 @@
 title: "High-performance Computing in GW modelling"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{other-01-hpc}
+  %\VignetteIndexEntry{High-performance Computing in GW modelling}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

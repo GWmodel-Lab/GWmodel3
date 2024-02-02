@@ -1,0 +1,51 @@
+---
+title: "Geographically Weighted Summary Statistics"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Geographically Weighted Summary Statistics}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(GWmodel3)
+```
+
+Geographically Weighted Summary Statistics (GWSS) are some statistics including:
+
+- Average
+- Variance
+- Standard deviation
+- Skewness
+- Cross-validation
+- Median
+- IQR
+- QI
+- Pearson's correlation
+- Spearman's correlation
+
+There are two modes of GWSS: "average" and "correlation".
+The Pearson's and Spearman's correlations are available in the "correlation" model,
+while others are in the "average" mode.
+
+```{r}
+data(LondonHP)
+m1 <- gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+m1
+m2 <- gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE, mode = "correlation")
+m2
+```
+
+And the result is also ready to make plots.
+
+```{r}
+plot(m1)
+```
+
