@@ -14,8 +14,10 @@ navbar:
         href: articles/tutorial-01-gwr-basic.html
       - text: Multiscale GWR
         href: articles/tutorial-02-gwr-multiscale.html
-      - text: Multiscale GWR
+      - text: Spatial Density Regression
         href: articles/tutorial-03-gwdr.html
+      - text: Summary Statistics
+        href: articles/tutorial-04-gwss.html
       - text: -------
       - text: Others
       - text: High-performance Computing
