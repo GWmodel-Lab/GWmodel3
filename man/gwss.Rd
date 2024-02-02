@@ -2,6 +2,7 @@
 % Please edit documentation in R/gwss.R
 \name{gwss}
 \alias{gwss}
+\alias{plot.gwssm}
 \title{Geographically Weighted Summary Statistics}
 \usage{
 gwss(
@@ -18,6 +19,8 @@ gwss(
   parallel_method = c("no", "omp"),
   parallel_arg = c(0)
 )
+
+\method{plot}{gwssm}(x, y, ..., columns)
 }
 \arguments{
 \item{formula}{Regresison model.}
@@ -44,10 +47,32 @@ default to 2, i.e., Euclidean distance.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
+
+\item{x}{A "gwssm" object}
+
+\item{y}{Ignored}
+
+\item{\dots}{Additional arguments passing to \code{\link[sf:plot]{sf::plot()}}.}
+
+\item{columnsColumn}{names to plot.
+If it is missing or non-character value, all coefficient columns are plotted.}
 }
 \value{
 A \code{gwssm} object.
 }
 \description{
 Geographically Weighted Summary Statistics
+}
+\section{Functions}{
+\itemize{
+\item \code{plot(gwssm)}: Plot the result of basic GWSS model.
+
+}}
+\examples{
+data(LondonHP)
+m <- gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE, mode = "correlation")
+
+plot(m)
+
 }

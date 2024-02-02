@@ -18,7 +18,8 @@
 #' 
 #' @examples
 #' data(LondonHP)
-#' gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+#' m <- gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+#' gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE, mode = "correlation")
 #' 
 #' @export 
 gwss <- function(
@@ -170,4 +171,32 @@ print.gwssm <- function(x, ..., decimal_fmt) {
     cat("===========", fill = T)
     res <- st_drop_geometry(x$SDF)
     print(as.data.frame(t(sapply(res, summary))))
+}
+
+#' @describeIn gwss Plot the result of basic GWSS model.
+#' 
+#' @param x A "gwssm" object
+#' @param y Ignored
+#' @param columnsColumn names to plot.
+#'  If it is missing or non-character value, all coefficient columns are plotted.
+#' @param \dots Additional arguments passing to [sf::plot()].
+#' @method plot gwssm
+#' 
+#' @examples 
+#' plot(m)
+#' 
+#' @export
+plot.gwssm <- function(x, y, ..., columns) {
+    if (!inherits(x, "gwssm"))
+        stop("It's not a 'gwssm' object.")
+    
+    sdf <- sf::st_as_sf(x$SDF)
+    sdf_colnames <- names(sf::st_drop_geometry(x$SDF))
+    if (!missing(columns) && is.character(columns)) {
+        valid_columns <- intersect(columns, sdf_colnames)
+        if (length(valid_columns) > 0) {
+            sdf <- sdf[valid_columns]
+        }
+    }
+    plot(sdf, ...)
 }
