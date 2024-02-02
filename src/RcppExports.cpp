@@ -131,12 +131,35 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gwss_fit
+List gwss_fit(const NumericMatrix& x, const NumericMatrix& coords, int mode, bool quantile, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, size_t parallel_type, const IntegerVector& parallel_arg);
+RcppExport SEXP _GWmodel3_gwss_fit(SEXP xSEXP, SEXP coordsSEXP, SEXP modeSEXP, SEXP quantileSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< int >::type mode(modeSEXP);
+    Rcpp::traits::input_parameter< bool >::type quantile(quantileSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
+    rcpp_result_gen = Rcpp::wrap(gwss_fit(x, coords, mode, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gwdr_fit", (DL_FUNC) &_GWmodel3_gwdr_fit, 19},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},
+    {"_GWmodel3_gwss_fit", (DL_FUNC) &_GWmodel3_gwss_fit, 12},
     {NULL, NULL, 0}
 };
 
