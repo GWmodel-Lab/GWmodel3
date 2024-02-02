@@ -16,6 +16,10 @@
 #' 
 #' @return A `gwssm` object.
 #' 
+#' @examples
+#' data(LondonHP)
+#' gwss(~ PURCHASE + FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+#' 
 #' @export 
 gwss <- function(
     formula,
@@ -47,6 +51,7 @@ gwss <- function(
     mc <- match.call(expand.dots = FALSE)
     mf <- model.frame(formula = formula(formula), data = sf::st_drop_geometry(data))
     mt <- attr(mf, "terms")
+    attr(mt, "intercept") <- 0
     x <- model.matrix(mt, mf)
     indep_vars <- colnames(x)
     colnames(x) <- indep_vars
@@ -74,19 +79,19 @@ gwss <- function(
         local_sdev <- c_results$sdev
         local_skew <- c_results$skew
         local_cv <- c_results$cv
-        colnames(local_mean) <- paste(indep_vars, "_LM")
-        colnames(local_var) <- paste(indep_vars, "_LVar")
-        colnames(local_sdev) <- paste(indep_vars, "_LSdev")
-        colnames(local_skew) <- paste(indep_vars, "_LSkew")
-        colnames(local_cv) <- paste(indep_vars, "_LCV")
+        colnames(local_mean) <- paste0(indep_vars, "_LM")
+        colnames(local_var) <- paste0(indep_vars, "_LVar")
+        colnames(local_sdev) <- paste0(indep_vars, "_LSdev")
+        colnames(local_skew) <- paste0(indep_vars, "_LSkew")
+        colnames(local_cv) <- paste0(indep_vars, "_LCV")
         sdf_data <- as.data.frame(cbind(local_mean, local_var, local_sdev, local_skew, local_cv))
         if (quantile) {
             local_median = c_results$median
             local_iqr = c_results$iqr
             local_qi = c_results$qi
-            colnames(local_median) <- paste(indep_vars, "_LMedian")
-            colnames(local_iqr) <- paste(indep_vars, "_IQR")
-            colnames(local_qi) <- paste(indep_vars, "_QI")
+            colnames(local_median) <- paste0(indep_vars, "_LMedian")
+            colnames(local_iqr) <- paste0(indep_vars, "_IQR")
+            colnames(local_qi) <- paste0(indep_vars, "_QI")
             sdf_data <- cbind(sdf_data, local_median, local_iqr, local_qi)
         }
     } else {
@@ -94,9 +99,9 @@ gwss <- function(
         local_scorr <- c_results$scorr
         var_pairs <- outer(indep_vars, indep_vars, paste, sep = ".")
         var_pairs <- var_pairs[upper.tri(var_pairs)]
-        colnames(local_corr) <- paste(var_pairs, "_LCor")
-        colnames(local_scorr) <- paste(var_pairs, "_LSCor")
-        sdf_data <- cbind(sdf_data, local_median, local_iqr, local_qi)
+        colnames(local_corr) <- paste0(var_pairs, "_LCor")
+        colnames(local_scorr) <- paste0(var_pairs, "_LSCor")
+        sdf_data <- as.data.frame(cbind(local_corr, local_scorr))
     }
     sdf_data$geometry <- sf::st_geometry(data)
     sdf <- sf::st_sf(sdf_data)
@@ -131,6 +136,7 @@ gwss <- function(
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' 
+#' @importFrom sf st_drop_geometry
 #' @method print gwssm
 #' @rdname print
 #' @export
@@ -159,4 +165,9 @@ print.gwssm <- function(x, ..., decimal_fmt) {
     distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
     cat("                Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
     cat("\n", fill = T)
+
+    cat("SDF Summary", fill = T)
+    cat("===========", fill = T)
+    res <- st_drop_geometry(x$SDF)
+    print(as.data.frame(t(sapply(res, summary))))
 }
