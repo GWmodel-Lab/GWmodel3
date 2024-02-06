@@ -1,10 +1,10 @@
-#ifndef GWDRTELEGRAM
-#define GWDRTELEGRAM
+#ifndef SDRTELEGRAM
+#define SDRTELEGRAM
 
 #include "RTelegram.h"
 #include <map>
 
-class GWDRTelegram : public RTelegram
+class SDRTelegram : public RTelegram
 {
 public:
     enum class InfoTag {
@@ -16,7 +16,7 @@ public:
     static std::map<gwm::GWDR::BandwidthCriterionType, std::string> BwCriterionName;
 
 public:
-    GWDRTelegram(const gwm::GWDR& algorithm, int verbose) : 
+    SDRTelegram(const gwm::GWDR& algorithm, int verbose) : 
         RTelegram(verbose)
     {
         const auto& sws = algorithm.spatialWeights();
@@ -29,13 +29,13 @@ public:
         mBandwidthCriterionType = algorithm.bandwidthCriterionType();
     }
 
-    GWDRTelegram(const gwm::GWDR& algorithm, std::vector<std::string> varNames, int verbose) : 
-        GWDRTelegram(algorithm, verbose)
+    SDRTelegram(const gwm::GWDR& algorithm, std::vector<std::string> varNames, int verbose) : 
+        SDRTelegram(algorithm, verbose)
     {
         mVariableNames = varNames;
     }
 
-    ~GWDRTelegram() {}
+    ~SDRTelegram() {}
     void parseInfo(std::string message) override;
     bool testBandwidthCriterionTitle(const std::string& s);
 
@@ -47,4 +47,4 @@ private:
     std::vector<std::string> mVariableNames;
 };
 
-#endif  // GWDRTELEGRAM
+#endif  // SDRTELEGRAM

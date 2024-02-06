@@ -2,7 +2,7 @@
 #include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
-#include "telegrams/GWDRTelegram.h"
+#include "telegrams/SDRTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -10,10 +10,10 @@ using namespace arma;
 using namespace gwm;
 
 // [[Rcpp::export]]
-List gwdr_fit(
-    const arma::mat& x,
-    const arma::vec& y,
-    const arma::mat& coords,
+List sdr_fit(
+    const NumericMatrix& x,
+    const NumericVector& y,
+    const NumericMatrix& coords,
     const NumericVector& bw,
     const LogicalVector& adaptive,
     const IntegerVector& kernel,
@@ -81,7 +81,7 @@ List gwdr_fit(
     }
     if (verbose > 0)
     {
-        algorithm.setTelegram(make_unique<GWDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
+        algorithm.setTelegram(make_unique<SDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
     try
     {

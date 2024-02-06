@@ -1,12 +1,12 @@
 data(LondonHP)
 m <- NULL
 
-test_that("GWDR: works", {
-  m <<- expect_no_error(gwdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
+test_that("SDR: works", {
+  m <<- expect_no_error(sdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP))
 })
 
-test_that("GWDR: verbose", {
+test_that("SDR: verbose", {
   skip_on_ci()
-  expect_no_error(gwdr(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, optim_bw = "CV", verbose = 1))
-  expect_no_error(gwdr(PURCHASE~FLOORSZ+UNEMPLOY+PROF, LondonHP, optim_bw = "CV", verbose = 2))
+  expect_no_error(sdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, optim_bw = "CV", verbose = 1))
+  expect_no_error(sdr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, optim_bw = "CV", verbose = 2))
 })
