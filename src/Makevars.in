@@ -56,13 +56,13 @@ OBJECTS_TELEGRAM = \
 	telegrams/RTelegram.o \
 	telegrams/GWRBasicTelegram.o \
 	telegrams/GWRMultiscaleTelegram.o \
-	telegrams/GWDRTelegram.o
+	telegrams/SDRTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
 	gwr_multiscale.o \
-	gwdr.o \
+	sdr.o \
 	RcppExports.o
 
 OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)

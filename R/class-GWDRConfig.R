@@ -1,11 +1,11 @@
-#' An S4 class to set GWDR configurations
+#' An S4 class to set SDR configurations
 #'
 #' @slot bw Bandwidth value.
 #' @slot adaptive Whether the bandwidth value is adaptive or not.
 #' @slot kernel Kernel function used.
 #' 
-#' @exportClass GWDRConfig
-GWDRConfig <- setClass("GWDRConfig", slots = c(
+#' @exportClass SDRConfig
+SDRConfig <- setClass("SDRConfig", slots = c(
     bw = "numeric",
     adaptive = "logical",
     kernel = "character"
@@ -15,25 +15,25 @@ GWDRConfig <- setClass("GWDRConfig", slots = c(
     kernel = "gaussian"
 ))
 
-#' Replicate GWDR config
+#' Replicate SDR config
 #'
-#' @param x A \linkS4class{GWDRConfig} object.
+#' @param x A \linkS4class{SDRConfig} object.
 #' @param \dots Additional arguments.
 #' @param times Replication times.
 #'
-#' @return A list of \linkS4class{GWDRConfig} objects.
+#' @return A list of \linkS4class{SDRConfig} objects.
 #'
 #' @examples
-#' rep(gwdr_config(36, TRUE, "bisquare"), 4)
+#' rep(sdr_config(36, TRUE, "bisquare"), 4)
 #'
-#' @name rep-GWDRConfig
+#' @name rep-SDRConfig
 NULL
 
-#' @rdname rep-GWDRConfig
+#' @rdname rep-SDRConfig
 #' @export
 setMethod(
     "rep",
-    signature(x = "GWDRConfig"),
+    signature(x = "SDRConfig"),
     definition = function(x, ...) {
         mc <- match.call(rep.int)
         mc[[1L]] <- as.name("rep.int")
@@ -41,15 +41,15 @@ setMethod(
     }
 )
 
-#' @rdname rep-GWDRConfig
+#' @rdname rep-SDRConfig
 #' @export
 setMethod(
     "rep.int",
-    signature(x = "GWDRConfig", times = "numeric"),
+    signature(x = "SDRConfig", times = "numeric"),
     definition = function(x, times = 1) {
         times <- as.integer(floor(times))
         lapply(seq_len(times), function(i) {
-            gwdr_config(
+            sdr_config(
                 bw = x@bw,
                 adaptive = x@adaptive,
                 kernel = x@kernel
@@ -58,32 +58,32 @@ setMethod(
     }
 )
 
-#' Create an instance of GWDRConfig.
+#' Create an instance of SDRConfig.
 #'
 #' @param bw Bandwidth value.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
 #'
 #' @examples
-#' gwdr_config(36, TRUE, "bisquare")
+#' sdr_config(36, TRUE, "bisquare")
 #' 
 #' @importFrom methods new
 #'
 #' @export
-gwdr_config <- function(
+sdr_config <- function(
     bw = 0.618,
     adaptive = TRUE,
     kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
 ) {
     kernel <- match.arg(kernel)
-    new("GWDRConfig",
+    new("SDRConfig",
         bw = bw,
         adaptive = adaptive,
         kernel = kernel
     )
 }
 
-gwdr_bw_criterion_enums <- c(
+sdr_bw_criterion_enums <- c(
     "CV",
     "AIC"
 )
