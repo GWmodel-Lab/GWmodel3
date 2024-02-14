@@ -1,0 +1,30 @@
+name: Build and Publish to GitHub Release
+
+on:
+  push:
+    tags:
+      - v*.*.*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Build R Package
+        run: |
+          devtools::build(path = ".")
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: GWmodel3_*.tar.gz
+          draft: true
+          
+           
+        
