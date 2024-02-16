@@ -5,6 +5,10 @@ on:
     tags:
       - v*.*.*
   workflow_dispatch:
+    inputs:
+      tag:
+        description: "The tag name to create release"
+        required: true
 
 jobs:
   build:
@@ -26,6 +30,7 @@ jobs:
         with:
           files: GWmodel3_*.tar.gz
           draft: true
-          
+          name: ${{ github.event_name == 'worflow_dispatch' && inputs.tag || github.ref_name }}
+          tag_name: ${{ github.event_name == 'worflow_dispatch' && inputs.tag || github.ref_name }}
            
         
