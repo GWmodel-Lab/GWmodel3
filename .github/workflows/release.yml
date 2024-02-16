@@ -23,9 +23,7 @@ jobs:
         with:
           submodules: recursive
       - name: Build R Package
-        run: |
-          devtools::build(path = ".")
-        shell: Rscript -e '{0}'
+        run: R CMD build .
       - name: Release
         uses: softprops/action-gh-release@v1
         with:
