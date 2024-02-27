@@ -107,6 +107,18 @@ A \code{gwrm} object.
 \description{
 Calibrate a basic GWR model
 }
+\details{
+\subsection{Parallelization}{
+
+Two parallel methods are provided to speed up basic GWR algorithm:
+\itemize{
+\item Multithreading (\code{omp})
+\item NVIDIA GPU Computing (\code{cuda})
+}
+
+See the vignettes about parallelization to learn more about this topic.
+}
+}
 \section{Functions}{
 \itemize{
 \item \code{step(gwrm)}: Model selection for basic GWR model
@@ -144,4 +156,7 @@ residuals(m)
 
 predict(m, LondonHP)
 
+}
+\seealso{
+\code{browseVignettes("")}
 }
