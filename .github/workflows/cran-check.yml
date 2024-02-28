@@ -86,23 +86,3 @@ jobs:
           build_args: 'c("--no-manual", "--resave-data")'
           error-on: '"error"'
           check-dir: '"check"'
-  
-  release_github:
-    if: ${{ startsWith(github.ref, 'refs/tags/') }}
-    needs: [check_windows, check_macos, check_linux]
-    runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
-    permissions:
-      contents: write
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-        with:
-          submodules: recursive
-      - name: Build R Package
-        run: R CMD build .
-      - name: Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: GWmodel3_*.tar.gz
