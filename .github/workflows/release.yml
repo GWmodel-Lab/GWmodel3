@@ -1,19 +1,16 @@
 name: R Package Release to GitHub
 
 on:
-  # workflow_run:
-  #   workflows:
-  #     - "R Package CRAN Check"
-  #   types:
-  #     - completed
-  push:
-    branches:
-      - feat/release-*
+  workflow_run:
+    workflows:
+      - "R Package CRAN Check"
+    types:
+      - completed
 
 jobs:
   source_package:
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.ref, 'refs/tags/') || contains(github.ref, 'feat/release-') }}
+    if: ${{ startsWith(github.ref, 'refs/tags/') }}
     container:
       image: ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
     outputs:
