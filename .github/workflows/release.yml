@@ -64,7 +64,7 @@ jobs:
           R.exe CMD INSTALL . --library=tmp/Library
       - name: Create Prebuilt Package
         run: |
-          R.exe -e "zip(\"../../GWmodel3_${{ needs.source_package.outputs.pkg_version }}.zip\", \"GWmodel3\")"
+          R.exe -e "zip(\\"../../GWmodel3_${{ needs.source_package.outputs.pkg_version }}.zip\\", \\"GWmodel3\\")"
         working-directory: tmp/Library
         shell: powershell
       - name: Upload Artifact
