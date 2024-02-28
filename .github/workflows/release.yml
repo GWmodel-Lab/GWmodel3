@@ -1,0 +1,92 @@
+name: R Package Release to GitHub
+
+on:
+  # workflow_run:
+  #   workflows:
+  #     - "R Package CRAN Check"
+  #   types:
+  #     - completed
+  push:
+    branches:
+      - feat/release-*
+
+jobs:
+  source_package:
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.ref, 'refs/tags/') || contains(github.ref, 'feat/release-') }}
+    container:
+      image: ghcr.io/gwmodel-lab/gwmodel3-test-debian-release:latest
+    outputs:
+      pkg_version: ${{ steps.read_version.outputs.version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Read Version
+        id: read_version
+        run: |
+          PKG_VERSION=`grep -Po "(?<=Version: )(\d+.\d+.\d+(.(alpha|beta)\d+)*)" DESCRIPTION`
+          echo "version=$PKG_VERSION" >> "$GITHUB_OUTPUT"
+      - name: Build R Package
+        run: R CMD build .
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GWmodel3_src
+          path: GWmodel3_*.tar.gz
+  
+  win_prebuilt:
+    runs-on: windows-2022
+    needs: source_package
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - name: Install Dependencies
+        run: |
+          choco install pandoc
+      - name: Setup R
+        uses: r-lib/actions/setup-r@v2
+        with:
+          r-version: 'release'
+          rtools-version: '42'
+          update-rtools: true
+      - name: Install R Dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: any::rcmdcheck, any::roxygen2
+          needs: check
+      - name: Install Package
+        run: |
+          mkdir tmp/Library
+          R.exe CMD INSTALL . --library=tmp/Library
+      - name: Create Prebuilt Package
+        run: |
+          zip("../../GWmodel3_${{ needs.source_package.outputs.pkg_version }}.zip", "GWmodel3")
+        shell: R.exe -e {0}
+        working-directory: tmp/Library
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: GWmodel3_win_prebuilt
+          path: tmp/Library/GWmodel3_*.zip
+  
+  release_github:
+    needs: win_prebuilt
+    if: ${{ startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          path: artifact
+          pattern: GWmodel3*
+          merge-multiple: true
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifact/*
