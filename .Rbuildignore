@@ -2,6 +2,11 @@
 \.github
 \.vscode
 \.devcontainer
+\.gitignore
+src/libgwmodel/CMakeLists\.txt
+src/libgwmodel/Doxygen
+src/libgwmodel/Doxygen\.zh-Hans
+src/libgwmodel/\.readthedocs\.yaml
 src/libgwmodel/test
 src/libgwmodel/docs
 ^_pkgdown\.yml$
