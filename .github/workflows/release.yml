@@ -66,6 +66,7 @@ jobs:
         run: |
           R.exe -e "zip(\"../../GWmodel3_${{ needs.source_package.outputs.pkg_version }}.zip\", \"GWmodel3\")"
         working-directory: tmp/Library
+        shell: powershell
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
