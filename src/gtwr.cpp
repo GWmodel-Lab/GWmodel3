@@ -111,7 +111,8 @@ List gtwr_fit(
         Named("betasSE") = mywrap(algorithm.betasSE()),
         Named("sTrace") = mywrap(algorithm.sHat()),
         Named("sHat") = mywrap(algorithm.s()),
-        Named("diagnostic") = mywrap(algorithm.diagnostic())
+        Named("diagnostic") = mywrap(algorithm.diagnostic()),
+        Named("fitted") = mywrap(fitted)
     );
     const SpatialWeight& spatialWeights = algorithm.spatialWeight();
     if (optim_bw)
