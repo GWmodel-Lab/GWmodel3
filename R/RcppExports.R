@@ -17,3 +17,7 @@ gwr_multiscale_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, t
     .Call(`_GWmodel3_gwr_multiscale_fit`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw, optim_bw_criterion, threashold, initial_type, centered, optim_bw_lower, optim_bw_upper, criterion, hatmatrix, intercept, retry_times, max_iterations, parallel_type, parallel_arg, variable_names, verbose)
 }
 
+gwss_fit <- function(x, coords, mode, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg) {
+    .Call(`_GWmodel3_gwss_fit`, x, coords, mode, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg)
+}
+
