@@ -11,6 +11,18 @@ test_that("GTWR: set timestamps", {
   })
 })
 
+test_that("GTWR: optim lambda and bandwidth", {
+  expect_no_error({
+    gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, NA, 0.05, TRUE)
+  })
+  expect_no_error({
+    gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, 64, NA, TRUE)
+  })
+  expect_no_error({
+    gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, NA, NA, TRUE)
+  })
+})
+
 test_that("GTWR: helper functions", {
   expect_no_error({
     coef(m)
