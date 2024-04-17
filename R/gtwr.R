@@ -1,7 +1,9 @@
-#' Calibrate a basic GWR model
+#' Geographically and Temporally Weighted Regression
 #'
-#' @param formula Regresison model.
+#' @param formula Formula for regression.
 #' @param data A `sf` objects.
+#' @param timestamps A vector timestamps for all samples.
+#'  Either a numerical vector, or a character vector to be parsed according to `time_format`.
 #' @param bw Either a value to set the size of bandwidth,
 #'  or one of the following characters to set the criterion for
 #'  bandwidth auto-optimization process.
@@ -9,6 +11,8 @@
 #'  - `CV`
 #'  Note that if `NA` or other non-numeric value is setted,
 #'  this parameter will be reset to `Inf`.
+#' @param lambda Either a value between 0 and 1 as the weight of temporal distance,
+#'  or a `NA` value to enable auto-selection.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
 #' @param longlat Whether the coordinates
@@ -18,6 +22,7 @@
 #' @param optim_bw_range Bounds on bandwidth optimization, a vector of two numeric elements.
 #'  Set to `NA_real_` to enable default values selected by the algorithm.
 #' @param hatmatrix If TRUE, great circle will be caculated.
+#' @param time_format The format used to parse timestamps if they are characters.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
 #' @param verbose Whether to print additional information.
@@ -27,24 +32,31 @@
 #' @details
 #' ## Parallelization
 #' 
-#' Two parallel methods are provided to speed up basic GWR algorithm:
+#' Supported method(s):
 #' 
 #' - Multithreading (`omp`)
-#' - NVIDIA GPU Computing (`cuda`)
 #' 
 #' See the vignettes about parallelization to learn more about this topic.
 #'
 #' @examples
 #' data(LondonHP)
+#' LondonHP$time <- as.integer(round(runif(nrow(LondonHP), 1, 365)))
 #'
 #' # Basic usage
-#' gtwr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, 64, TRUE)
+#' m <- gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "time", 64, 0.05, TRUE)
+#' m
+#' coef(m)
+#' fitted(m)
+#' residual(m)
 #'
 #' # Bandwidth Optimization
-#' m <- gtwr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, 'AIC', TRUE)
-#' m
+#' gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, NA, 0.05, TRUE)
 #' 
-#' @seealso `browseVignettes("")`
+#' # Lambda Optimization
+#' gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, 64, NA, TRUE)
+#' 
+#' # Bandwidth and Lambda optimization
+#' gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, NA, NA, TRUE)
 #'
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export
@@ -62,7 +74,7 @@ gtwr <- function(
     optim_bw_range = c(0, Inf),
     hatmatrix = TRUE,
     time_format = NA,
-    parallel_method = c("no", "omp", "cuda"),
+    parallel_method = c("no", "omp"),
     parallel_arg = c(0),
     verbose = FALSE
 ) {
@@ -215,7 +227,7 @@ gtwr <- function(
 #' 
 #' @method print gtwrm
 #' @importFrom stats coef fivenum
-#' @rdname print
+#' @noRd
 #' @export
 print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gtwrm")) {
@@ -262,7 +274,7 @@ print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
     cat("\n", fill = T)
 }
 
-#' @describeIn gtwr Predict on new locations.
+#' @describeIn [Not implemented] gtwr Predict on new locations.
 #'
 #' @param object A "gtwrm" object.
 #' @param regression_points Data of new locations.
@@ -270,9 +282,6 @@ print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' @param verbose Whether to print additional message.
 #' 
 #' @method predict gtwrm
-#'
-#' @examples
-#' predict(m, LondonHP)
 #'
 #' @export
 predict.gtwrm <- function(object, regression_points, verbose = FALSE, ...) {
