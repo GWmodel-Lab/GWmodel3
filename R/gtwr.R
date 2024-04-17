@@ -45,9 +45,9 @@
 #' # Basic usage
 #' m <- gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "time", 64, 0.05, TRUE)
 #' m
-#' coef(m)
-#' fitted(m)
-#' residual(m)
+#' head(coef(m))
+#' head(fitted(m))
+#' head(residuals(m))
 #'
 #' # Bandwidth Optimization
 #' gtwr(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, LondonHP$time, NA, 0.05, TRUE)
