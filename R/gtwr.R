@@ -235,8 +235,8 @@ print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
     }
 
     ### Basic Information
-    cat("Geographically Weighted Regression Model", fill = T)
-    cat("========================================", fill = T)
+    cat("Geographically and Temporally Weighted Regression Model", fill = T)
+    cat("=======================================================", fill = T)
     cat("  Formula:", deparse(x$call$formula), fill = T)
     cat("     Data:", deparse(x$call$data), fill = T)
     cat("   Kernel:", x$args$kernel, fill = T)
