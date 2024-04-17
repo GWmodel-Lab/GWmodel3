@@ -34,6 +34,7 @@ endif
 OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/BandwidthWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CRSDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CRSSTDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/DMatDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Distance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/MinkwoskiDistance.o \
@@ -41,6 +42,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/GTWR.o \
 	libgwmodel/src/gwmodelpp/GWDR.o \
 	libgwmodel/src/gwmodelpp/GWPCA.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
@@ -63,6 +65,7 @@ OBJECTS_GWMODEL = \
 	gwr_basic.o \
 	gwr_multiscale.o \
 	gwdr.o \
+	gtwr.o \
 	RcppExports.o
 
 OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)

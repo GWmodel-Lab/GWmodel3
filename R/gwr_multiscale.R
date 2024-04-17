@@ -268,9 +268,9 @@ gwr_multiscale <- function(
     gwrmultiscalem
 }
 
-#' Print description of a `gwrmultiscalem` object
+#' @describeIn print.gwrm
 #'
-#' @param x An `gwrmultiscalem` object returned by [gwr_multiscale()].
+#' @param x Object returned by GW modelling methods.
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #'

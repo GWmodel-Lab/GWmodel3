@@ -390,9 +390,9 @@ residuals.gwdrm <- function(object, ...) {
     object$SDF[["residual"]]
 }
 
-#' Print description of a `gwdrm` object
+#' @describeIn print.gwrm
 #'
-#' @param x An `gwdrm` object returned by [gwdr()].
+#' @param x Object returned by GW modelling methods.
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' 

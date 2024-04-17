@@ -311,9 +311,9 @@ step.gwrm <- function(
     object
 }
 
-#' Print description of a `gwrm` object
+#' Print description of a GW model object
 #'
-#' @param x An `hgwrm` object returned by [gwr_basic()].
+#' @param x Object returned by GW modelling methods.
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' 
