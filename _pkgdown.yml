@@ -24,9 +24,10 @@ reference:
   - contents:
       - GWmodel3-package
   - title: GW regression models
-  - subtitle: Basic GWR
+  - subtitle: Basic GWR and Extensions
   - contents:
     - starts_with("gwr_basic")
+    - starts_with("gtwr")
   - subtitle: Multiscale GWR
   - contents:
     - starts_with("gwr_multiscale")

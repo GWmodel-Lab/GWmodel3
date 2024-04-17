@@ -219,15 +219,15 @@ gtwr <- function(
     gtwrm
 }
 
-#' Print description of a `gtwrm` object
+#' @describeIn print.gwrm
 #'
-#' @param x An `hgtwrm` object returned by [gtwr()].
+#' @param x Object returned by GW modelling methods.
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' 
 #' @method print gtwrm
 #' @importFrom stats coef fivenum
-#' @noRd
+#' @rdname print
 #' @export
 print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
     if (!inherits(x, "gtwrm")) {
@@ -274,7 +274,7 @@ print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
     cat("\n", fill = T)
 }
 
-#' @describeIn [Not implemented] gtwr Predict on new locations.
+#' @describeIn gtwr [Not implemented] Predict on new locations.
 #'
 #' @param object A "gtwrm" object.
 #' @param regression_points Data of new locations.
@@ -282,7 +282,7 @@ print.gtwrm <- function(x, decimal_fmt = "%.3f", ...) {
 #' @param verbose Whether to print additional message.
 #' 
 #' @method predict gtwrm
-#'
+#' @noRd
 #' @export
 predict.gtwrm <- function(object, regression_points, verbose = FALSE, ...) {
     if (!inherits(object, "gtwrm")) {
