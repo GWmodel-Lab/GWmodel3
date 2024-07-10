@@ -1,5 +1,5 @@
-#include <Rcpp.h>
-#include <armadillo>
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
 #include "telegrams/GWRMultiscaleTelegram.h"
@@ -11,9 +11,9 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gwr_multiscale_fit (
-    const NumericMatrix& x,
-    const NumericVector& y,
-    const NumericMatrix& coords,
+    const arma::mat& x,
+    const arma::vec& y,
+    const arma::mat& coords,
     const NumericVector& bw,
     const LogicalVector& adaptive,
     const IntegerVector& kernel,
@@ -37,14 +37,9 @@ List gwr_multiscale_fit (
     const CharacterVector& variable_names,
     int verbose
 ) {
-    // Convert data types
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
-    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
-
     // Make Spatial Weight
-    size_t nVar = (size_t)mx.n_cols;
+    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
+    size_t nVar = (size_t)x.n_cols;
     auto vbw = as< vector<double> >(NumericVector(bw));
     auto vadaptive = as< vector<bool> >(LogicalVector(adaptive));
     auto vkernel = as< vector<int> >(IntegerVector(kernel));
@@ -79,10 +74,10 @@ List gwr_multiscale_fit (
     });
     
     // Make Algorithm Object
-    GWRMultiscale algorithm(mx, my, mcoords, spatials);
-    algorithm.setIndependentVariables(mx);
-    algorithm.setDependentVariable(my);
-    algorithm.setCoords(mcoords);
+    GWRMultiscale algorithm(x, y, coords, spatials);
+    algorithm.setIndependentVariables(x);
+    algorithm.setDependentVariable(y);
+    algorithm.setCoords(coords);
     algorithm.setSpatialWeights(spatials);
     algorithm.setPreditorCentered(vcentered);
     algorithm.setBandwidthInitilize(bandwidthInitialize);
@@ -134,12 +129,12 @@ List gwr_multiscale_fit (
     
     // Return Results
     mat betas = algorithm.betas();
-    vec fitted = sum(mx % betas, 1);
+    vec fitted = sum(x % betas, 1);
     List result_list = List::create(
-        Named("betas") = mywrap(betas),
+        Named("betas") = betas,
         Named("diagnostic") = mywrap(algorithm.diagnostic()),
         Named("bw_value") = wrap(bw_value),
-        Named("fitted") = mywrap(fitted)
+        Named("fitted") = fitted
     );
 
     return result_list;

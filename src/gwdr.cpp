@@ -1,5 +1,5 @@
-#include <Rcpp.h>
-#include <armadillo>
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
 #include "telegrams/GWDRTelegram.h"
@@ -11,9 +11,9 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gwdr_fit(
-    const NumericMatrix& x,
-    const NumericVector& y,
-    const NumericMatrix& coords,
+    const arma::mat& x,
+    const arma::vec& y,
+    const arma::mat& coords,
     const NumericVector& bw,
     const LogicalVector& adaptive,
     const IntegerVector& kernel,
@@ -31,27 +31,22 @@ List gwdr_fit(
     const CharacterVector& variable_names,
     int verbose
 ) {
-    // Convert data types
-    arma::mat mx = myas(x);
-    arma::vec my = myas(y);
-    arma::mat mcoords = myas(coords);
-    std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
-
     // Make Spatial Weight
-    size_t nDim = (size_t)mcoords.n_cols;
+    std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
+    size_t nDim = (size_t)coords.n_cols;
     auto vbw = as< vector<double> >(NumericVector(bw));
     auto vadaptive = as< vector<bool> >(LogicalVector(adaptive));
     auto vkernel = as< vector<int> >(IntegerVector(kernel));
     vector<SpatialWeight> spatials;
     for (size_t i = 0; i < nDim; i++)
     {
-        BandwidthWeight bandwidth(vbw[i] * mcoords.n_rows, vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
+        BandwidthWeight bandwidth(vbw[i] * coords.n_rows, vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
         OneDimDistance distance;
         spatials.push_back(SpatialWeight(&bandwidth, &distance));
     }
     
     // Make Algorithm Object
-    GWDR algorithm(mx, my, mcoords, spatials);
+    GWDR algorithm(x, y, coords, spatials);
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setBandwidthCriterionType(GWDR::BandwidthCriterionType(size_t(optim_bw_criterion)));
 
@@ -99,12 +94,12 @@ List gwdr_fit(
         
     // Return Results
     mat betas = algorithm.betas();
-    vec fitted = sum(mx % betas, 1);
+    vec fitted = sum(x % betas, 1);
     List result_list = List::create(
-        Named("betas") = mywrap(betas),
-        Named("betasSE") = mywrap(algorithm.betasSE()),
-        Named("sTrace") = mywrap(algorithm.sHat()),
-        Named("sHat") = mywrap(algorithm.s()),
+        Named("betas") = betas,
+        Named("betasSE") = algorithm.betasSE(),
+        Named("sTrace") = algorithm.sHat(),
+        Named("sHat") = algorithm.s(),
         Named("diagnostic") = mywrap(algorithm.diagnostic())
     );
     if (optim_bw)
@@ -113,7 +108,7 @@ List gwdr_fit(
         const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
         for (size_t i = 0; i < nDim; i++)
         {
-            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth() / double(mcoords.n_rows));
+            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth() / double(coords.n_rows));
         }
         result_list["bw_value"] = wrap(bw_value);
     }
@@ -122,12 +117,12 @@ List gwdr_fit(
         vector<size_t> sel_vars = algorithm.selectedVariables();
         result_list["variables"] = wrap(sel_vars);
         result_list["model_sel_criterions"] = mywrap(algorithm.indepVarCriterionList());
-        mat x = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(x, betas));
+        mat xs = x.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = GWRBasic::Fitted(xs, betas);
     }
     else
     {
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
+        result_list["fitted"] = GWRBasic::Fitted(x, betas);
     }
 
     return result_list;

@@ -12,14 +12,14 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // gwdr_fit
-List gwdr_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, double optim_threashold, double optim_step, size_t optim_max_iter, bool select_model, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
+List gwdr_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, double optim_threashold, double optim_step, size_t optim_max_iter, bool select_model, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
 RcppExport SEXP _GWmodel3_gwdr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP interceptSEXP, SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP optim_threasholdSEXP, SEXP optim_stepSEXP, SEXP optim_max_iterSEXP, SEXP select_modelSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type bw(bwSEXP);
     Rcpp::traits::input_parameter< const LogicalVector& >::type adaptive(adaptiveSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type kernel(kernelSEXP);
@@ -41,14 +41,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_fit
-List gwr_basic_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, double optim_bw_lower, double optim_bw_upper, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
+List gwr_basic_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, double optim_bw_lower, double optim_bw_upper, bool hatmatrix, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw, size_t optim_bw_criterion, bool select_model, size_t select_model_criterion, size_t select_model_threshold, const CharacterVector& variable_names, int verbose);
 RcppExport SEXP _GWmodel3_gwr_basic_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bw_lowerSEXP, SEXP optim_bw_upperSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP select_modelSEXP, SEXP select_model_criterionSEXP, SEXP select_model_thresholdSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
     Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
     Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
     Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
@@ -73,15 +73,15 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_basic_predict
-NumericMatrix gwr_basic_predict(const NumericMatrix& pcoords, const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, int verbose);
+arma::mat gwr_basic_predict(const arma::mat& pcoords, const arma::mat& x, const arma::vec& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, size_t parallel_type, const IntegerVector& parallel_arg, int verbose);
 RcppExport SEXP _GWmodel3_gwr_basic_predict(SEXP pcoordsSEXP, SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type pcoords(pcoordsSEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type pcoords(pcoordsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
     Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
     Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
     Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
@@ -97,14 +97,14 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_multiscale_fit
-List gwr_multiscale_fit(const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const LogicalVector& optim_bw, const IntegerVector& optim_bw_criterion, const NumericVector& threashold, const IntegerVector& initial_type, const LogicalVector& centered, double optim_bw_lower, double optim_bw_upper, size_t criterion, bool hatmatrix, bool intercept, size_t retry_times, size_t max_iterations, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
+List gwr_multiscale_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const LogicalVector& optim_bw, const IntegerVector& optim_bw_criterion, const NumericVector& threashold, const IntegerVector& initial_type, const LogicalVector& centered, double optim_bw_lower, double optim_bw_upper, size_t criterion, bool hatmatrix, bool intercept, size_t retry_times, size_t max_iterations, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
 RcppExport SEXP _GWmodel3_gwr_multiscale_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP threasholdSEXP, SEXP initial_typeSEXP, SEXP centeredSEXP, SEXP optim_bw_lowerSEXP, SEXP optim_bw_upperSEXP, SEXP criterionSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP retry_timesSEXP, SEXP max_iterationsSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type x(xSEXP);
-    Rcpp::traits::input_parameter< const NumericVector& >::type y(ySEXP);
-    Rcpp::traits::input_parameter< const NumericMatrix& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
     Rcpp::traits::input_parameter< const NumericVector& >::type bw(bwSEXP);
     Rcpp::traits::input_parameter< const LogicalVector& >::type adaptive(adaptiveSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type kernel(kernelSEXP);
