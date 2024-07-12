@@ -34,7 +34,7 @@ jobs:
       - name: Install C++ dependencies
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -qq armadillo gsl openblas catch2 
+          sudo apt-get install -qq libgsl-dev
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
@@ -44,6 +44,7 @@ jobs:
         with:
           cache-version: 2
           extra-packages: |
+            any::devtools
             any::pkgdown
 
       # Render quarto website
