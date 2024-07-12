@@ -44,7 +44,6 @@ jobs:
         with:
           cache-version: 2
           extra-packages: |
-            any::devtools
             any::pkgdown
 
       # Render quarto website
