@@ -94,7 +94,6 @@ List gwdr_fit(
         
     // Return Results
     mat betas = algorithm.betas();
-    vec fitted = sum(x % betas, 1);
     List result_list = List::create(
         Named("betas") = betas,
         Named("betasSE") = algorithm.betasSE(),
