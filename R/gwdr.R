@@ -33,7 +33,7 @@
 #' ### Optim Bandwidth
 #' m <- gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
 #'     gwdr_config(0.618, TRUE, "gaussian")
-#' ), optim_bw = "AIC")
+#' ), optim_bw = "CV")
 #' m
 #'
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
@@ -43,7 +43,7 @@ gwdr <- function(
     formula,
     data,
     config = list(gwdr_config()),
-    optim_bw = c("no", "AIC", "CV"),
+    optim_bw = c("no", "CV", "AIC"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
     optim_bw_max_iter = 1e6,
@@ -98,7 +98,7 @@ gwdr <- function(
     bw_value <- sapply(config, function(x) {
         ifelse(is.numeric(x@bw) || is.integer(x@bw), x@bw, Inf)
     })
-    optim_bw_criterion <- "AIC"
+    optim_bw_criterion <- "CV"
     if (optim_bw == "no") {
         optim_bw <- FALSE
     } else {
@@ -228,7 +228,7 @@ step.gwdrm <- function(
     criterion = c("AIC"),
     threshold = 3.0,
     config = list(gwdr_config()),
-    optim_bw = c("no", "AIC", "CV"),
+    optim_bw = c("no", "CV", "AIC"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
     optim_bw_max_iter = 1e6
@@ -246,7 +246,7 @@ step.gwdrm <- function(
             ifelse(is.numeric(x@bw) || is.integer(x@bw), x@bw, Inf)
         })
     }
-    optim_bw_criterion <- "AIC"
+    optim_bw_criterion <- "CV"
     if (optim_bw == "no") {
         optim_bw <- FALSE
     } else {

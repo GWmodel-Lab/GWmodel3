@@ -1,5 +1,5 @@
-#include <Rcpp.h>
-#include <armadillo>
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
 #include "telegrams/GWRBasicTelegram.h"
@@ -14,7 +14,7 @@ using namespace arma;
 using namespace gwm;
 
 List gwr_basic_fit_cuda(
-    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+    const arma::mat& x, const arma::vec& y, const arma::mat& coords,
     double bw, bool adaptive, size_t kernel, 
     bool longlat, double p, double theta,
     bool hatmatrix, bool intercept,
@@ -24,9 +24,9 @@ List gwr_basic_fit_cuda(
     const CharacterVector& variable_names, int verbose
 );
 
-NumericMatrix gwr_basic_predict_cuda(
-    const NumericMatrix& pcoords,
-    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+arma::mat gwr_basic_predict_cuda(
+    const arma::mat& pcoords,
+    const arma::mat& x, const arma::vec& y, const arma::mat& coords,
     double bw, bool adaptive, size_t kernel, 
     bool longlat, double p, double theta,
     bool intercept,
@@ -36,9 +36,9 @@ NumericMatrix gwr_basic_predict_cuda(
 
 // [[Rcpp::export]]
 List gwr_basic_fit(
-    const NumericMatrix& x,
-    const NumericVector& y,
-    const NumericMatrix& coords,
+    const arma::mat& x,
+    const arma::vec& y,
+    const arma::mat& coords,
     double bw,
     bool adaptive,
     size_t kernel,
@@ -80,11 +80,6 @@ int verbose
     }
 #endif // ENABLE_CUDA_SHARED
 
-    // Convert data types
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
-
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
     Distance* distance = nullptr;
@@ -106,7 +101,7 @@ int verbose
     SpatialWeight spatial(&bandwidth, distance);
 
     // Make Algorithm Object
-    GWRBasic algorithm(mx, my, mcoords, spatial, hatmatrix, intercept);
+    GWRBasic algorithm(x, y, coords, spatial, hatmatrix, intercept);
     algorithm.setIsAutoselectIndepVars(select_model);
     algorithm.setIndepVarSelectionThreshold(select_model_threshold);
     algorithm.setIsAutoselectBandwidth(optim_bw);
@@ -153,10 +148,10 @@ int verbose
     // Return Results
     mat betas = algorithm.betas();
     List result_list = List::create(
-        Named("betas") = mywrap(betas),
-        Named("betasSE") = mywrap(algorithm.betasSE()),
-        Named("sTrace") = mywrap(algorithm.sHat()),
-        Named("sHat") = mywrap(algorithm.s()),
+        Named("betas") = betas,
+        Named("betasSE") = algorithm.betasSE(),
+        Named("sTrace") = algorithm.sHat(),
+        Named("sHat") = algorithm.s(),
         Named("diagnostic") = mywrap(algorithm.diagnostic())
     );
     if (optim_bw)
@@ -169,12 +164,12 @@ int verbose
         vector<size_t> sel_vars = algorithm.selectedVariables();
         result_list["variables"] = wrap(sel_vars);
         result_list["model_sel_criterions"] = mywrap(algorithm.indepVarsSelectionCriterionList());
-        mat x = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(x, betas));
+        mat xs = x.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = GWRBasic::Fitted(xs, betas);
     }
     else
     {
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
+        result_list["fitted"] = GWRBasic::Fitted(x, betas);
     }
 
     return result_list;
@@ -182,11 +177,11 @@ int verbose
 
 
 // [[Rcpp::export]]
-NumericMatrix gwr_basic_predict(
-    const NumericMatrix& pcoords,
-    const NumericMatrix& x,
-    const NumericVector& y,
-    const NumericMatrix& coords,
+arma::mat gwr_basic_predict(
+    const arma::mat& pcoords,
+    const arma::mat& x,
+    const arma::vec& y,
+    const arma::mat& coords,
     double bw,
     bool adaptive,
     size_t kernel,
@@ -219,11 +214,6 @@ NumericMatrix gwr_basic_predict(
     }
 #endif // ENABLE_CUDA_SHARED
 
-    mat mpcoords = myas(pcoords);
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
-
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
     Distance* distance = nullptr;
@@ -245,7 +235,7 @@ NumericMatrix gwr_basic_predict(
     SpatialWeight spatial(&bandwidth, distance);
 
     // Make Algorithm Object
-    GWRBasic algorithm(mx, my, mcoords, spatial, false, intercept);
+    GWRBasic algorithm(x, y, coords, spatial, false, intercept);
     switch (ParallelType(size_t(parallel_type)))
     {
     case ParallelType::SerialOnly:
@@ -279,18 +269,18 @@ NumericMatrix gwr_basic_predict(
     mat betas;
     try
     {
-        betas = algorithm.predict(mpcoords);
+        betas = algorithm.predict(pcoords);
     }
     catch(const std::exception& e)
     {
         stop(e.what());
     }
 
-    return mywrap(betas);
+    return betas;
 }
 
 List gwr_basic_fit_cuda(
-    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+    const arma::mat& x, const arma::vec& y, const arma::mat& coords,
     double bw, bool adaptive, size_t kernel, 
     bool longlat, double p, double theta,
     bool hatmatrix, bool intercept,
@@ -300,9 +290,6 @@ List gwr_basic_fit_cuda(
     const CharacterVector& variable_names, int verbose
 ) {
 #ifdef ENABLE_CUDA_SHARED
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
     
     int distanceType = 0;
     if (longlat)
@@ -321,26 +308,26 @@ List gwr_basic_fit_cuda(
         }
     }
     if (verbose > 0) Rcout << "** CUDA create task ...";
-    auto algorithm = GWRBasicGpuTaskFit_Create(mcoords.n_rows, mx.n_cols, distanceType);
+    auto algorithm = GWRBasicGpuTaskFit_Create(coords.n_rows, x.n_cols, distanceType);
     if (verbose > 0) Rcout << " done\n";
     // Set data
     if (verbose > 0) Rcout << "** CUDA set data ...";
-    for (size_t j = 0; j < mx.n_cols; j++)
+    for (size_t j = 0; j < x.n_cols; j++)
     {
-        for (size_t i = 0; i < mx.n_rows; i++)
+        for (size_t i = 0; i < x.n_rows; i++)
         {
-            algorithm->setX(i, j, mx(i, j));
+            algorithm->setX(i, j, x(i, j));
         }
     }
-    for (size_t i = 0; i < my.n_rows; i++)
+    for (size_t i = 0; i < y.n_rows; i++)
     {
-        algorithm->setY(i, my(i));
+        algorithm->setY(i, y(i));
     }
-    for (size_t j = 0; j < mcoords.n_cols; j++)
+    for (size_t j = 0; j < coords.n_cols; j++)
     {
-        for (size_t i = 0; i < mcoords.n_rows; i++)
+        for (size_t i = 0; i < coords.n_rows; i++)
         {
-            algorithm->setCoords(i, j, mcoords(i, j));
+            algorithm->setCoords(i, j, coords(i, j));
         }
     }
     if (verbose > 0) Rcout << " done\n";
@@ -378,12 +365,12 @@ List gwr_basic_fit_cuda(
 
     // Get data
     size_t sRows = algorithm->sRows();
-    mat betas(size(mx)), betasSE(size(mx)), sHat(sRows, mx.n_rows);
+    mat betas(size(x)), betasSE(size(x)), sHat(sRows, x.n_rows);
     vec sTrace(2);
     if (verbose > 0) Rcout << "** CUDA get beta ...";
-    for (size_t j = 0; j < mx.n_cols; j++)
+    for (size_t j = 0; j < x.n_cols; j++)
     {
-        for (size_t i = 0; i < mx.n_rows; i++)
+        for (size_t i = 0; i < x.n_rows; i++)
         {
             betas(i, j) = algorithm->betas(i, j);
             betasSE(i, j) = algorithm->betasSE(i, j);
@@ -392,7 +379,7 @@ List gwr_basic_fit_cuda(
     if (verbose > 0) Rcout << " done\n";
     sTrace(0) = algorithm->shat1();
     sTrace(1) = algorithm->shat2();
-    for (size_t j = 0; j < mx.n_rows; j++)
+    for (size_t j = 0; j < x.n_rows; j++)
     {
         for (size_t i = 0; i < sRows; i++)
         {
@@ -411,11 +398,11 @@ List gwr_basic_fit_cuda(
     
     // Make result
     List result_list = List::create(
-        Named("betas") = mywrap(betas),
-        Named("betasSE") = mywrap(betasSE),
-        Named("sTrace") = mywrap(sTrace),
-        Named("sHat") = mywrap(sHat),
-        Named("diagnostic") = mywrap(diagnostic)
+        Named("betas") = betas,
+        Named("betasSE") = betasSE,
+        Named("sTrace") = sTrace,
+        Named("sHat") = sHat,
+        Named("diagnostic") = diagnostic
     );
 
     if (optim_bw)
@@ -447,13 +434,13 @@ List gwr_basic_fit_cuda(
             criterions[i].second = algorithm->variableSelectionCriterionItemValue(i);
         }
         result_list["model_sel_criterions"] = mywrap(criterions);
-        mat sx = mx.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(sx, betas));
+        mat sx = x.cols(VariableForwardSelector::index2uvec(sel_vars, intercept));
+        result_list["fitted"] = GWRBasic::Fitted(sx, betas);
         if (verbose > 0) Rcout << " done\n";
     }
     else
     {
-        result_list["fitted"] = mywrap(GWRBasic::Fitted(mx, betas));
+        result_list["fitted"] = GWRBasic::Fitted(x, betas);
     }
 
     if (verbose > 0) Rcout << "** CUDA delete ...";
@@ -467,9 +454,9 @@ List gwr_basic_fit_cuda(
 #endif // ENABLE_CUDA_SHARED
 }
 
-NumericMatrix gwr_basic_predict_cuda(
-    const NumericMatrix& pcoords,
-    const NumericMatrix& x, const NumericVector& y, const NumericMatrix& coords,
+arma::mat gwr_basic_predict_cuda(
+    const arma::mat& pcoords,
+    const arma::mat& x, const arma::vec& y, const arma::mat& coords,
     double bw, bool adaptive, size_t kernel, 
     bool longlat, double p, double theta,
     bool intercept,
@@ -477,10 +464,6 @@ NumericMatrix gwr_basic_predict_cuda(
     int verbose
 ) {
 #ifdef ENABLE_CUDA_SHARED
-    mat mpcoords = myas(pcoords);
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
     
     int distanceType = 0;
     if (longlat)
@@ -499,34 +482,34 @@ NumericMatrix gwr_basic_predict_cuda(
         }
     }
     if (verbose > 0) Rcout << "** CUDA create task ...";
-    auto algorithm = GWRBasicGpuTaskPredict_Create(mcoords.n_rows, mx.n_cols, distanceType, mpcoords.n_rows);
+    auto algorithm = GWRBasicGpuTaskPredict_Create(coords.n_rows, x.n_cols, distanceType, coords.n_rows);
     if (verbose > 0) Rcout << " done\n";
 
     // Set data
     if (verbose > 0) Rcout << "** CUDA set data ...";
-    for (size_t j = 0; j < mx.n_cols; j++)
+    for (size_t j = 0; j < x.n_cols; j++)
     {
-        for (size_t i = 0; i < mx.n_rows; i++)
+        for (size_t i = 0; i < x.n_rows; i++)
         {
-            algorithm->setX(i, j, mx(i, j));
+            algorithm->setX(i, j, x(i, j));
         }
     }
-    for (size_t i = 0; i < my.n_rows; i++)
+    for (size_t i = 0; i < y.n_rows; i++)
     {
-        algorithm->setY(i, my(i));
+        algorithm->setY(i, y(i));
     }
-    for (size_t j = 0; j < mcoords.n_cols; j++)
+    for (size_t j = 0; j < coords.n_cols; j++)
     {
-        for (size_t i = 0; i < mcoords.n_rows; i++)
+        for (size_t i = 0; i < coords.n_rows; i++)
         {
-            algorithm->setCoords(i, j, mcoords(i, j));
+            algorithm->setCoords(i, j, coords(i, j));
         }
     }
-    for (size_t j = 0; j < mpcoords.n_cols; j++)
+    for (size_t j = 0; j < coords.n_cols; j++)
     {
-        for (size_t i = 0; i < mpcoords.n_rows; i++)
+        for (size_t i = 0; i < coords.n_rows; i++)
         {
-            algorithm->setPredictLocations(i, j, mpcoords(i, j));
+            algorithm->setPredictLocations(i, j, coords(i, j));
         }
     }
     
@@ -556,11 +539,11 @@ NumericMatrix gwr_basic_predict_cuda(
     if (verbose > 0) Rcout << " done\n";
 
     // Get data
-    mat betas(size(mx));
+    mat betas(size(x));
     if (verbose > 0) Rcout << "** CUDA get beta ...";
-    for (size_t j = 0; j < mx.n_cols; j++)
+    for (size_t j = 0; j < x.n_cols; j++)
     {
-        for (size_t i = 0; i < mx.n_rows; i++)
+        for (size_t i = 0; i < x.n_rows; i++)
         {
             betas(i, j) = algorithm->betas(i, j);
         }
@@ -571,7 +554,7 @@ NumericMatrix gwr_basic_predict_cuda(
     GWRBasicGpuTask_Del(algorithm);
     if (verbose > 0) Rcout << " done\n";
 
-    return mywrap(betas);
+    return betas;
     
 #else
     throw std::logic_error("Not supported.");

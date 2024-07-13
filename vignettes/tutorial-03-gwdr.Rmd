@@ -163,7 +163,7 @@ We can enable bandwidth optimization with the following codes.
 m4 <- gwdr(
     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
     data = LondonHP,
-    optim_bw = "AIC"
+    optim_bw = "CV"
 )
 ```
 
@@ -177,11 +177,11 @@ Apply the `step()` function to `gwdrm` objects to select the best model.
 Since version 4.1 of R, the pipe operator `|>` is avaliable.
 We can use the following code to enable model selection.
 
-```{r model-selection, eval=FALSE, cache=T}
+```{r model-selection, eval=FALSE, cache=T, eval=F}
 m5 <- gwdr(
     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
     data = LondonHP,
-    optim_bw = "AIC"
+    optim_bw = "CV"
 ) |> step(criterion = "AIC", threshold = 3, optim_bw = "AIC")
 ```
 
@@ -193,7 +193,7 @@ For R of lower version, please use the following form:
 ```{r, eval=TRUE}
 m5 <- gwdr(
     PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2,
-    LondonHP, optim_bw = "AIC"
+    LondonHP, optim_bw = "CV"
 )
 m5 <- step(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
 m5

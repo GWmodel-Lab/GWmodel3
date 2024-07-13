@@ -1,9 +1,10 @@
+// [[Rcpp::depends(RcppArmadillo)]]
 #ifndef RTELEGRAM
 #define RTELEGRAM
 
 #include <vector>
 #include <string>
-#include <Rcpp.h>
+#include <RcppArmadillo.h>
 #include "gwmodel.h"
 
 class RTelegram : public gwm::ITelegram

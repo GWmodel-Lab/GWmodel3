@@ -13,7 +13,7 @@ gwdr(
   formula,
   data,
   config = list(gwdr_config()),
-  optim_bw = c("no", "AIC", "CV"),
+  optim_bw = c("no", "CV", "AIC"),
   optim_bw_threshold = 1e-06,
   optim_bw_step = 0.02,
   optim_bw_max_iter = 1e+06,
@@ -30,7 +30,7 @@ gwdr(
   criterion = c("AIC"),
   threshold = 3,
   config = list(gwdr_config()),
-  optim_bw = c("no", "AIC", "CV"),
+  optim_bw = c("no", "CV", "AIC"),
   optim_bw_threshold = 1e-06,
   optim_bw_step = 0.02,
   optim_bw_max_iter = 1e+06
@@ -119,7 +119,7 @@ gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
 ### Optim Bandwidth
 m <- gwdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
     gwdr_config(0.618, TRUE, "gaussian")
-), optim_bw = "AIC")
+), optim_bw = "CV")
 m
 
 plot(m)
