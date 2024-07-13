@@ -112,6 +112,8 @@ List gwr_multiscale_fit (
     default:
         break;
     }
+    
+    MYMPI_COMM_INFO_DECL
 #ifdef ENABLE_MPI
     if (algorithm.parallelType() & ParallelType::MPI)
     {
@@ -151,7 +153,7 @@ List gwr_multiscale_fit (
     // Return Results
     mat betas = algorithm.betas();
     vec fitted = sum(x % betas, 1);
-    List result_list = List::create(
+    result_list = List::create(
         Named("betas") = betas,
         Named("diagnostic") = mywrap(algorithm.diagnostic()),
         Named("bw_value") = wrap(bw_value),
@@ -159,8 +161,10 @@ List gwr_multiscale_fit (
     );
     MYMPI_MASTER_END
 
+#ifdef ENABLE_MPI
     if (parallel_type & ParallelType::MPI)
         result_list["mpi_rank"] = iProcess;
+#endif // ENABLE_MPI
 
     return result_list;
 }

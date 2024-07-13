@@ -92,11 +92,6 @@ int verbose
     }
 #endif // ENABLE_MPI
 
-    // Convert data types
-    mat mx = myas(x);
-    vec my = myas(y);
-    mat mcoords = myas(coords);
-
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
     Distance* distance = nullptr;
@@ -185,7 +180,7 @@ int verbose
 
     MYMPI_MASTER_BEGIN
     mat betas = algorithm.betas();
-    List result_list = List::create(
+    result_list = List::create(
         Named("betas") = betas,
         Named("betasSE") = algorithm.betasSE(),
         Named("sTrace") = algorithm.sHat(),
