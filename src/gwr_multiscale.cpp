@@ -117,7 +117,8 @@ List gwr_multiscale_fit (
 #ifdef ENABLE_MPI
     if (algorithm.parallelType() & ParallelType::MPI)
     {
-        Rcout << "MPI mode\n";
+        if (verbose > 0) Rcout << "* MPI mode\n";
+        MYMPI_COMM_INFO_GET
         algorithm.setWorkerId(iProcess);
         algorithm.setWorkerNum(nProcess);
     }
