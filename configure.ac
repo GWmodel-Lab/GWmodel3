@@ -84,7 +84,7 @@ NVCC="${CUDA_HOME}/bin/nvcc"
 AC_MSG_RESULT(building the cuda include path)
 CUDA_INCL="${CUDA_HOME}/include"
 
-ENABLE_MPI=1
+ENABLE_MPI=0
 AC_ARG_ENABLE([mpi], [AS_HELP_STRING([--enable-mpi],[install mpi (default no)])],
 [ case "${enableval}" in
     yes) ENABLE_MPI=1 ;;

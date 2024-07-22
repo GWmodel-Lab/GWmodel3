@@ -79,9 +79,12 @@ endif
 ### [End]
 
 ### [Begin] Configure MPI
+MPI_ENABLED = ${ENABLE_MPI}
+ifeq ($(MPI_ENABLED),1)
 PKG_CXXFLAGS += -DENABLE_MPI
 PKG_LIBS += -lmsmpi
 OBJECTS_LIBGWMODEL += libgwmodel/src/gwmodelpp/utils/armampi.o
+endif
 ### [End]
 
 OBJECTS = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
