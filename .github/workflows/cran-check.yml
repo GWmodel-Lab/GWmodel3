@@ -51,7 +51,7 @@ jobs:
       - name: Install Dependencies
         run: brew install gsl pandoc open-mpi
       - name: Install Rmpi
-        run: Rscript -e 'install.packages("Rmpi")'
+        run: Rscript -e 'install.packages("Rmpi", configure.args = c("--with-Rmpi-include=/opt/homebrew/include/", "--with-Rmpi-libpath=/opt/homebrew/lib/", "--with-Rmpi-type=OPENMPI"))'
       - name: Install R Dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
