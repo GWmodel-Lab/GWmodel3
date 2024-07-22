@@ -38,7 +38,7 @@ jobs:
           check-dir: '"check"'
 
   check_macos:
-    runs-on: macos-12
+    runs-on: macos-14
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -50,6 +50,8 @@ jobs:
           r-version: 'release'
       - name: Install Dependencies
         run: brew install gsl pandoc open-mpi
+      - name: Install Rmpi
+        run: Rscript -e 'install.packages("Rmpi")'
       - name: Install R Dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
