@@ -47,6 +47,7 @@ RoxygenNote: 7.2.3
 Suggests: 
     testthat (>= 3.0.0),
     knitr,
-    rmarkdown
+    rmarkdown,
+    Rmpi
 Config/testthat/edition: 3
 VignetteBuilder: knitr

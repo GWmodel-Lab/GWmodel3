@@ -19,30 +19,32 @@ To solve this problem, this package provided some techniques to speed up the com
 
 - Multithreading based on OpenMP
 - GPU comoputing based on NVIDIA CUDA computing toolkit
+- Multiprocessing based on MPI
 
 Currently, almost all algorithms have a serial implementation and one or two high-performance implementation.
 
-| Algorithm      | Multithreading | GPU computing |
-| -------------- | -------------- | ------------- |
-| Basic GWR      | o              | o             |
-| Multiscale GWR | o              |               |
-| GWDR           | o              |               |
+| Algorithm      | Multithreading | GPU computing | Multiprocessing |
+| -------------- | -------------- | ------------- | --------------- |
+| Basic GWR      | o              | o             | o               |
+| Multiscale GWR | o              |               | o               |
+| GWDR           | o              |               |                 |
 
-All the parallelizable algorithms take two parameters to control parallelization: `parallel_method` and `parallel_arg`.
+The multithreading- and GPU- parallelization algorithms take two parameters to control parallelization: `parallel_method` and `parallel_arg`.
 The `parallel_method` is used to pick a high-performance implementation.
 The valid options are `"omp"` and `"cuda"`, representing multithreading and GPU computing respectively.
 The `parallel_arg` is used to pass arguments.
 Different parallel methods needs different arguments.
+For the multiprocessing parallelization, please see below for further details.
 
-However, not all platform support both techniques, and some platform may have limited performance.
+However, not all platform support all the techniques, and some platform may have limited performance.
 When users choosed unsupported method, it will fall back to the serial implementation.
 Please refer to the table below for additional information regarding platform support.
 
-| Platform               | Multithreading | GPU computing |
-| ---------------------- | -------------- | ------------- |
-| Windows                | o              | o\*            |
-| macOS (Apple Sillicon) |                |               |
-| Linux                  | o              | o             |
+| Platform               | Multithreading | GPU computing | Multiprocessing |
+| ---------------------- | -------------- | ------------- | --------------- |
+| Windows                | o              | o\*           | o               |
+| macOS (Apple Sillicon) |                |               | o               |
+| Linux                  | o              | o             | o               |
 
 \*On Windows, GPU computing is supported through an additional library called "GWmodelCUDA", which is built with MSVC.
 This is because CUDA does not support the MinGW compiler, which is used to compile R packages.
@@ -136,3 +138,69 @@ remotes::install_github("GWmodel-Lab/GWmodel3", build_opts = c("--configure-args
 ```
 
 Before installing the package, make sure that the environment variable `CUDA_HOME` is defined as the path to the CUDA toolkit.
+
+# Multiprocessing
+
+The multiprocessing parallel is implemented by the Message Passing Interface (MPI).
+To use enable the paralleling, we need to install an implementation of MPI and [**Rmpi**](https://cran.r-project.org/web/packages/Rmpi/).
+Please follow the instructions on the [official site](https://fisher.stats.uwo.ca/faculty/yu/Rmpi/) to install the package.
+
+## Install
+
+### Linux
+
+Available implementations of MPI are:
+
+- [OpenMPI](https://www.open-mpi.org/)
+- [MPICH](https://www.mpich.org/)
+
+After cloning the source package, install this package with the following script.
+
+```bash
+R CMD INSTALL GWmodel3 --configure-args=--enable-mpi=yes
+```
+
+### Windows
+
+Available implementations of MPI are:
+
+- [Microsoft MPI](https://learn.microsoft.com/en-us/message-passing-interface/microsoft-mpi)
+
+Then set a environment `ENABLE_MPI=1`, and use the following script to install the package.
+
+```powershell
+R.exe CMD INSTALL GWmodel3
+```
+
+## Usage
+
+Note that programs running with MPI parallel processing execute the same script in each process, unlike the multi-session parallelism provided by the **parallel** package.
+When we are writing an R script to be paralleled by MPI, it is targeted to configure one process of the cluster.
+For example, the following script let every process use the serial algorithm to fit the GWR model and set the bandwidth to 64 nearest neighbours.
+
+```r
+# test.R
+library(sf)
+library(Rmpi)
+library(GWmodel3)
+data(LondonHP)
+gwr_basic(
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+  data = LondonHP,
+  bw = 64,
+  adaptive = TRUE
+)
+invisible(mpi.finalize())
+```
+
+If we save the script to file `test.R`, we can run it by 4 processes with the following script.
+
+```bash
+mpiexec -np 4 Rscript test.R
+```
+
+The number `4` can be changed to other numbers of processes.
+In this case, all the processes run on the same machine.
+
+To run scripts on a high-performance cluster using MPI, a scheduler that supports MPI, such as Slurm, is required.
+The specific method for execution should be referenced from the scheduler's documentation.

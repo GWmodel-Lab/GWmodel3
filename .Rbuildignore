@@ -9,6 +9,7 @@ src/libgwmodel/Doxygen\.zh-Hans
 src/libgwmodel/\.readthedocs\.yaml
 src/libgwmodel/test
 src/libgwmodel/docs
+tests/others
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$

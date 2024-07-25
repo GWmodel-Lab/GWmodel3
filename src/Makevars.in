@@ -102,6 +102,17 @@ OBJECTS_CUDA_CXX =
 endif
 ### [End]
 
+### [Begin] Configure MPI
+ENABLE_MPI = @ENABLE_MPI@
+ifeq ($(ENABLE_MPI),1)
+MPI_CFLAGS = @MPI_CFLAGS@
+MPI_LIBS = @MPI_LIBS@
+PKG_CXXFLAGS += ${MPI_CFLAGS} -DENABLE_MPI
+PKG_LIBS += ${MPI_LIBS}
+OBJECTS_CXX += libgwmodel/src/gwmodelpp/utils/armampi.o
+endif
+### [End]
+
 OBJECTS = ${OBJECTS_CUDA_CU} ${OBJECTS_CUDA_CXX} ${OBJECTS_CXX}
 
 .PHONY: all clean

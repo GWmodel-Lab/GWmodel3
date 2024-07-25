@@ -8,6 +8,10 @@
 #include "gwmodelcuda/IGWRBasicGpuTask.h"
 #endif // ENABLE_CUDA_SHARED
 
+#ifdef ENABLE_MPI
+#include "mpi.h"
+#endif // ENABLE_MPI
+
 using namespace std;
 using namespace Rcpp;
 using namespace arma;
@@ -80,6 +84,14 @@ int verbose
     }
 #endif // ENABLE_CUDA_SHARED
 
+    MYMPI_COMM_INFO_DECL
+#ifdef ENABLE_MPI
+    if (parallel_type & ParallelType::MPI)
+    {
+        MYMPI_COMM_INFO_GET
+    }
+#endif // ENABLE_MPI
+
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
     Distance* distance = nullptr;
@@ -110,32 +122,50 @@ int verbose
         algorithm.setGoldenLowerBounds(optim_bw_lower);
     if (optim_bw_upper < R_PosInf)
         algorithm.setGoldenUpperBounds(optim_bw_upper);
-    switch (ParallelType(size_t(parallel_type)))
+    algorithm.setParallelType(ParallelType(parallel_type));
+    switch (algorithm.parallelType())
     {
     case ParallelType::SerialOnly:
-        algorithm.setParallelType(ParallelType::SerialOnly);
+#ifdef ENABLE_MPI
+    case ParallelType::MPI_Serial:
+#endif // ENABLE_MPI
         break;
-#ifdef _OPENMP
     case ParallelType::OpenMP:
-        algorithm.setParallelType(ParallelType::OpenMP);
+#ifdef ENABLE_MPI
+    case ParallelType::MPI_MP:
+#endif // ENABLE_MPI
+#ifdef _OPENMP
         algorithm.setOmpThreadNum(vpar_args[0]);
         break;
+#else
+        throw std::logic_error("OpenMP method not implemented.");
 #endif
     case ParallelType::CUDA:
+#ifdef ENABLE_MPI
+    case ParallelType::MPI_CUDA:
+#endif // ENABLE_MPI
 #ifdef ENABLE_CUDA
         if (vpar_args.size() < 2) throw std::length_error("CUDA parallelisation needs two parallel args.");
-        algorithm.setParallelType(ParallelType::CUDA);
         algorithm.setGPUId(vpar_args[0]);
         algorithm.setGroupSize(vpar_args[1]);
 #else  // ENABLE_CUDA
         throw std::logic_error("Method not implemented.");
 #endif // ENABLE_CUDA
     default:
-        algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
+#ifdef ENABLE_MPI
+    if (algorithm.parallelType() & ParallelType::MPI)
+    {
+        Rcout << "MPI mode\n";
+        algorithm.setWorkerId(iProcess);
+        algorithm.setWorkerNum(nProcess);
+    }
+#endif // ENABLE_MPI
+    MYMPI_MASTER_BEGIN
     if (verbose)
         algorithm.setTelegram(make_unique<GWRBasicTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
+    MYMPI_MASTER_END
     try
     {
         algorithm.fit();
@@ -146,8 +176,11 @@ int verbose
     }
 
     // Return Results
+    List result_list;
+
+    MYMPI_MASTER_BEGIN
     mat betas = algorithm.betas();
-    List result_list = List::create(
+    result_list = List::create(
         Named("betas") = betas,
         Named("betasSE") = algorithm.betasSE(),
         Named("sTrace") = algorithm.sHat(),
@@ -171,6 +204,10 @@ int verbose
     {
         result_list["fitted"] = GWRBasic::Fitted(x, betas);
     }
+    MYMPI_MASTER_END
+    
+    if (parallel_type & ParallelType::MPI)
+        result_list["mpi_rank"] = iProcess;
 
     return result_list;
 }
