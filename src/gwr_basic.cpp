@@ -130,6 +130,7 @@ int verbose
 #else  // ENABLE_CUDA
         throw std::logic_error("Method not implemented.");
 #endif // ENABLE_CUDA
+        break;
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
