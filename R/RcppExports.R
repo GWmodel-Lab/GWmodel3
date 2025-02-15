@@ -21,3 +21,7 @@ gwss_fit <- function(x, coords, mode, quantile, bw, adaptive, kernel, longlat, p
     .Call(`_GWmodel3_gwss_fit`, x, coords, mode, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg)
 }
 
+gwss_average <- function(x, coords, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg) {
+    .Call(`_GWmodel3_gwss_average`, x, coords, quantile, bw, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg)
+}
+
