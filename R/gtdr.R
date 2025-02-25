@@ -1,9 +1,9 @@
-#' Geographically Weighted Density Regression (SDR)
+#' Geographical and Temporal Density Regression (GTDR)
 #'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.
 #' @param config Dimension-specified weighting configuration.
-#'  It must be a list of `SDRConfig` objects.
+#'  It must be a list of `GTDRConfig` objects.
 #'  Its length can be 1 or equal to the number of columns of coordinates in `data`.
 #'  When its length is 1, elements will be duplicated for each column in coordinates.
 #' @param optim_bw Whether optimize bandwidth after selecting models.
@@ -18,32 +18,32 @@
 #' @param verbose Whether to print additional information.
 #'  A higher value leads to more information.
 #' 
-#' @return A `sdrm` object.
+#' @return A `gtdrm` object.
 #'
 #' @examples
 #' data(LondonHP)
-#' sdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP)
+#' gtdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP)
 #'
 #' ### Specific Bandwidth
-#' sdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
-#'     sdr_config(0.2, TRUE, "gaussian"),
-#'     sdr_config(0.2, TRUE, "gaussian")
+#' gtdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
+#'     gtdr_config(0.2, TRUE, "gaussian"),
+#'     gtdr_config(0.2, TRUE, "gaussian")
 #' ))
 #'
 #' ### Optim Bandwidth
-#' m <- sdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
-#'     sdr_config(0.618, TRUE, "gaussian")
-#' ), optim_bw = "CV")
+#' m <- gtdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
+#'     gtdr_config(0.618, TRUE, "gaussian")
+#' ), optim_bw = "AIC")
 #' m
 #'
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @importFrom methods validObject
 #' @export
-sdr <- function(
+gtdr <- function(
     formula,
     data,
-    config = list(sdr_config()),
-    optim_bw = c("no", "CV", "AIC"),
+    config = list(gtdr_config()),
+    optim_bw = c("no", "AIC", "CV"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
     optim_bw_max_iter = 1e6,
@@ -53,9 +53,9 @@ sdr <- function(
 ) {
     ### Check args
     if (!inherits(config, "list")) {
-        stop("Parameter config requires a list of SDRConfig.")
-    } else if (!all(sapply(config, inherits, "SDRConfig"))) {
-        stop("Each element in parameter config requires to be SDRConfig.")
+        stop("Parameter config requires a list of GTDRConfig.")
+    } else if (!all(sapply(config, inherits, "GTDRConfig"))) {
+        stop("Each element in parameter config requires to be GTDRConfig.")
     } else {
         for (i in config) {
             valid <- validObject(i)
@@ -108,11 +108,11 @@ sdr <- function(
     adaptive <- sapply(config, function(x) x@adaptive)
     kernel <- sapply(config, function(x) x@kernel)
 
-    c_result <- tryCatch(sdr_fit(
+    c_result <- tryCatch(gtdr_fit(
         x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
         has_intercept, TRUE,
         enum_list(parallel_method, parallel_types), parallel_arg,
-        optim_bw, enum(optim_bw_criterion, sdr_bw_criterion_enums),
+        optim_bw, enum(optim_bw_criterion, gtdr_bw_criterion_enums),
         optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
         select_model = FALSE, select_model_threshold = 3.0,
         indep_vars, verbose
@@ -139,7 +139,7 @@ sdr <- function(
     sdf <- sf::st_sf(sdf_data)
 
     ### Return result
-    sdrm <- list(
+    gtdrm <- list(
         SDF = sdf,
         diagnostic = diagnostic,
         call = mc,
@@ -163,25 +163,25 @@ sdr <- function(
             verbose = verbose
         )
     )
-    class(sdrm) <- "sdrm"
-    sdrm
+    class(gtdrm) <- "gtdrm"
+    gtdrm
 }
-#' @describeIn sdr Plot the result of SDR model.
+#' @describeIn gtdr Plot the result of GTDR model.
 #'
-#' @param x A "sdrm" object.
+#' @param x A "gtdrm" object.
 #' @param y Ignored.
 #' @param columns Column names to plot.
 #'  If it is missing or non-character value, all coefficient columns are plottd.
 #' @param \dots Additional arguments passing to [sf::plot()].
-#' @method plot sdrm
+#' @method plot gtdrm
 #'
 #' @examples
 #' plot(m)
 #' 
 #' @export
-plot.sdrm <- function(x, y, ..., columns) {
-    if (!inherits(x, "sdrm")) {
-        stop("It's not a sdrm object.")
+plot.gtdrm <- function(x, y, ..., columns) {
+    if (!inherits(x, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
 
     sdf <- sf::st_as_sf(x$SDF)
@@ -197,15 +197,15 @@ plot.sdrm <- function(x, y, ..., columns) {
     plot(sdf, ...)
 }
 
-#' @describeIn sdr Model selection for SDR model
+#' @describeIn gtdr Model selection for GTDR model
 #'
-#' @param object A "`sdrm`" class object.
+#' @param object A "`gtdrm`" class object.
 #' @param criterion The model-selection method.
 #'  Currently there is only AIC available.
 #' @param threshold The threshold of criterion changes. Default to 3.0.
 #' @param config Dimension-specified weighting configuration.
 #'  If it is omitted, bandwidth settings will be inherited from `object`.
-#'  Otherwise, it must be a list of `SDRConfig` objects.
+#'  Otherwise, it must be a list of `GTDRConfig` objects.
 #'  Its length can be 1 or equal to the number of columns of coordinates in `data`.
 #'  When its length is 1, elements will be duplicated for each column in coordinates.
 #' @param optim_bw Whether optimize bandwidth after selecting models.
@@ -222,19 +222,19 @@ plot.sdrm <- function(x, y, ..., columns) {
 #'
 #' @importFrom stats formula
 #' @export
-step.sdrm <- function(
+step.gtdrm <- function(
     object,
     ...,
     criterion = c("AIC"),
     threshold = 3.0,
-    config = list(sdr_config()),
-    optim_bw = c("no", "CV", "AIC"),
+    config = list(gtdr_config()),
+    optim_bw = c("no", "AIC", "CV"),
     optim_bw_threshold = 1e-6,
     optim_bw_step = 0.02,
     optim_bw_max_iter = 1e6
 ) {
-    if (!inherits(object, "sdrm")) {
-        stop("It's not a sdrm object.")
+    if (!inherits(object, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
     criterion <- match.arg(criterion)
     optim_bw <- match.arg(optim_bw)
@@ -257,12 +257,12 @@ step.sdrm <- function(
     kernel <- sapply(config, function(x) x@kernel)
 
     ### Calibrate GWR
-    c_result <- with(object$args, sdr_fit(
+    c_result <- with(object$args, gtdr_fit(
         x, y, coords, bw_value, adaptive,
         enum(kernel, kernel_enums),
         has_intercept, hatmatrix = TRUE,
         enum_list(parallel_method, parallel_types), parallel_arg,
-        optim_bw, enum(optim_bw_criterion, sdr_bw_criterion_enums),
+        optim_bw, enum(optim_bw_criterion, gtdr_bw_criterion_enums),
         optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
         select_model = TRUE, select_model_threshold = threshold,
         object$indep_vars, verbose
@@ -339,70 +339,70 @@ step.sdrm <- function(
     object
 }
 
-#' @describeIn sdr Get coefficients of a SDR model.
+#' @describeIn gtdr Get coefficients of a GTDR model.
 #'
-#' @param object A "sdrm" object.
+#' @param object A "gtdrm" object.
 #' @param \dots Additional arguments passing to [coef()].
 #' 
 #' @examples
 #' coef(m)
 #' 
-#' @method coef sdrm
+#' @method coef gtdrm
 #' @export
-coef.sdrm <- function(object, ...) {
-    if (!inherits(object, "sdrm")) {
-        stop("It's not a sdrm object.")
+coef.gtdrm <- function(object, ...) {
+    if (!inherits(object, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
 
-#' @describeIn sdr Get fitted values of a SDR model.
+#' @describeIn gtdr Get fitted values of a GTDR model.
 #'
-#' @param object A "sdrm" object.
+#' @param object A "gtdrm" object.
 #' @param \dots Additional arguments passing to [fitted()].
 #'
 #' @examples
 #' fitted(m)
 #'
-#' @method fitted sdrm
+#' @method fitted gtdrm
 #' @export
-fitted.sdrm <- function(object, ...) {
-    if (!inherits(object, "sdrm")) {
-        stop("It's not a sdrm object.")
+fitted.gtdrm <- function(object, ...) {
+    if (!inherits(object, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
     object$SDF[["yhat"]]
 }
 
-#' @describeIn sdr Get residuals of a SDR model.
+#' @describeIn gtdr Get residuals of a GTDR model.
 #'
-#' @param object A "sdrm" object.
+#' @param object A "gtdrm" object.
 #' @param \dots Additional arguments passing to [residuals()].
 #'
 #' @examples 
 #' residuals(m)
 #'
-#' @method residuals sdrm
+#' @method residuals gtdrm
 #' @export
-residuals.sdrm <- function(object, ...) {
-    if (!inherits(object, "sdrm")) {
-        stop("It's not a sdrm object.")
+residuals.gtdrm <- function(object, ...) {
+    if (!inherits(object, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
     object$SDF[["residual"]]
 }
 
-#' Print description of a `sdrm` object
+#' Print description of a `gtdrm` object
 #'
-#' @param x An `sdrm` object returned by [sdr()].
+#' @param x An `gtdrm` object returned by [gtdr()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
 #' @inheritDotParams print_table_md
 #' 
-#' @method print sdrm
+#' @method print gtdrm
 #' @importFrom stats coef fivenum
 #' @rdname print
 #' @export
-print.sdrm <- function(x, decimal_fmt = "%.3f", ...) {
-    if (!inherits(x, "sdrm")) {
-        stop("It's not a sdrm object.")
+print.gtdrm <- function(x, decimal_fmt = "%.3f", ...) {
+    if (!inherits(x, "gtdrm")) {
+        stop("It's not a gtdrm object.")
     }
 
     ### Basic Information
