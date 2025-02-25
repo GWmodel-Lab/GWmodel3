@@ -1,21 +1,21 @@
-#include "SDRTelegram.h"
+#include "GTDRTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
 using namespace gwm;
 
-map<string, SDRTelegram::InfoTag> SDRTelegram::TagDict = {
+map<string, GTDRTelegram::InfoTag> GTDRTelegram::TagDict = {
     make_pair("#stage", InfoTag::Stage),
     make_pair("#bandwidth-criterion", InfoTag::BandwidthCriterion),
     make_pair("#variable-criterion", InfoTag::VariableCriterion)
 };
 
-map<GWDR::BandwidthCriterionType, string> SDRTelegram::BwCriterionName = {
-    make_pair(GWDR::BandwidthCriterionType::AIC, "AIC"),
-    make_pair(GWDR::BandwidthCriterionType::CV, "CV")
+map<GTDR::BandwidthCriterionType, string> GTDRTelegram::BwCriterionName = {
+    make_pair(GTDR::BandwidthCriterionType::AIC, "AIC"),
+    make_pair(GTDR::BandwidthCriterionType::CV, "CV")
 };
 
-void SDRTelegram::parseInfo(string message)
+void GTDRTelegram::parseInfo(string message)
 {
     vector<string> msgs = split(message, ' ');
     InfoTag tag = TagDict[msgs[0]];
@@ -76,7 +76,7 @@ void SDRTelegram::parseInfo(string message)
     }
 }
 
-bool SDRTelegram::testBandwidthCriterionTitle(const std::string &s)
+bool GTDRTelegram::testBandwidthCriterionTitle(const std::string &s)
 {
     istringstream iss(s);
     string buffer;
