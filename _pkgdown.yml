@@ -15,7 +15,7 @@ navbar:
       - text: Multiscale GWR
         href: articles/tutorial-02-gwr-multiscale.html
       - text: Multiscale GWR
-        href: articles/tutorial-03-sdr.html
+        href: articles/tutorial-03-gtdr.html
       - text: -------
       - text: Others
       - text: High-performance Computing
@@ -35,10 +35,10 @@ reference:
     - starts_with("mgwr")
   - subtitle: Density GWR
   - contents:
-    - starts_with("sdr")
-    - starts_with("SDRConfig")
-    - ends_with("SDRConfig")
-    - starts_with("sdr")
+    - starts_with("gtdr")
+    - starts_with("GTDRConfig")
+    - ends_with("GTDRConfig")
+    - starts_with("gtdr")
   - title: Utils
   - contents:
     - print_table_md
