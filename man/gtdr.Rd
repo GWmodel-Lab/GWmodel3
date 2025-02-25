@@ -119,7 +119,7 @@ gtdr(PURCHASE ~ FLOORSZ + UNEMPLOY, LondonHP, list(
 ### Optim Bandwidth
 m <- gtdr(PURCHASE ~ FLOORSZ + UNEMPLOY + PROF, LondonHP, list(
     gtdr_config(0.618, TRUE, "gaussian")
-), optim_bw = "CV")
+), optim_bw = "AIC")
 m
 
 plot(m)

@@ -1,8 +1,8 @@
 ---
-title: "SDR"
+title: "GTDR"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{SDR}
+  %\VignetteIndexEntry{GTDR}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
@@ -14,10 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-Geographically weighted density regression (SDR), is a model which
+Geographically weighted density regression (GTDR), is a model which
 calcaulates a wight for each dimension of coordinates,
 and calibrate regression model with the product of these weights.
-In this page, we mainly introduce the usage of `sdr()`.
+In this page, we mainly introduce the usage of `gtdr()`.
 
 ```{r setup}
 library(sf)
@@ -26,15 +26,15 @@ library(GWmodel3)
 
 # Basics
 
-Let us set the data `LondonHP` as an example, and show how to use `sdr()`.
+Let us set the data `LondonHP` as an example, and show how to use `gtdr()`.
 Assume that the `PURCHASE` is the dependent variable, 
 while `FLOORSZ`, `PROF` and `UNEMPLOY` are independent variable, 
-we can calibrate a SDR model with the following code.
+we can calibrate a GTDR model with the following code.
 
 ```{r model-calibration, cache=T}
 data(LondonHP)
-m1 <- sdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m1 <- gtdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
  data = LondonHP
 )
 m1
@@ -50,7 +50,7 @@ Here no additional arguments are set, so the function will apply the follwing co
 On most situations, these configurations can ensure the algorithm works.
 To further specify arguments, please turn to [Weighting configurations](#weighting-configurations).
 
-This function returns a object of class name `sdrm`.
+This function returns a object of class name `gtdrm`.
 Through the outputs in console,
 we can get infromation of fomula, data, kernel, bandwidth, coefficient estimates, and diagnostics.
 Besides, it is supported to get more infromation via `coef()` `fitted()` `residuals()`.
@@ -61,7 +61,7 @@ head(fitted(m1))
 head(residuals(m1))
 ```
 
-Like other functions, `sdrm` objects provide a `$SDF` variable 
+Like other functions, `gtdrm` objects provide a `$SDF` variable 
 which contains coefficient estimates and other sample-wise results.
 
 ```{r sdf}
@@ -83,7 +83,7 @@ Otherwise, only specified variables will be mapped.
 
 ## S4 class for dimension-specified weighting configrations
 
-This package provides a S4 class named `SDRConfig`,
+This package provides a S4 class named `GTDRConfig`,
 which is used to set dimension-specified weighting configurations.
 This class contains the following slots:
 
@@ -93,33 +93,33 @@ This class contains the following slots:
 | `adaptive` | Logical   | Whether the bandwidth is adaptive. |
 | `kernel`   | Character | Name of the kernel function.       |
 
-We can use the function `sdr_config()` to create an object.
+We can use the function `gtdr_config()` to create an object.
 
 ```{r}
-sdr_config(0.618, TRUE, "bisquare")
+gtdr_config(0.618, TRUE, "bisquare")
 ```
 
 Replicating via `rep()` is enabled, but only the `times` parameter is supported.
 
 ```{r}
-rep(sdr_config(36, TRUE, "bisquare"), 2)
+rep(gtdr_config(36, TRUE, "bisquare"), 2)
 ```
 
-## Use SDRConfig to configure arguments
+## Use GTDRConfig to configure arguments
 
-The function `sdr()` can not only set a uniform configuration,
+The function `gtdr()` can not only set a uniform configuration,
 but also set each a configuration for dimensions.
 
 ### Uniform configuration
 
-To set a uniform configuration for all dimensions, just pass a list of only one `SDRConfig` object.
+To set a uniform configuration for all dimensions, just pass a list of only one `GTDRConfig` object.
 For example, the following code will set the bandwidth size to 10% samples for all dimensions.
 
 ```{r, cache=T}
-m2 <- sdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m2 <- gtdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
  data = LondonHP,
- config = list(sdr_config(0.2))
+ config = list(gtdr_config(0.2))
 )
 m2
 ```
@@ -128,25 +128,25 @@ Likewise, we can use the `rep()` function, but remember to use a right `times` a
 which should be equal to the number of independent variables (including the intercept if it exists).
 
 ```r
-m2 <- sdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m2 <- gtdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
  data = LondonHP,
- config = rep(sdr_config(0.2), times = 2)
+ config = rep(gtdr_config(0.2), times = 2)
 )
 ```
 
 ### Separate configuration
 
 To set configurations separately for each dimension,
-we need to input a list of `SDRConfig` objects
+we need to input a list of `GTDRConfig` objects
 with the same number of elements to that of dimensions.
 
 ```{r, cache=T}
-m3 <- sdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m3 <- gtdr(
+ formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
  data = LondonHP,
- config = list(sdr_config(bw = 0.5, kernel = "bisquare"),
-               sdr_config(bw = 0.5, kernel = "bisquare"))
+ config = list(gtdr_config(bw = 0.5, kernel = "bisquare"),
+               gtdr_config(bw = 0.5, kernel = "bisquare"))
 )
 m3
 ```
@@ -155,15 +155,15 @@ Then the functions `c()` `rep()` can be used to flexiably create such a list.
 
 # Bandwidth Optimization
 
-The bandwidth optimization algorithm for SDR requires a set of initial values for each parameter.
+The bandwidth optimization algorithm for GTDR requires a set of initial values for each parameter.
 Thus, even bandwidth optimization is enabled, it is necessary to set the initial values via the `config` argument.
 We can enable bandwidth optimization with the following codes.
 
 ```{r, cahce=T}
-m4 <- sdr(
-    formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m4 <- gtdr(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
     data = LondonHP,
-    optim_bw = "CV"
+    optim_bw = "AIC"
 )
 ```
 
@@ -173,15 +173,15 @@ If the initial values are not appropriate, the function will use the default ini
 
 # Model Selection
 
-Apply the `step()` function to `sdrm` objects to select the best model.
+Apply the `step()` function to `gtdrm` objects to select the best model.
 Since version 4.1 of R, the pipe operator `|>` is avaliable.
 We can use the following code to enable model selection.
 
 ```{r model-selection, eval=FALSE, cache=T, eval=F}
-m5 <- sdr(
-    formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
+m5 <- gtdr(
+    formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
     data = LondonHP,
-    optim_bw = "CV"
+    optim_bw = "AIC"
 ) |> step(criterion = "AIC", threshold = 3, optim_bw = "AIC")
 ```
 
@@ -191,16 +191,16 @@ Currently, only AIC criterion is supported, so the `criterion` here can only be 
 For R of lower version, please use the following form:
 
 ```{r, eval=TRUE}
-m5 <- sdr(
-    PURCHASE ~ FLOORSZ + UNEMPLOY + PROF + BATH2 + BEDS2,
-    LondonHP, optim_bw = "CV"
+m5 <- gtdr(
+    PURCHASE ~ FLOORSZ + UNEMPLOY,
+    LondonHP, optim_bw = "AIC"
 )
 m5 <- step(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
 m5
 ```
 
 We can set `config` in `step()` to overwrite the original configurations.
-If it is not set, configurations in the `sdrm` object will be applied.
+If it is not set, configurations in the `gtdrm` object will be applied.
 Further, if `optim_bw` is sepcified, bandwidth will be optimized afther the model selection.
 
 The returned object after model selection contains a `$step` variable,
