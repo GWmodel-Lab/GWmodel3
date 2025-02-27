@@ -120,7 +120,7 @@ gw.average <- function(
     gwssm <- list(
         SDF = sdf,
         args = list(
-            x = x,
+            vars1 = x,
             coords = coords,
             bw = bw,
             adaptive = adaptive,
@@ -134,7 +134,168 @@ gw.average <- function(
             parallel_arg = parallel_arg
         ),
         call = mc,
-        indep_vars = indep_vars
+        name_vars1 = indep_vars
+    )
+    class(gwssm) <- "gwssm"
+    gwssm
+}
+
+#' Geographically Weighted Correlation
+#' 
+#' @param data A `sf` objects.
+#' @param vars1 a vector of variable names to be calculated.
+#' @param vars2 a vector of variable names as the responsed.
+#' @param bws Bandwidth value list.
+#' @param adaptive Whether the bandwidth value is adaptive or not.
+#' @param quantile Whether to calculate local quantiles.
+#' @param kernel Kernel function used.
+#' @param longlat Whether the coordinates
+#' @param p Power of the Minkowski distance,
+#'  default to 2, i.e., Euclidean distance.
+#' @param theta Angle in radian to roate the coordinate system, default to 0.
+#' @param parallel_method Parallel method.
+#' @param parallel_arg Parallel method argument.
+#' 
+#' @return A `gwssm` object.
+#' 
+#' @examples
+#' data(LondonHP)
+#' m <- gw.correlation(LondonHP, c("PURCHASE","FLOORSZ","UNEMPLOY"), 64, TRUE)
+#' gw.correlation(LondonHP, "PURCHASE,FLOORSZ,UNEMPLOY", 64, TRUE)
+#' 
+#' @export 
+gw.correlation <- function(
+    data,
+    vars1,
+    vars2,
+    bws,
+    adaptive = FALSE,
+    kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
+    approach = c("CV", "AIC"),
+    longlat = FALSE,
+    p = 2.0,
+    theta = 0.0,
+    parallel_method = c("no", "omp"),
+    parallel_arg = c(0)
+) {
+    ### Check args
+    kernel = match.arg(kernel)
+    parallel_method = match.arg(parallel_method)
+    approach = match.arg(approach)
+    attr(data, "na.action") <- getOption("na.action")
+
+    ### Extract coords
+    data <- do.call(na.action(data), args = list(data))
+    coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
+    if (is.null(coords) || nrow(coords) != nrow(data))
+        stop("Missing coordinates.")
+
+    ### Extract variables
+    mc <- match.call(expand.dots = FALSE)
+
+    if (inherits(data, "sf")) {
+        df <- sf::st_drop_geometry(data)
+    } else {
+        stop("Input data should be an sf object.")
+    }
+
+    if (!is.character(vars1) || length(vars1) == 0 ) {
+        stop("Input 'vars1' should be a character vector")
+    }
+    if (!is.character(vars2) || length(vars2) == 0 ) {
+        stop("Input 'vars2' should be a character vector")
+    }
+
+    len.var <- length(vars1) + length(vars2)
+    col.nm <- colnames(df)
+
+    var.idx1 <- match(vars1, col.nm)[!is.na(match(vars1, col.nm))]
+    if (length(var.idx1) == 0) 
+        stop("All variables input doesn't match with data")
+    x <- df[, var.idx1]
+    x <- as.matrix(x)
+    vars1 <- colnames(x)
+    var.idx2 <- match(vars2, col.nm)[!is.na(match(vars2, col.nm))]
+    if (length(var.idx2) == 0) 
+        stop("All variables input doesn't match with data")
+    y <- df[, var.idx2]
+    y <- as.matrix(y)
+    vars2 <- colnames(y)
+
+    ### Check bandwidth.
+    if (missing(bws)) {
+        stop("Bandwidth is missing.")
+    } else if (is.numeric(bws) || is.integer(bws)) {
+        if (any(bws <= 0)) stop("Bandwidth must be positive numbers.")
+    } else {
+        stop("Bandwidth must be a number.")
+    }
+
+    if (length(bws) >= len.var) {
+        bws <- bws[1:len.var]
+    }
+    else {
+        if (is.null(initial_type)) {
+            initial_type <- c(rep("Specified", length(bws)), rep("Null", n - length(bws)))
+        }
+        
+        if (is.null(optim_bw_criterion)) {
+            optim_bw_criterion <- rep(match.arg(approach), n)
+        }
+    }
+
+    ### Config kernels
+    vkernel <- c(rep(enum(kernel), length(len.var)))
+    vadaptive <- c(rep(adaptive, length(len.var)))
+    vlonglat <- c(rep(longlat, length(len.var)))
+    vp <- c(rep(p, length(len.var)))
+    vtheta <- c(rep(theta, length(len.var)))
+
+    c_results <- gw_correlation(
+        x, y, coords,
+        bws, vadaptive, vkernel,
+        vlonglat, vp, vtheta,
+        initial_type, optim_bw_criterion,
+        enum_list(parallel_method, parallel_types), parallel_arg
+    )
+
+    sdf_data <- data.frame()
+    ## copy results
+    {
+        local_cov <- c_results$Cov
+        local_corr <- c_results$Corr
+        local_scorr <- c_results$SCorr
+        # colnames(local_cov) <- paste0(vars1,"_",vars2, "_LCov")
+        # colnames(local_corr) <- paste0(vars1,"_",vars2, "_LCorr")
+        # colnames(local_scorr) <- paste0(vars1,"_",vars2, "_LSCorr")
+        colnames(local_cov) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LCov")
+        colnames(local_corr) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LCorr")
+        colnames(local_scorr) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LSCorr")
+        sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
+    } 
+    sdf_data$geometry <- sf::st_geometry(data)
+    sdf <- sf::st_sf(sdf_data)
+
+    ### Return result
+    gwssm <- list(
+        SDF = sdf,
+        args = list(
+            vars1 = x,
+            vars2 = y,
+            coords = coords,
+            bw = c_results$bw_value,
+            mode = "Correlation",
+            adaptive = adaptive,
+            kernel = kernel,
+            longlat = longlat,
+            p = p,
+            theta = theta,
+            parallel_method = parallel_method,
+            parallel_arg = parallel_arg
+        ),
+        call = mc,
+        name_vars1 = vars1,
+        name_vars2 = vars2
     )
     class(gwssm) <- "gwssm"
     gwssm
