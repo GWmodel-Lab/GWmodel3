@@ -9,7 +9,7 @@ test_that("gw.average: works", {
 
 test_that("gw.correlation: works", {
   m <<- expect_no_error({
-    gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"), adaptive=TRUE)
+    gw.correlation(LondonHP, c("PURCHASE","PROF"),c("FLOORSZ","UNEMPLOY"),kernel="bisquare", adaptive=TRUE)
   })
 })
 

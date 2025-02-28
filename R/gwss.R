@@ -71,7 +71,7 @@ gw.average <- function(
     x <- df[, var.idx]
     x <- as.matrix(x)
     indep_vars <- colnames(x)
-    # colnames(x) <- indep_vars
+    colnames(x) <- indep_vars
 
     ### Check whether bandwidth is valid.
     if (missing(bw)) {
@@ -147,8 +147,8 @@ gw.average <- function(
 #' @param vars2 a vector of variable names as the responsed.
 #' @param bws Bandwidth value list.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
-#' @param quantile Whether to calculate local quantiles.
 #' @param kernel Kernel function used.
+#' @param approach Bandwidth selection.
 #' @param longlat Whether the coordinates
 #' @param p Power of the Minkowski distance,
 #'  default to 2, i.e., Euclidean distance.
@@ -215,12 +215,14 @@ gw.correlation <- function(
     x <- df[, var.idx1]
     x <- as.matrix(x)
     vars1 <- colnames(x)
+    colnames(x) <- vars1
     var.idx2 <- match(vars2, col.nm)[!is.na(match(vars2, col.nm))]
     if (length(var.idx2) == 0) 
         stop("All variables input doesn't match with data")
     y <- df[, var.idx2]
     y <- as.matrix(y)
     vars2 <- colnames(y)
+    colnames(y) <- vars2
 
     ### Check bandwidth.
     initial_type <- c(rep("Specified", length(bws)), rep("Null", len.var - length(bws)))
@@ -268,12 +270,9 @@ gw.correlation <- function(
         local_cov <- c_results$Cov
         local_corr <- c_results$Corr
         local_scorr <- c_results$SCorr
-        # colnames(local_cov) <- paste0(vars1,"_",vars2, "_LCov")
-        # colnames(local_corr) <- paste0(vars1,"_",vars2, "_LCorr")
-        # colnames(local_scorr) <- paste0(vars1,"_",vars2, "_LSCorr")
-        # colnames(local_cov) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LCov")
-        # colnames(local_corr) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LCorr")
-        # colnames(local_scorr) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LSCorr")
+        colnames(local_cov) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCov", sep = "_")
+        colnames(local_corr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCorr", sep = "_")
+        colnames(local_scorr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LSCorr", sep = "_")
         sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
     } 
     sdf_data$geometry <- sf::st_geometry(data)
@@ -289,10 +288,12 @@ gw.correlation <- function(
             bw = c_results$bw_value,
             mode = "Correlation",
             adaptive = adaptive,
-            kernel = kernel,
+            kernel = kernels,
             longlat = longlat,
             p = p,
             theta = theta,
+            optim_bw = optim_bw,
+            optim_bw_criterion = approach,
             parallel_method = parallel_method,
             parallel_arg = parallel_arg
         ),
@@ -317,31 +318,38 @@ gw.correlation <- function(
 print.gwssm <- function(x, ..., decimal_fmt) {
     if (!inherits(x, "gwssm"))
         stop("It's not a 'gwssm' object.")
-    cat("Local summary statistics", fill = T)
-    cat("========================", fill = T)
-    # cat("                 Formula:", deparse(x$call$formula), fill = T)
-    cat("                    Data:", deparse(x$call$data), fill = T)
-    cat("Number of summary points:", nrow(x$args$vars1), fill = T)
-    cat("         Kernel function:", x$args$kernel, fill = T)
+    cat("   ***********************************************************************\n")
+    cat("   *                       Package   GWmodel                             *\n")
+    cat("   ***********************************************************************\n")
+    cat("   ***********************Calibration information*************************\n")
+    cat("                   Local summary statistics of GW", fill = T, x$args$mode)
+    # cat("   =======================================================================\n", fill = T)
+    cat("   Data:", deparse(x$call$data), fill = T)
+    cat("   Number of summary points:", nrow(x$args$vars1), fill = T)
+    cat("   Kernel function:", x$args$kernel, fill = T)
     switch(x$args$mode,
-       "Average" = {
-           cat("               Bandwidth:", x$args$bw, "\n")
-       },
-       "Correlation" = {
-           cat("               Bandwidth:", x$args$bw,
-               ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-               ifelse(x$args$optim_bw, paste0(
-                   "(Optimized according to ", x$args$optim_bw_criterion, ")"
-               ), ""), fill = TRUE, sep = " ")
-       }
+            "Average" = {
+                cat("   Bandwidth:", x$args$bw,
+                    ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),"\n")
+            },
+            "Correlation" = {
+                var_width <- max(nchar(x$name_vars2))
+                bw_matrix <- matrix(x$args$bw, nrow = length(x$name_vars1), ncol = length(x$name_vars2), byrow = TRUE)
+                cat("   Bandwidth:\n")
+                for (i in 1:length(x$name_vars1)) {
+                    cat("             ", 
+                        sprintf(x$name_vars1[i]),
+                        paste(sprintf("%-*s", var_width, x$name_vars2), collapse = " "),fill = TRUE)
+                    cat("             ", 
+                        paste(sprintf("%-*s", var_width, "")),
+                        paste(sprintf("%-*s", var_width, bw_matrix[i, ]), collapse = ""),  
+                        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+                        # ifelse(x$args$optim_bw, paste0("(Optimized according to ", x$args$optim_bw_criterion, ")"), ""),
+                        fill = TRUE
+                    )
+                }
+            }
     )
-    # cat("               Bandwidth:", x$args$bw,
-    #     ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-    #     ifelse(x$args$optim_bw, paste0(
-    #         "(Optimized accroding to ",
-    #         x$args$optim_bw_criterion,
-    #         ")"
-    #     ), ""), fill = T)
     distance_type <- "Euclidean"
     if (x$args$longlat) distance_type <- "Geodetic"
     else if (x$args$p == 2) distance_type <- "Euclidean"
@@ -349,13 +357,13 @@ print.gwssm <- function(x, ..., decimal_fmt) {
     else if (is.infinite(x$args$p)) distance_type <- "Chebyshev"
     else distance_type <- "Generalized Minkowski"
     distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
-    cat("                Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
-    cat("\n", fill = T)
-
-    cat("SDF Summary", fill = T)
-    cat("===========", fill = T)
+    cat("   Distance metric:", distance_type, ifelse(distance_rotated, " (rotated)", "distance metric is used."), fill = T)
+    
+    cat("\n   ************************Local Summary Statistics:**********************\n", fill = T)
+    # cat("   =======================================================================\n", fill = T)
     res <- st_drop_geometry(x$SDF)
     print(as.data.frame(t(sapply(res, summary))))
+    cat("   ***********************************************************************\n")
 }
 
 #' @describeIn gwss Plot the result of basic GWSS model.
