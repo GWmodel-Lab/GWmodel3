@@ -10,8 +10,8 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gw_average(
-    const NumericMatrix& x,
-    const NumericMatrix& coords,
+    const NumericMatrix &x,
+    const NumericMatrix &coords,
     bool quantile,
     double bw,
     bool adaptive,
@@ -20,15 +20,15 @@ List gw_average(
     double p,
     double theta,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
-) {
+    const IntegerVector &parallel_arg)
+{
     // Convert data types
     mat mx = myas(x);
     mat mcoords = myas(coords);
 
     // Make Spatial Weight
     BandwidthWeight bandwidth(bw, adaptive, BandwidthWeight::KernelFunctionType((size_t)kernel));
-    Distance* distance = nullptr;
+    Distance *distance = nullptr;
     if (longlat)
     {
         distance = new CRSDistance(true);
@@ -49,7 +49,7 @@ List gw_average(
     GWAverage algorithm(mx, mcoords, spatial);
     algorithm.setQuantile(quantile);
 
-    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
+    vector<int> vpar_args = as<vector<int>>(IntegerVector(parallel_arg));
     switch (ParallelType(size_t(parallel_type)))
     {
 #ifdef _OPENMP
@@ -62,7 +62,7 @@ List gw_average(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    
+
     algorithm.run();
 
     List results = List::create(
@@ -70,9 +70,9 @@ List gw_average(
         Named("var") = mywrap(algorithm.localVar()),
         Named("sdev") = mywrap(algorithm.localSDev()),
         Named("skew") = mywrap(algorithm.localSkewness()),
-        Named("cv") = mywrap(algorithm.localCV())
-    );
-    if (quantile) {
+        Named("cv") = mywrap(algorithm.localCV()));
+    if (quantile)
+    {
         results["median"] = mywrap(algorithm.localMedian());
         results["iqr"] = mywrap(algorithm.iqr());
         results["qi"] = mywrap(algorithm.qi());
@@ -81,23 +81,22 @@ List gw_average(
     return results;
 }
 
-
 // [[Rcpp::export]]
 List gw_correlation(
-    const NumericMatrix& x,
-    const NumericMatrix& y,
-    const NumericMatrix& coords,
-    const NumericVector& bw,
-    const LogicalVector& adaptive,
-    const IntegerVector& kernel,
-    const LogicalVector& longlat,
-    const NumericVector& p,
-    const NumericVector& theta,
-    const IntegerVector& initial_type,
-    const IntegerVector& optim_bw_criterion,
+    const NumericMatrix &x,
+    const NumericMatrix &y,
+    const NumericMatrix &coords,
+    const NumericVector &bw,
+    const LogicalVector &adaptive,
+    const IntegerVector &kernel,
+    const LogicalVector &longlat,
+    const NumericVector &p,
+    const NumericVector &theta,
+    const IntegerVector &initial_type,
+    const IntegerVector &optim_bw_criterion,
     size_t parallel_type,
-    const IntegerVector& parallel_arg
-) {
+    const IntegerVector &parallel_arg)
+{
     // Convert data types
     mat mx = myas(x);
     mat my = myas(y);
@@ -105,16 +104,16 @@ List gw_correlation(
 
     // Make Spatial Weight
     size_t nVar = (size_t)mx.n_cols * (size_t)my.n_cols;
-    auto vbw = as< vector<double> >(NumericVector(bw));
-    auto vadaptive = as< vector<bool> >(LogicalVector(adaptive));
-    auto vkernel = as< vector<int> >(IntegerVector(kernel));
-    auto vlonglat = as< vector<bool> >(LogicalVector(longlat));
-    auto vp = as< vector<double> >(NumericVector(p));
-    auto vtheta = as< vector<double> >(NumericVector(theta));
-    auto vinitial_type = as< vector<int> >(IntegerVector(initial_type));
-    auto voptim_bw_criterion = as< vector<int> >(IntegerVector(optim_bw_criterion));
+    auto vbw = as<vector<double>>(NumericVector(bw));
+    auto vadaptive = as<vector<bool>>(LogicalVector(adaptive));
+    auto vkernel = as<vector<int>>(IntegerVector(kernel));
+    auto vlonglat = as<vector<bool>>(LogicalVector(longlat));
+    auto vp = as<vector<double>>(NumericVector(p));
+    auto vtheta = as<vector<double>>(NumericVector(theta));
+    auto vinitial_type = as<vector<int>>(IntegerVector(initial_type));
+    auto voptim_bw_criterion = as<vector<int>>(IntegerVector(optim_bw_criterion));
     vector<SpatialWeight> spatials;
-    for (size_t i = 0; i < vbw.size(); i++)
+    for (size_t i = 0; i < nVar; i++)
     {
         BandwidthWeight bandwidth(vbw[i], vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
         Distance* distance = nullptr;
@@ -145,7 +144,7 @@ List gw_correlation(
     algorithm.setBandwidthInitilize(bandwidthInitialize);
     algorithm.setBandwidthSelectionApproach(bandwidthSelectionApproach);
 
-    vector<int> vpar_args = as< vector<int> >(IntegerVector(parallel_arg));
+    vector<int> vpar_args = as<vector<int>>(IntegerVector(parallel_arg));
     switch (ParallelType(size_t(parallel_type)))
     {
 #ifdef _OPENMP
@@ -158,11 +157,11 @@ List gw_correlation(
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
     }
-    
+
     algorithm.run();
 
     vector<double> bw_value;
-    const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
+    const vector<SpatialWeight> &spatialWeights = algorithm.spatialWeights();
     for (size_t i = 0; i < nVar; i++)
     {
         bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
@@ -172,8 +171,7 @@ List gw_correlation(
         Named("Cov") = mywrap(algorithm.localCov()),
         Named("Corr") = mywrap(algorithm.localCorr()),
         Named("SCorr") = mywrap(algorithm.localSCorr()),
-        Named("bw_value") = wrap(bw_value),
-    );
+        Named("bw_value") = wrap(bw_value));
 
     return results;
 }

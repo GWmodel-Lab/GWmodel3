@@ -160,15 +160,15 @@ gw.average <- function(
 #' 
 #' @examples
 #' data(LondonHP)
-#' m <- gw.correlation(LondonHP, c("PURCHASE","FLOORSZ","UNEMPLOY"), 64, TRUE)
-#' gw.correlation(LondonHP, "PURCHASE,FLOORSZ,UNEMPLOY", 64, TRUE)
+#' m <- gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"), kernel = "gaussian", adaptive=TRUE)
+#' gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"),c(50,50), adaptive=TRUE)
 #' 
 #' @export 
 gw.correlation <- function(
     data,
     vars1,
     vars2,
-    bws,
+    bws = NULL,
     adaptive = FALSE,
     kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
     approach = c("CV", "AIC"),
@@ -179,7 +179,7 @@ gw.correlation <- function(
     parallel_arg = c(0)
 ) {
     ### Check args
-    kernel = match.arg(kernel)
+    kernels = match.arg(kernel)
     parallel_method = match.arg(parallel_method)
     approach = match.arg(approach)
     attr(data, "na.action") <- getOption("na.action")
@@ -206,7 +206,7 @@ gw.correlation <- function(
         stop("Input 'vars2' should be a character vector")
     }
 
-    len.var <- length(vars1) + length(vars2)
+    len.var <- length(vars1) * length(vars2)
     col.nm <- colnames(df)
 
     var.idx1 <- match(vars1, col.nm)[!is.na(match(vars1, col.nm))]
@@ -223,41 +223,44 @@ gw.correlation <- function(
     vars2 <- colnames(y)
 
     ### Check bandwidth.
+    initial_type <- c(rep("Specified", length(bws)), rep("Null", len.var - length(bws)))
+    if (missing(approach))  approach <- "AIC"
+    optim_bw_criterion <- rep(match.arg(approach), len.var)
+
     if (missing(bws)) {
-        stop("Bandwidth is missing.")
-    } else if (is.numeric(bws) || is.integer(bws)) {
-        if (any(bws <= 0)) stop("Bandwidth must be positive numbers.")
+        bws <- c(rep(1, len.var))
+        optim_bw <- TRUE
     } else {
-        stop("Bandwidth must be a number.")
+        if (is.numeric(bws) || is.integer(bws)) {
+            optim_bw <- FALSE
+            if (any(bws <= 0)) stop("Bandwidth must be positive numbers.")
+        } else {
+            stop("Bandwidth must be a number!")
+        }
     }
 
     if (length(bws) >= len.var) {
         bws <- bws[1:len.var]
-    }
-    else {
-        if (is.null(initial_type)) {
-            initial_type <- c(rep("Specified", length(bws)), rep("Null", n - length(bws)))
-        }
-        
-        if (is.null(optim_bw_criterion)) {
-            optim_bw_criterion <- rep(match.arg(approach), n)
-        }
+        optim_bw <- FALSE
     }
 
     ### Config kernels
-    vkernel <- c(rep(enum(kernel), length(len.var)))
-    vadaptive <- c(rep(adaptive, length(len.var)))
-    vlonglat <- c(rep(longlat, length(len.var)))
-    vp <- c(rep(p, length(len.var)))
-    vtheta <- c(rep(theta, length(len.var)))
+    vkernel <- c(rep(kernel, len.var))
+    # vkernel <- c(rep(which(kernel == kernels) - 1,len.var))
+    vadaptive <- c(rep(adaptive, len.var))
+    vlonglat <- c(rep(longlat, len.var))
+    vp <- c(rep(p, len.var))
+    vtheta <- c(rep(theta, len.var))
 
-    c_results <- gw_correlation(
+    c_results <- tryCatch(gw_correlation(
         x, y, coords,
-        bws, vadaptive, vkernel,
+        bws, vadaptive, enum(vkernel, kernel_enums),
         vlonglat, vp, vtheta,
-        initial_type, optim_bw_criterion,
+        enum(initial_type,initial_enums), enum(optim_bw_criterion,criterion_enums),
         enum_list(parallel_method, parallel_types), parallel_arg
-    )
+    ), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
 
     sdf_data <- data.frame()
     ## copy results
@@ -268,9 +271,9 @@ gw.correlation <- function(
         # colnames(local_cov) <- paste0(vars1,"_",vars2, "_LCov")
         # colnames(local_corr) <- paste0(vars1,"_",vars2, "_LCorr")
         # colnames(local_scorr) <- paste0(vars1,"_",vars2, "_LSCorr")
-        colnames(local_cov) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LCov")
-        colnames(local_corr) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LCorr")
-        colnames(local_scorr) <- paste0(rep(vars1, each = len_vars2), "_", rep(vars2, times = len_vars1), "_LSCorr")
+        # colnames(local_cov) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LCov")
+        # colnames(local_corr) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LCorr")
+        # colnames(local_scorr) <- paste0(rep(vars1, each = length(vars2)), "_", rep(vars2, times = length(vars1)), "_LSCorr")
         sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
     } 
     sdf_data$geometry <- sf::st_geometry(data)
@@ -318,15 +321,27 @@ print.gwssm <- function(x, ..., decimal_fmt) {
     cat("========================", fill = T)
     # cat("                 Formula:", deparse(x$call$formula), fill = T)
     cat("                    Data:", deparse(x$call$data), fill = T)
-    cat("Number of summary points:", nrow(x$args$x), fill = T)
+    cat("Number of summary points:", nrow(x$args$vars1), fill = T)
     cat("         Kernel function:", x$args$kernel, fill = T)
-    cat("               Bandwidth:", x$args$bw,
-        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-        ifelse(x$args$optim_bw, paste0(
-            "(Optimized accroding to ",
-            x$args$optim_bw_criterion,
-            ")"
-        ), ""), fill = T)
+    switch(x$args$mode,
+       "Average" = {
+           cat("               Bandwidth:", x$args$bw, "\n")
+       },
+       "Correlation" = {
+           cat("               Bandwidth:", x$args$bw,
+               ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+               ifelse(x$args$optim_bw, paste0(
+                   "(Optimized according to ", x$args$optim_bw_criterion, ")"
+               ), ""), fill = TRUE, sep = " ")
+       }
+    )
+    # cat("               Bandwidth:", x$args$bw,
+    #     ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+    #     ifelse(x$args$optim_bw, paste0(
+    #         "(Optimized accroding to ",
+    #         x$args$optim_bw_criterion,
+    #         ")"
+    #     ), ""), fill = T)
     distance_type <- "Euclidean"
     if (x$args$longlat) distance_type <- "Geodetic"
     else if (x$args$p == 2) distance_type <- "Euclidean"
@@ -370,3 +385,14 @@ plot.gwssm <- function(x, y, ..., columns) {
     }
     plot(sdf, ...)
 }
+
+
+criterion_enums <- c(
+    "CV",
+    "AIC"
+)
+
+initial_enums <- c(
+    "Null",
+    "Specified"
+)
