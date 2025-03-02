@@ -2,7 +2,7 @@
 #' 
 #' @param data A `sf` objects.
 #' @param vars a vector of variable names to be summarized.
-#' @param bw Bandwidth value.
+#' @param bw Bandwidth value, need to be specified.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param quantile Whether to calculate local quantiles.
 #' @param kernel Kernel function used.
@@ -145,7 +145,7 @@ gw.average <- function(
 #' @param data A `sf` objects.
 #' @param vars1 a vector of variable names to be calculated.
 #' @param vars2 a vector of variable names as the responsed.
-#' @param bws Bandwidth value list.
+#' @param bws Bandwidth value list, auto-select if not provided.
 #' @param adaptive Whether the bandwidth value is adaptive or not.
 #' @param kernel Kernel function used.
 #' @param approach Bandwidth selection.
@@ -160,7 +160,7 @@ gw.average <- function(
 #' 
 #' @examples
 #' data(LondonHP)
-#' m <- gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"), kernel = "gaussian", adaptive=TRUE)
+#' m <- gw.correlation(LondonHP, c("PURCHASE","PROF"),c("FLOORSZ","UNEMPLOY"),kernel="bisquare", adaptive=TRUE)
 #' gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"),c(50,50), adaptive=TRUE)
 #' 
 #' @export 
@@ -214,36 +214,37 @@ gw.correlation <- function(
         stop("All variables input doesn't match with data")
     x <- df[, var.idx1]
     x <- as.matrix(x)
-    vars1 <- colnames(x)
     colnames(x) <- vars1
+    vars1 <- colnames(x)
     var.idx2 <- match(vars2, col.nm)[!is.na(match(vars2, col.nm))]
     if (length(var.idx2) == 0) 
         stop("All variables input doesn't match with data")
     y <- df[, var.idx2]
     y <- as.matrix(y)
-    vars2 <- colnames(y)
     colnames(y) <- vars2
+    vars2 <- colnames(y)
 
     ### Check bandwidth.
-    initial_type <- c(rep("Specified", length(bws)), rep("Null", len.var - length(bws)))
+    initial_type <- c(rep("Specified", length(bws)), rep("Null", ifelse(len.var>=length(bws),len.var - length(bws),len.var)))
+    bw_select_type <- c(rep("Specified", length(bws)), rep("AutoSelect", ifelse(len.var>=length(bws),len.var - length(bws),len.var)))
     if (missing(approach))  approach <- "AIC"
     optim_bw_criterion <- rep(match.arg(approach), len.var)
 
     if (missing(bws)) {
         bws <- c(rep(1, len.var))
-        optim_bw <- TRUE
+        # optim_bw <- TRUE
     } else {
         if (is.numeric(bws) || is.integer(bws)) {
-            optim_bw <- FALSE
+            # optim_bw <- FALSE
             if (any(bws <= 0)) stop("Bandwidth must be positive numbers.")
         } else {
-            stop("Bandwidth must be a number!")
+            stop("Bandwidth must be a number.")
         }
     }
 
-    if (length(bws) >= len.var) {
+    if (length(bws) > len.var) {
         bws <- bws[1:len.var]
-        optim_bw <- FALSE
+        # optim_bw <- FALSE
     }
 
     ### Config kernels
@@ -292,7 +293,8 @@ gw.correlation <- function(
             longlat = longlat,
             p = p,
             theta = theta,
-            optim_bw = optim_bw,
+            # optim_bw = optim_bw,
+            bw_configuration = bw_select_type,
             optim_bw_criterion = approach,
             parallel_method = parallel_method,
             parallel_arg = parallel_arg

@@ -7,14 +7,20 @@ test_that("gw.average: works", {
   })
 })
 
-test_that("gw.correlation: works", {
+test_that("gw.correlation: no bw", {
   m <<- expect_no_error({
-    gw.correlation(LondonHP, c("PURCHASE","PROF"),c("FLOORSZ","UNEMPLOY"),kernel="bisquare", adaptive=TRUE)
+    gw.correlation(LondonHP, c("PURCHASE","PROF"), c("FLOORSZ","UNEMPLOY"), kernel="bisquare", adaptive=TRUE)
   })
 })
 
-test_that("gw.correlation: works", {
+test_that("gw.correlation: specified bw", {
   m <<- expect_no_error({
-    gw.correlation(LondonHP, c("PURCHASE"),c("FLOORSZ","UNEMPLOY"),c(50,50), adaptive=TRUE)
+    gw.correlation(LondonHP, c("PURCHASE"), c("FLOORSZ","UNEMPLOY"), c(50,50), adaptive=TRUE)
+  })
+})
+
+test_that("gw.correlation: insufficient bw", {
+  m <<- expect_no_error({
+    gw.correlation(LondonHP, c("PURCHASE"), c("FLOORSZ","UNEMPLOY"), c(50), kernel="bisquare", adaptive=TRUE)
   })
 })
