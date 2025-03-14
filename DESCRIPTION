@@ -16,6 +16,7 @@ Authors@R: c(
     person("Isabella", "Gollini", role = ("ctb")),
     person("Fiona H", "Evans", role = ("ctb")))
 Maintainer: Binbin Lu <binbinlu@whu.edu.cn>
+Encoding: UTF-8
 Description: Techniques from a particular branch of spatial statistics, termed
     geographically-weighted (GW) models. GW models suit situations when
     data are not described well by some global model, but where there are
