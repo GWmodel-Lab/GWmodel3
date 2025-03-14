@@ -43,11 +43,9 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
-	libgwmodel/src/gwmodelpp/GWDR.o \
-	libgwmodel/src/gwmodelpp/GWPCA.o \
+	libgwmodel/src/gwmodelpp/GTDR.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
-	libgwmodel/src/gwmodelpp/GWSS.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
@@ -58,13 +56,13 @@ OBJECTS_TELEGRAM = \
 	telegrams/RTelegram.o \
 	telegrams/GWRBasicTelegram.o \
 	telegrams/GWRMultiscaleTelegram.o \
-	telegrams/GWDRTelegram.o
+	telegrams/GTDRTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
 	gwr_multiscale.o \
-	gwdr.o \
+	gtdr.o \
 	RcppExports.o
 
 

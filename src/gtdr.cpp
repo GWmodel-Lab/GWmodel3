@@ -2,7 +2,7 @@
 #include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
-#include "telegrams/GWDRTelegram.h"
+#include "telegrams/GTDRTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -10,7 +10,7 @@ using namespace arma;
 using namespace gwm;
 
 // [[Rcpp::export]]
-List gwdr_fit(
+List gtdr_fit(
     const arma::mat& x,
     const arma::vec& y,
     const arma::mat& coords,
@@ -46,9 +46,9 @@ List gwdr_fit(
     }
     
     // Make Algorithm Object
-    GWDR algorithm(x, y, coords, spatials);
+    GTDR algorithm(x, y, coords, spatials);
     algorithm.setHasHatMatrix(hatmatrix);
-    algorithm.setBandwidthCriterionType(GWDR::BandwidthCriterionType(size_t(optim_bw_criterion)));
+    algorithm.setBandwidthCriterionType(GTDR::BandwidthCriterionType(size_t(optim_bw_criterion)));
 
     if (select_model)
     {
@@ -81,7 +81,7 @@ List gwdr_fit(
     }
     if (verbose > 0)
     {
-        algorithm.setTelegram(make_unique<GWDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
+        algorithm.setTelegram(make_unique<GTDRTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
     try
     {

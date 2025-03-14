@@ -1,10 +1,10 @@
-#ifndef GWDRTELEGRAM
-#define GWDRTELEGRAM
+#ifndef GTDRTELEGRAM
+#define GTDRTELEGRAM
 
 #include "RTelegram.h"
 #include <map>
 
-class GWDRTelegram : public RTelegram
+class GTDRTelegram : public RTelegram
 {
 public:
     enum class InfoTag {
@@ -13,10 +13,10 @@ public:
         VariableCriterion,
     };
     static std::map<std::string, InfoTag> TagDict;
-    static std::map<gwm::GWDR::BandwidthCriterionType, std::string> BwCriterionName;
+    static std::map<gwm::GTDR::BandwidthCriterionType, std::string> BwCriterionName;
 
 public:
-    GWDRTelegram(const gwm::GWDR& algorithm, int verbose) : 
+    GTDRTelegram(const gwm::GTDR& algorithm, int verbose) : 
         RTelegram(verbose)
     {
         const auto& sws = algorithm.spatialWeights();
@@ -29,22 +29,22 @@ public:
         mBandwidthCriterionType = algorithm.bandwidthCriterionType();
     }
 
-    GWDRTelegram(const gwm::GWDR& algorithm, std::vector<std::string> varNames, int verbose) : 
-        GWDRTelegram(algorithm, verbose)
+    GTDRTelegram(const gwm::GTDR& algorithm, std::vector<std::string> varNames, int verbose) : 
+        GTDRTelegram(algorithm, verbose)
     {
         mVariableNames = varNames;
     }
 
-    ~GWDRTelegram() {}
+    ~GTDRTelegram() {}
     void parseInfo(std::string message) override;
     bool testBandwidthCriterionTitle(const std::string& s);
 
 private:
-    // const gwm::GWDR& mAlgorithm;
+    // const gwm::GTDR& mAlgorithm;
     std::size_t mDims;
-    gwm::GWDR::BandwidthCriterionType mBandwidthCriterionType;
+    gwm::GTDR::BandwidthCriterionType mBandwidthCriterionType;
     std::vector<bool> mBandwidthTypes;
     std::vector<std::string> mVariableNames;
 };
 
-#endif  // GWDRTELEGRAM
+#endif  // GTDRTELEGRAM
