@@ -10,7 +10,7 @@
 \usage{
 \method{print}{gtdrm}(x, decimal_fmt = "\%.3f", ...)
 
-\method{print}{gwcorrm}(x, ..., decimal_fmt)
+\method{print}{gwcorrm}(x, ..., decimal_fmt = "\%.3f")
 
 \method{print}{gwrm}(x, decimal_fmt = "\%.3f", ...)
 

@@ -11,7 +11,7 @@ gwcorr_config(
   longlat = FALSE,
   p = 2,
   theta = 0,
-  optim_bw = c("AIC", "CV", "no")
+  optim_bw = c("CV", "AIC", "no")
 )
 }
 \arguments{

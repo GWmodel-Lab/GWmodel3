@@ -1,16 +1,10 @@
 #' Geographically Weighted Correlation
 #' 
+#' @param formula A formula, seperated by '~' and joined by '+'
 #' @param data A `sf` objects.
-#' @param vars1 a vector of variable names to be calculated.
-#' @param vars2 a vector of variable names as the responsed.
-#' @param bws Bandwidth value list, auto-select if not provided.
-#' @param adaptive Whether the bandwidth value is adaptive or not.
-#' @param kernel Kernel function used.
-#' @param approach Bandwidth selection.
-#' @param longlat Whether the coordinates
-#' @param p Power of the Minkowski distance,
-#'  default to 2, i.e., Euclidean distance.
-#' @param theta Angle in radian to roate the coordinate system, default to 0.
+#' @param config Parameter-specified weighting configuration.
+#'  It must be a list of `GWCorr` objects.
+#'  Please find more details in the details section.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
 #' 
@@ -18,26 +12,29 @@
 #' 
 #' @examples
 #' data(LondonHP)
-#' gw_correlation(
-#'  formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#'  data = LondonHP
-#' )
+#' # Basic use
+#' m <- gwcorrelation(formula = PURCHASE ~ FLOORSZ + UNEMPLOY, data = LondonHP)
 #' # Specify more variable pairs
-#' gw_correlation(
+#' gwcorrelation(
 #'  formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
 #'  data = LondonHP
 #' )
-#' 
-#' # Specify more configurations for all variables
-#' gw_correlation(
+#' # Specify using default for all variables
+#' gwcorrelation(
+#'   formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
+#'   data = LondonHP, 
+#'   config = list(.default = gwcorr_config(adaptive = TRUE, kernel = "gaussian", optim_bw="CV"))
+#' )
+#' # or
+#' gwcorrelation(
 #'  formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
 #'  data = LondonHP,
-#'  config = list(gwcorr_config(adaptive = TRUE, kernel = "bisquare"))
+#'  config = list(gwcorr_config(adaptive = FALSE, kernel = "bisquare"))
 #' )
-#' m
 #'
 #' # Specify more configurations for each variables
-#' gw_correlation(
+#' # Make sure the numbers of variables are correct
+#' gwcorrelation(
 #'  formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
 #'  data = LondonHP,
 #'  config = list(
@@ -46,9 +43,19 @@
 #'      gwcorr_config(adaptive = TRUE, kernel = "bisquare"),
 #'      gwcorr_config(adaptive = TRUE, kernel = "bisquare")
 #'  ))
+#' # or names should be paired with '_'
+#' gwcorrelation(
+#'  formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
+#'  data = LondonHP,
+#'  config = list(
+#'      PURCHASE_UNEMPLOY = gwcorr_config(kernel="bisquare", adaptive = TRUE),
+#'      PURCHASE_PROF = gwcorr_config(kernel="bisquare", adaptive = FALSE),
+#'      FLOORSZ_UNEMPLOY = gwcorr_config(kernel="gaussian", adaptive = TRUE),
+#'      FLOORSZ_PROF = gwcorr_config(kernel="gaussian", adaptive = FALSE)
+#'  ))
 #' 
-#' # Specify configurations by variable names, names should be paired with '_'
-#' gw_correlation(
+#' # Specify configurations by variable names and default
+#' gwcorrelation(
 #'  formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
 #'  data = LondonHP,
 #'  config = list(
@@ -57,7 +64,7 @@
 #'  ))
 #' 
 #' @export 
-gw_correlation <- function(
+gwcorrelation <- function(
     formula,
     data,
     config = list(gwcorr_config()),
@@ -98,11 +105,12 @@ gw_correlation <- function(
         formula_new <- update(formula, . ~ . - 1)
     }
     # print(formula_new)
+
     ### Extract variables
     mc <- match.call(expand.dots = FALSE)
     mf <- model.frame(formula = formula(formula_new), data = sf::st_drop_geometry(data))
     mt <- attr(mf, "terms")
-    x1 <- model.extract(mf, "response")
+    x1 <- model.extract(mf, "response")#y
     if (is.null(dim(x1))) {
         x1 <- matrix(x1, ncol = 1)
     }
@@ -113,11 +121,14 @@ gw_correlation <- function(
         vars1 <- colnames(x1)
     }
     vars2 <- colnames(x2)
+    colnames(x1) <- vars1
+
+    x2 <- as.matrix(x2)
+    x1 <- as.matrix(x1)
 
     # vars_grid <- expand.grid(v2 = vars2, v1 = vars1)
     # vars_all <- paste0(vars_grid$v1, "_", vars_grid$v2)
     vars_all <- as.vector(outer(vars1, vars2, FUN = function(v1, v2) paste0(v1, "_", v2)))
-    # print(vars_all)
 
     ### Extract config
     if (is.null(names(config))) {
@@ -133,9 +144,6 @@ gw_correlation <- function(
         if (all(vars_all %in% names(config))) {
             config <- config[vars_all]
         } else if (".default" %in% names(config)) {
-            # config <- sapply(vars_all, function(name) {
-            #     if (name %in% names(config)) config[[name]] else config[[".default"]]
-            # })
             config <- ifelse(vars_all %in% names(config), config[vars_all], config[".default"])
         } else {
             stop("Either provide configs for all variable combinations using '_', or supply a default config named '.default'.")
@@ -151,19 +159,13 @@ gw_correlation <- function(
             initial_type <- "Null"
         } else if (is.numeric(x@bw) || is.integer(x@bw)) {
             bw_value <- x@bw
-            if (x@optim_bw == "no") {
-                optim_bw <- FALSE
-                optim_bw_criterion <- "AIC"
-                initial_type <- "Specified"
-            } else {
-                optim_bw <- TRUE
-                optim_bw_criterion <- x@optim_bw
-                initial_type <- "Initial"
-            }
+            optim_bw <- FALSE
+            optim_bw_criterion <- x@optim_bw
+            initial_type <- "Specified"
         } else {
             bw_value <- Inf
             optim_bw <- TRUE
-            optim_bw_criterion <- "AIC"
+            optim_bw_criterion <- "CV"
             initial_type <- "Null"
         }
         list(
@@ -185,7 +187,7 @@ gw_correlation <- function(
     p <- sapply(config, function(x) x@p)
     theta <- sapply(config, function(x) x@theta)
 
-    c_result <- tryCatch(gw_correlation_cal(
+    c_results <- tryCatch(gw_correlation_cal(
         x1, x2, coords,
         bw_value, adaptive, enum(kernel, kernel_enums),
         longlat, p, theta,
@@ -196,6 +198,8 @@ gw_correlation <- function(
     ), error = function (e) {
         stop("Error:", conditionMessage(e))
     })
+
+    # print(c_results)
 
     sdf_data <- data.frame()
     ## copy results
@@ -208,6 +212,7 @@ gw_correlation <- function(
         colnames(local_scorr) <- paste(vars_all, "LSCorr", sep = "_")
         sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
     } 
+    
     sdf_data$geometry <- sf::st_geometry(data)
     sdf <- sf::st_sf(sdf_data)
 
@@ -215,14 +220,13 @@ gw_correlation <- function(
     gwcorrm <- list(
         SDF = sdf,
         args = list(
-            vars1 = x1,
-            vars2 = x2,
+            x1 = x1,
+            x2 = x2,
             coords = coords,
             bw_init = bw_value,
             bw_optim = c_results$bw_value,
-            mode = "Correlation",
             adaptive = adaptive,
-            kernel = kernels,
+            kernel = kernel,
             longlat = longlat,
             p = p,
             theta = theta,
@@ -232,12 +236,151 @@ gw_correlation <- function(
             parallel_arg = parallel_arg
         ),
         call = mc,
-        vars1 = vars1,
-        vars2 = vars2
+        names_x1 = vars1,
+        names_x2 = vars2,
+        names_all = vars_all
     )
     class(gwcorrm) <- "gwcorrm"
     gwcorrm
 }
+
+
+
+## old code, no export
+gw.correlation <- function(
+    data,
+    vars1,
+    vars2,
+    bws = NULL,
+    adaptive = FALSE,
+    kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar"),
+    approach = c("CV", "AIC"),
+    longlat = FALSE,
+    p = 2.0,
+    theta = 0.0,
+    parallel_method = c("no", "omp"),
+    parallel_arg = c(0)
+) {
+    ### Check args
+    kernels = match.arg(kernel)
+    parallel_method = match.arg(parallel_method)
+    approach = match.arg(approach)
+    attr(data, "na.action") <- getOption("na.action")
+
+    ### Extract coords
+    data <- do.call(na.action(data), args = list(data))
+    coords <- as.matrix(sf::st_coordinates(sf::st_centroid(data)))
+    if (is.null(coords) || nrow(coords) != nrow(data))
+        stop("Missing coordinates.")
+
+    ### Extract variables
+    mc <- match.call(expand.dots = FALSE)
+    if (inherits(data, "sf")) {
+        df <- sf::st_drop_geometry(data)
+    } else {
+        stop("Input data should be an sf object.")
+    }
+
+    if (!is.character(vars1) || length(vars1) == 0 ) {
+        stop("Input 'vars1' should be a character vector")
+    }
+    if (!is.character(vars2) || length(vars2) == 0 ) {
+        stop("Input 'vars2' should be a character vector")
+    }
+
+    len.var <- length(vars1) * length(vars2)
+    col.nm <- colnames(df)
+
+    var.idx1 <- match(vars1, col.nm)[!is.na(match(vars1, col.nm))]
+    if (length(var.idx1) == 0) 
+        stop("All variables input doesn't match with data")
+    x1 <- df[, var.idx1]
+    x1 <- as.matrix(x1)
+    colnames(x1) <- vars1
+
+    var.idx2 <- match(vars2, col.nm)[!is.na(match(vars2, col.nm))]
+    if (length(var.idx2) == 0) 
+        stop("All variables input doesn't match with data")
+    x2 <- df[, var.idx2]
+    x2 <- as.matrix(x2)
+    colnames(x2) <- vars2
+
+    ### Check bandwidth.
+    initial_type <- c(rep("Specified", length(bws)), rep("Null", ifelse(len.var>=length(bws),len.var - length(bws),len.var)))
+    bw_select_type <- c(rep("Specified", length(bws)), rep("AutoSelect", ifelse(len.var>=length(bws),len.var - length(bws),len.var)))
+    if (missing(approach))  approach <- "AIC"
+    optim_bw_criterion <- rep(match.arg(approach), len.var)
+
+    if (missing(bws)) {
+        bws <- c(rep(Inf, len.var))
+    } else {
+        if (is.numeric(bws) || is.integer(bws)) {
+            if (any(bws <= 0)) stop("Bandwidth must be positive numbers.")
+        } else {
+            stop("Bandwidth must be a number.")
+        }
+    }
+
+    if (length(bws) > len.var) {
+        bws <- bws[1:len.var]
+    }
+
+    vkernel <- c(rep(kernel, len.var))
+    vadaptive <- c(rep(adaptive, len.var))
+    vlonglat <- c(rep(longlat, len.var))
+    vp <- c(rep(p, len.var))
+    vtheta <- c(rep(theta, len.var))
+
+    c_results <- tryCatch(gw_correlation_cal(
+        x1, x2, coords,
+        bws, vadaptive, enum(vkernel, kernel_enums),
+        vlonglat, vp, vtheta,
+        enum(initial_type,gwcorr_initial_enums), enum(optim_bw_criterion,gwcorr_bw_criterion_enums),
+        enum_list(parallel_method, parallel_types), parallel_arg
+    ), error = function (e) {
+        stop("Error:", conditionMessage(e))
+    })
+
+    sdf_data <- data.frame()
+    {
+        local_cov <- c_results$Cov
+        local_corr <- c_results$Corr
+        local_scorr <- c_results$SCorr
+        colnames(local_cov) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCov", sep = "_")
+        colnames(local_corr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCorr", sep = "_")
+        colnames(local_scorr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LSCorr", sep = "_")
+        sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
+    } 
+    sdf_data$geometry <- sf::st_geometry(data)
+    sdf <- sf::st_sf(sdf_data)
+
+    gwcorrm <- list(
+        SDF = sdf,
+        args = list(
+            x1 = x1,
+            x2 = x2,
+            coords = coords,
+            bw_init = bws,
+            bw_optim = c_results$bw_value,
+            adaptive = adaptive,
+            kernel = kernel,
+            longlat = longlat,
+            p = p,
+            theta = theta,
+            initial_type = bw_select_type,
+            optim_bw_criterion = approach,
+            parallel_method = parallel_method,
+            parallel_arg = parallel_arg
+        ),
+        call = mc,
+        names_x1 = vars1,
+        names_x2 = vars2,
+        names_all = as.vector(outer(vars1, vars2, FUN = function(v1, v2) paste0(v1, "_", v2)))
+    )
+    class(gwcorrm) <- "gwcorrm"
+    gwcorrm
+}
+
 
 #' Print description of a `gwcorrm` object
 #'
@@ -249,7 +392,7 @@ gw_correlation <- function(
 #' @method print gwcorrm
 #' @rdname print
 #' @export
-print.gwcorrm <- function(x, ..., decimal_fmt) {
+print.gwcorrm <- function(x, ..., decimal_fmt = "%.3f") {
     if (!inherits(x, "gwcorrm"))
         stop("It's not a 'gwcorrm' object.")
     cat("   ***********************************************************************\n")
@@ -259,39 +402,48 @@ print.gwcorrm <- function(x, ..., decimal_fmt) {
     cat("                   Local summary statistics of GW", fill = T, x$args$mode)
     # cat("   =======================================================================\n", fill = T)
     cat("   Data:", deparse(x$call$data), fill = T)
-    cat("   Number of summary points:", nrow(x$args$vars1), fill = T)
-    cat("   Kernel function:", x$args$kernel, fill = T)
-    switch(x$args$mode,
-            "Average" = {
-                cat("   Bandwidth:", x$args$bw,
-                    ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),"\n")
-            },
-            "Correlation" = {
-                var_width <- max(nchar(x$name_vars2))
-                bw_matrix <- matrix(x$args$bw, nrow = length(x$name_vars1), ncol = length(x$name_vars2), byrow = TRUE)
-                cat("   Bandwidth:\n")
-                for (i in 1:length(x$name_vars1)) {
-                    cat("             ", 
-                        sprintf(x$name_vars1[i]),
-                        paste(sprintf("%-*s", var_width, x$name_vars2), collapse = " "),fill = TRUE)
-                    cat("             ", 
-                        paste(sprintf("%-*s", var_width, "")),
-                        paste(sprintf("%-*s", var_width, bw_matrix[i, ]), collapse = ""),  
-                        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-                        # ifelse(x$args$optim_bw, paste0("(Optimized according to ", x$args$optim_bw_criterion, ")"), ""),
-                        fill = TRUE
-                    )
-                }
-            }
-    )
-    distance_type <- "Euclidean"
-    if (x$args$longlat) distance_type <- "Geodetic"
-    else if (x$args$p == 2) distance_type <- "Euclidean"
-    else if (x$args$p == 1) distance_type <- "Manhattan"
-    else if (is.infinite(x$args$p)) distance_type <- "Chebyshev"
-    else distance_type <- "Generalized Minkowski"
-    distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
-    cat("   Distance metric:", distance_type, ifelse(distance_rotated, " (rotated)", "distance metric is used."), fill = T)
+    cat("   Number of summary points:", nrow(x$args$x1), fill = T)
+
+    cat("\n   Parameter-specified Weighting Configuration", fill = T)
+    cat("   -----------------------------------------------------------------------\n", fill = T)
+
+    config_str <- with(x$args, data.frame(
+        bw = matrix2char(bw_init, ifelse(adaptive, "%.0f", decimal_fmt)),
+        optim_bw = bw_optim,
+        unit = ifelse(adaptive, "Nearest Neighbors", "Meters"),
+        kernel = kernel,
+        longlat = longlat,
+        p = p,
+        theta = theta,
+        criterion = ifelse(bw_optim, optim_bw_criterion, "")
+    ))
+
+    config_str$distance <- apply(config_str, 1, function(row) {
+        distance_type <- "Euclidean"
+        if (row["longlat"] == "TRUE" || row["longlat"] == TRUE) {
+            distance_type <- "Geodetic"
+        } else if (as.numeric(row["p"]) == 2) {
+            distance_type <- "Euclidean"
+        } else if (as.numeric(row["p"]) == 1) {
+            distance_type <- "Manhattan"
+        } else if (is.infinite(as.numeric(row["p"]))) {
+            distance_type <- "Chebyshev"
+        } else {
+            distance_type <- "Generalized Minkowski"
+        }
+        distance_rotated <- (as.numeric(row["theta"]) != 0 && as.numeric(row["p"]) != 2 && !(row["longlat"] == "TRUE" || row["longlat"] == TRUE))
+        if (distance_rotated) {
+            paste0(distance_type, " (rotated)")
+        } else {
+            distance_type
+        }
+    })
+
+    config_str_print <- config_str[, c("bw", "optim_bw", "unit", "kernel", "criterion", "distance")]
+
+    rownames(config_str_print) <- x$names_all
+    print.data.frame(config_str_print)
+    cat("\n", fill = T)
 
     cat("\n   ************************Local Summary Statistics:**********************\n", fill = T)
     # cat("   =======================================================================\n", fill = T)

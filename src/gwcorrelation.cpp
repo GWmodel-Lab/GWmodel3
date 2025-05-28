@@ -81,9 +81,8 @@ List gw_correlation_cal(
     }
 
     algorithm.run();
-    vector<double> bw_value;
-    cout << bw_value[1];
 
+    vector<double> bw_value;
     const vector<SpatialWeight> &spatialWeights = algorithm.spatialWeights();
     for (size_t i = 0; i < nVar; i++)
     {
@@ -91,7 +90,7 @@ List gw_correlation_cal(
     }
 
     List results = List::create(
-        Named("Cov") =algorithm.localCov(),
+        Named("Cov") = algorithm.localCov(),
         Named("Corr") = algorithm.localCorr(),
         Named("SCorr") = algorithm.localSCorr(),
         Named("bw_value") = wrap(bw_value));

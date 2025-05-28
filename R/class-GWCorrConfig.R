@@ -28,7 +28,7 @@ GWCorrConfig <- setClass("GWCorrConfig", slots = c(
     longlat = FALSE,
     p = 2.0,
     theta = 0.0,
-    optim_bw = "AIC"
+    optim_bw = "CV"
 ))
 
 setValidity("GWCorrConfig", function(object) {
@@ -114,7 +114,7 @@ gwcorr_config <- function(
     longlat = FALSE,
     p = 2.0,
     theta = 0.0,
-    optim_bw = c("AIC", "CV", "no")
+    optim_bw = c("CV", "AIC", "no")
 ) {
     kernel <- match.arg(kernel)
     optim_bw <- match.arg(optim_bw)
@@ -140,5 +140,6 @@ gwcorr_bw_criterion_enums <- c(
 
 gwcorr_initial_enums <- c(
     "Null",
+    "Initial",
     "Specified"
 )
