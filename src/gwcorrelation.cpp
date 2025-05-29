@@ -2,6 +2,7 @@
 #include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodel.h"
+#include "telegrams/GWCorrelationTelegram.h"
 
 using namespace std;
 using namespace Rcpp;
@@ -10,9 +11,9 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gw_correlation_cal(
-    const arma::mat& x1,
-    const arma::mat& x2,
-    const arma::mat& coords,
+    const arma::mat &x1,
+    const arma::mat &x2,
+    const arma::mat &coords,
     const NumericVector &bw,
     const LogicalVector &adaptive,
     const IntegerVector &kernel,
@@ -22,7 +23,9 @@ List gw_correlation_cal(
     const IntegerVector &initial_type,
     const IntegerVector &optim_bw_criterion,
     size_t parallel_type,
-    const IntegerVector &parallel_arg)
+    const IntegerVector &parallel_arg,
+    const CharacterVector &variable_names,
+    int verbose)
 {
     // Make Spatial Weight
     size_t nVar = (size_t)x1.n_cols * (size_t)x2.n_cols;
@@ -78,6 +81,11 @@ List gw_correlation_cal(
     default:
         algorithm.setParallelType(ParallelType::SerialOnly);
         break;
+    }
+
+    if (verbose > 0)
+    {
+        algorithm.setTelegram(make_unique<GWCorrelationTelegram>(algorithm, as<vector<string>>(variable_names), verbose));
     }
 
     algorithm.run();

@@ -41,8 +41,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gw_correlation_cal
-List gw_correlation_cal(const arma::mat& x1, const arma::mat& x2, const arma::mat& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const IntegerVector& initial_type, const IntegerVector& optim_bw_criterion, size_t parallel_type, const IntegerVector& parallel_arg);
-RcppExport SEXP _GWmodel3_gw_correlation_cal(SEXP x1SEXP, SEXP x2SEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP initial_typeSEXP, SEXP optim_bw_criterionSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
+List gw_correlation_cal(const arma::mat& x1, const arma::mat& x2, const arma::mat& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const IntegerVector& initial_type, const IntegerVector& optim_bw_criterion, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
+RcppExport SEXP _GWmodel3_gw_correlation_cal(SEXP x1SEXP, SEXP x2SEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP initial_typeSEXP, SEXP optim_bw_criterionSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -59,7 +59,9 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< const IntegerVector& >::type optim_bw_criterion(optim_bw_criterionSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
-    rcpp_result_gen = Rcpp::wrap(gw_correlation_cal(x1, x2, coords, bw, adaptive, kernel, longlat, p, theta, initial_type, optim_bw_criterion, parallel_type, parallel_arg));
+    Rcpp::traits::input_parameter< const CharacterVector& >::type variable_names(variable_namesSEXP);
+    Rcpp::traits::input_parameter< int >::type verbose(verboseSEXP);
+    rcpp_result_gen = Rcpp::wrap(gw_correlation_cal(x1, x2, coords, bw, adaptive, kernel, longlat, p, theta, initial_type, optim_bw_criterion, parallel_type, parallel_arg, variable_names, verbose));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -157,7 +159,7 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gtdr_fit", (DL_FUNC) &_GWmodel3_gtdr_fit, 19},
-    {"_GWmodel3_gw_correlation_cal", (DL_FUNC) &_GWmodel3_gw_correlation_cal, 13},
+    {"_GWmodel3_gw_correlation_cal", (DL_FUNC) &_GWmodel3_gw_correlation_cal, 15},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},

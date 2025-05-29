@@ -79,26 +79,21 @@ test_that("GW Correlation: expect error", {
 
 })
 
-# test_that("GW Correlation: verbose", {
-#   skip_on_ci()
-#   expect_no_error(gwcorrelation(
-#     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#     data = LondonHP,
-#     verbose = 1
-#   ))
-#   expect_no_error(gwcorrelation(
-#     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#     data = LondonHP,
-#     verbose = 2
-#   ))
-#   expect_no_error(gwcorrelation(
-#     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#     data = LondonHP,
-#     verbose = 3
-#   ))
-#   expect_no_error(gwcorrelation(
-#     formula = PURCHASE ~ FLOORSZ + UNEMPLOY + PROF,
-#     data = LondonHP,
-#     verbose = 4
-#   ))
-# })
+test_that("GW Correlation: verbose", {
+  skip_on_ci()
+  expect_no_error(gwcorrelation(
+    formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
+    data = LondonHP,
+    verbose = 1
+  ))
+  expect_no_error(gwcorrelation(
+    formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
+    data = LondonHP,
+    verbose = 2
+  ))
+  # expect_no_error(gwcorrelation(
+  #   formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
+  #   data = LondonHP,
+  #   verbose = 3
+  # ))
+})

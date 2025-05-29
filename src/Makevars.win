@@ -57,7 +57,8 @@ OBJECTS_TELEGRAM = \
 	telegrams/RTelegram.o \
 	telegrams/GWRBasicTelegram.o \
 	telegrams/GWRMultiscaleTelegram.o \
-	telegrams/GTDRTelegram.o
+	telegrams/GTDRTelegram.o \
+	telegrams/GWCorrelationTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \

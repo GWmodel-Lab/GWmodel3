@@ -69,7 +69,8 @@ gwcorrelation <- function(
     data,
     config = list(gwcorr_config()),
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0)
+    parallel_arg = c(0),
+    verbose = FALSE
 ) {
 
     ### Check args
@@ -194,7 +195,9 @@ gwcorrelation <- function(
         enum(initial_type,gwcorr_initial_enums),
         enum(optim_bw_criterion, gwcorr_bw_criterion_enums),
         enum_list(parallel_method, parallel_types),
-        parallel_arg
+        parallel_arg,
+        vars_all,
+        as.integer(verbose)
     ), error = function (e) {
         stop("Error:", conditionMessage(e))
     })
@@ -259,7 +262,8 @@ gw.correlation <- function(
     p = 2.0,
     theta = 0.0,
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0)
+    parallel_arg = c(0),
+    verbose = FALSE
 ) {
     ### Check args
     kernels = match.arg(kernel)
@@ -325,6 +329,8 @@ gw.correlation <- function(
         bws <- bws[1:len.var]
     }
 
+    vars_all <- as.vector(outer(vars1, vars2, FUN = function(v1, v2) paste0(v1, "_", v2)))
+
     vkernel <- c(rep(kernel, len.var))
     vadaptive <- c(rep(adaptive, len.var))
     vlonglat <- c(rep(longlat, len.var))
@@ -336,7 +342,8 @@ gw.correlation <- function(
         bws, vadaptive, enum(vkernel, kernel_enums),
         vlonglat, vp, vtheta,
         enum(initial_type,gwcorr_initial_enums), enum(optim_bw_criterion,gwcorr_bw_criterion_enums),
-        enum_list(parallel_method, parallel_types), parallel_arg
+        enum_list(parallel_method, parallel_types), parallel_arg,
+        vars_all, as.integer(verbose)
     ), error = function (e) {
         stop("Error:", conditionMessage(e))
     })
@@ -346,9 +353,9 @@ gw.correlation <- function(
         local_cov <- c_results$Cov
         local_corr <- c_results$Corr
         local_scorr <- c_results$SCorr
-        colnames(local_cov) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCov", sep = "_")
-        colnames(local_corr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LCorr", sep = "_")
-        colnames(local_scorr) <- paste(paste(rep(vars1, each = length(vars2)), rep(vars2, times = length(vars1)), sep = "_"), "LSCorr", sep = "_")
+        colnames(local_cov) <- paste(vars_all, "LCov", sep = "_")
+        colnames(local_corr) <- paste(vars_all, "LCorr", sep = "_")
+        colnames(local_scorr) <- paste(vars_all, "LSCorr", sep = "_")
         sdf_data <- as.data.frame(cbind(local_cov, local_corr, local_scorr))
     } 
     sdf_data$geometry <- sf::st_geometry(data)
@@ -375,7 +382,7 @@ gw.correlation <- function(
         call = mc,
         names_x1 = vars1,
         names_x2 = vars2,
-        names_all = as.vector(outer(vars1, vars2, FUN = function(v1, v2) paste0(v1, "_", v2)))
+        names_all = vars_all
     )
     class(gwcorrm) <- "gwcorrm"
     gwcorrm
