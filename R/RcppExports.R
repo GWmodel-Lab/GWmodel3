@@ -5,8 +5,12 @@ gtwr_fit <- function(x, y, coords, times, bw, adaptive, kernel, lambda, longlat,
     .Call(`_GWmodel3_gtwr_fit`, x, y, coords, times, bw, adaptive, kernel, lambda, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_lambda, verbose)
 }
 
-gwdr_fit <- function(x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose) {
-    .Call(`_GWmodel3_gwdr_fit`, x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose)
+gtdr_fit <- function(x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose) {
+    .Call(`_GWmodel3_gtdr_fit`, x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose)
+}
+
+gtwr_fit <- function(x, y, coords, times, bw, adaptive, kernel, lambda, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_lambda, verbose) {
+    .Call(`_GWmodel3_gtwr_fit`, x, y, coords, times, bw, adaptive, kernel, lambda, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_lambda, verbose)
 }
 
 gwr_basic_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw_lower, optim_bw_upper, hatmatrix, intercept, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose) {

@@ -26,7 +26,7 @@ Currently, almost all algorithms have a serial implementation and one or two hig
 | -------------- | -------------- | ------------- |
 | Basic GWR      | o              | o             |
 | Multiscale GWR | o              |               |
-| GWDR           | o              |               |
+| GTDR           | o              |               |
 
 All the parallelizable algorithms take two parameters to control parallelization: `parallel_method` and `parallel_arg`.
 The `parallel_method` is used to pick a high-performance implementation.

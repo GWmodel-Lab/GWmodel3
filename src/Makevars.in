@@ -24,7 +24,7 @@ LIBGWMODEL_CXXFLAGS = \
 	-DM_PI_2=$(DEF_M_PI_2) \
 	-DDOUBLE_EPS=$(DEF_DOUBLE_EPS) \
 	-DDBL_MAX=__DBL_MAX__ \
-	-DARMA_NO_DEBUG
+	-DUSE_RCPPARMADILLO
 
 OPENMP_CXXFLAGS = @OPENMP_CXXFLAGS@
 ifneq ($(strip $(OPENMP_CXXFLAGS)),)
@@ -43,11 +43,10 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
 	libgwmodel/src/gwmodelpp/GTWR.o \
-	libgwmodel/src/gwmodelpp/GWDR.o \
 	libgwmodel/src/gwmodelpp/GWPCA.o \
+	libgwmodel/src/gwmodelpp/GTDR.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
-	libgwmodel/src/gwmodelpp/GWSS.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
@@ -58,14 +57,14 @@ OBJECTS_TELEGRAM = \
 	telegrams/RTelegram.o \
 	telegrams/GWRBasicTelegram.o \
 	telegrams/GWRMultiscaleTelegram.o \
-	telegrams/GWDRTelegram.o
+	telegrams/GTDRTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
 	gwr_multiscale.o \
-	gwdr.o \
 	gtwr.o \
+	gtdr.o \
 	RcppExports.o
 
 OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
