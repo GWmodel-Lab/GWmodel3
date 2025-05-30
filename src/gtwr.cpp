@@ -1,5 +1,5 @@
-#include <Rcpp.h>
-#include <armadillo>
+// [[Rcpp::depends(RcppArmadillo)]]
+#include <RcppArmadillo.h>
 #include "utils.h"
 #include "gwmodelpp/GTWR.h"
 
@@ -10,10 +10,10 @@ using namespace gwm;
 
 // [[Rcpp::export]]
 List gtwr_fit(
-    const NumericMatrix& x,
-    const NumericVector& y,
-    const NumericMatrix& coords,
-    const NumericVector& times,
+    const arma::mat& x,
+    const arma::vec& y,
+    const arma::mat& coords,
+    const arma::vec& times,
     double bw,
     bool adaptive,
     int kernel,
@@ -31,10 +31,6 @@ List gtwr_fit(
     int verbose
 ) {
     // Convert data types
-    arma::mat mx = myas(x);
-    arma::vec my = myas(y);
-    arma::mat mcoords = myas(coords);
-    arma::mat mtimes = myas(times);
     std::vector<int> vpar_args = as< std::vector<int> >(Rcpp::IntegerVector(parallel_arg));
 
     // Make Spatial Weight
@@ -61,9 +57,9 @@ List gtwr_fit(
     
     // Make Algorithm Object
     GTWR algorithm;
-    algorithm.setDependentVariable(my);
-    algorithm.setIndependentVariables(mx);
-    algorithm.setCoords(mcoords, mtimes);
+    algorithm.setDependentVariable(y);
+    algorithm.setIndependentVariables(x);
+    algorithm.setCoords(coords, times);
     algorithm.setSpatialWeight(spatial);
     algorithm.setHasHatMatrix(hatmatrix);
     algorithm.setHasIntercept(intercept);
@@ -105,14 +101,14 @@ List gtwr_fit(
         
     // Return Results
     mat betas = algorithm.betas();
-    vec fitted = sum(mx % betas, 1);
+    vec fitted = sum(x % betas, 1);
     List result_list = List::create(
-        Named("betas") = mywrap(betas),
-        Named("betasSE") = mywrap(algorithm.betasSE()),
-        Named("sTrace") = mywrap(algorithm.sHat()),
-        Named("sHat") = mywrap(algorithm.s()),
-        Named("diagnostic") = mywrap(algorithm.diagnostic()),
-        Named("fitted") = mywrap(fitted)
+        Named("betas") = betas,
+        Named("betasSE") = algorithm.betasSE(),
+        Named("sTrace") = algorithm.sHat(),
+        Named("sHat") = algorithm.s(),
+        Named("fitted") = fitted,
+        Named("diagnostic") = mywrap(algorithm.diagnostic())
     );
     const SpatialWeight& spatialWeights = algorithm.spatialWeight();
     if (optim_bw)
