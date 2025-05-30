@@ -36,6 +36,7 @@ PKG_LIBS = $(SHLIB_OPENMP_CXXFLAGS) $(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS) $(GSL_L
 OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/BandwidthWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/CRSDistance.o \
+	libgwmodel/src/gwmodelpp/spatialweight/CRSSTDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/DMatDistance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Distance.o \
 	libgwmodel/src/gwmodelpp/spatialweight/MinkwoskiDistance.o \
@@ -43,6 +44,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/GTWR.o \
 	libgwmodel/src/gwmodelpp/GTDR.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
@@ -63,6 +65,7 @@ OBJECTS_GWMODEL = \
 	gwr_basic.o \
 	gwr_multiscale.o \
 	gtdr.o \
+	gtwr.o \
 	RcppExports.o
 
 
