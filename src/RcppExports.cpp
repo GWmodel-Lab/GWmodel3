@@ -96,6 +96,32 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// ggwr_fit
+List ggwr_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, size_t family, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool hatmatrix, bool intercept, bool optim_bw, size_t optim_bw_criterion, size_t parallel_type, const IntegerVector& parallel_arg);
+RcppExport SEXP _GWmodel3_ggwr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP familySEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< size_t >::type family(familySEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
+    Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
+    Rcpp::traits::input_parameter< size_t >::type optim_bw_criterion(optim_bw_criterionSEXP);
+    Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
+    rcpp_result_gen = Rcpp::wrap(ggwr_fit(x, y, coords, family, bw, adaptive, kernel, longlat, p, theta, hatmatrix, intercept, optim_bw, optim_bw_criterion, parallel_type, parallel_arg));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gwr_multiscale_fit
 List gwr_multiscale_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, const NumericVector& bw, const LogicalVector& adaptive, const IntegerVector& kernel, const LogicalVector& longlat, const NumericVector& p, const NumericVector& theta, const LogicalVector& optim_bw, const IntegerVector& optim_bw_criterion, const NumericVector& threashold, const IntegerVector& initial_type, const LogicalVector& centered, double optim_bw_lower, double optim_bw_upper, size_t criterion, bool hatmatrix, bool intercept, size_t retry_times, size_t max_iterations, size_t parallel_type, const IntegerVector& parallel_arg, const CharacterVector& variable_names, int verbose);
 RcppExport SEXP _GWmodel3_gwr_multiscale_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP, SEXP threasholdSEXP, SEXP initial_typeSEXP, SEXP centeredSEXP, SEXP optim_bw_lowerSEXP, SEXP optim_bw_upperSEXP, SEXP criterionSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP retry_timesSEXP, SEXP max_iterationsSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP variable_namesSEXP, SEXP verboseSEXP) {
@@ -136,6 +162,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gtdr_fit", (DL_FUNC) &_GWmodel3_gtdr_fit, 19},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
+    {"_GWmodel3_ggwr_fit", (DL_FUNC) &_GWmodel3_ggwr_fit, 16},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},
     {NULL, NULL, 0}
 };
