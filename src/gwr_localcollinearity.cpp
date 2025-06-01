@@ -20,6 +20,9 @@ List gwr_lcr_fit(
     bool longlat,
     double p,
     double theta,
+    double lambda,
+    bool lambda_adjust,
+    double cn_thresh,
     bool intercept,
     bool hatmatrix,
     size_t parallel_type,
@@ -56,12 +59,33 @@ List gwr_lcr_fit(
     algorithm.setHasIntercept(intercept);
     algorithm.setHasHatMatrix(hatmatrix);
 
+    algorithm.setLambdaAdjust(lambda_adjust);
+    algorithm.setLambda(lambda);
+    algorithm.setCnThresh(cn_thresh);
+
+    switch (ParallelType(size_t(parallel_type)))
+    {
+    case ParallelType::SerialOnly:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+#ifdef _OPENMP
+    case ParallelType::OpenMP:
+        algorithm.setParallelType(ParallelType::OpenMP);
+        algorithm.setOmpThreadNum(vpar_args[0]);
+        break;
+#endif
+    default:
+        algorithm.setParallelType(ParallelType::SerialOnly);
+        break;
+    }
 
     if (optim_bw)
     {
         algorithm.setIsAutoselectBandwidth(true);
         algorithm.setBandwidthSelectionCriterion(GWRLocalCollinearity::BandwidthSelectionCriterionType::CV);
     }
+
+
 
     algorithm.fit();
     
@@ -71,7 +95,9 @@ List gwr_lcr_fit(
     List result_list = List::create(
         Named("betas") = betas,
         Named("diagnostic") = mywrap(algorithm.diagnostic()),
-        Named("yhat") = yhat
+        Named("yhat") = yhat,
+        Named("localCN") = algorithm.localCN(),
+        Named("localLambda") = algorithm.localLambda()
     );
     
     if (optim_bw){

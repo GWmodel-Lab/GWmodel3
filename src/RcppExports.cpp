@@ -97,8 +97,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // gwr_lcr_fit
-List gwr_lcr_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw);
-RcppExport SEXP _GWmodel3_gwr_lcr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP interceptSEXP, SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP) {
+List gwr_lcr_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, double lambda, bool lambda_adjust, double cn_thresh, bool intercept, bool hatmatrix, size_t parallel_type, const IntegerVector& parallel_arg, bool optim_bw);
+RcppExport SEXP _GWmodel3_gwr_lcr_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP lambdaSEXP, SEXP lambda_adjustSEXP, SEXP cn_threshSEXP, SEXP interceptSEXP, SEXP hatmatrixSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP, SEXP optim_bwSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -111,12 +111,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
     Rcpp::traits::input_parameter< double >::type p(pSEXP);
     Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type lambda(lambdaSEXP);
+    Rcpp::traits::input_parameter< bool >::type lambda_adjust(lambda_adjustSEXP);
+    Rcpp::traits::input_parameter< double >::type cn_thresh(cn_threshSEXP);
     Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
     Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
     Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
     Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
     Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
-    rcpp_result_gen = Rcpp::wrap(gwr_lcr_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw));
+    rcpp_result_gen = Rcpp::wrap(gwr_lcr_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, lambda, lambda_adjust, cn_thresh, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -160,7 +163,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gtdr_fit", (DL_FUNC) &_GWmodel3_gtdr_fit, 19},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
-    {"_GWmodel3_gwr_lcr_fit", (DL_FUNC) &_GWmodel3_gwr_lcr_fit, 14},
+    {"_GWmodel3_gwr_lcr_fit", (DL_FUNC) &_GWmodel3_gwr_lcr_fit, 17},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},
     {NULL, NULL, 0}
 };

@@ -13,8 +13,8 @@ gwr_basic_predict <- function(pcoords, x, y, coords, bw, adaptive, kernel, longl
     .Call(`_GWmodel3_gwr_basic_predict`, pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg, verbose)
 }
 
-gwr_lcr_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw) {
-    .Call(`_GWmodel3_gwr_lcr_fit`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw)
+gwr_lcr_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, lambda, lambda_adjust, cn_thresh, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw) {
+    .Call(`_GWmodel3_gwr_lcr_fit`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, lambda, lambda_adjust, cn_thresh, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw)
 }
 
 gwr_multiscale_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw, optim_bw_criterion, threashold, initial_type, centered, optim_bw_lower, optim_bw_upper, criterion, hatmatrix, intercept, retry_times, max_iterations, parallel_type, parallel_arg, variable_names, verbose) {

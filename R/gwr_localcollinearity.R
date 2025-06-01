@@ -107,10 +107,19 @@ gwr_lcr <- function(
         bw <- Inf
     }
 
+    ### Check lambda and cnthresh
+    if (lambda<0 || lambda>1){
+        stop("Error: lambda must in [0,1]")
+    }
+    if (cn_thresh>30 || cn_thresh<20){
+        warning("cn_thresh is recommended in [20,30]")
+    }
+
     ### Call solver
     c_result <- tryCatch(gwr_lcr_fit(
         x, y, coords,
         bw, adaptive, enum(kernel), longlat, p, theta,
+        lambda, lambda_adjust, cn_thresh,
         has_intercept, hatmatrix,
         enum_list(parallel_method, parallel_types), parallel_arg,
         optim_bw
@@ -123,6 +132,8 @@ gwr_lcr <- function(
     yhat <- c_result$yhat
     diagnostic <- c_result$diagnostic
     resi <- y - yhat
+    local_cn <- c_result$localCN
+    local_lambda <- c_result$localLambda
     # n_dp <- nrow(coords)
     # rss_gw <- sum(resi * resi)
     # sigma <- rss_gw / (n_dp - 2 * shat_trace[1] + shat_trace[2])
@@ -136,7 +147,9 @@ gwr_lcr <- function(
     sdf_data <- as.data.frame(cbind(
         betas,
         "yhat" = yhat,
-        "residual" = resi
+        "residual" = resi,
+        "localCN" = local_cn,
+        "localLambda" = local_lambda
         # betas_se,
         # betas_tv
     ))
@@ -157,6 +170,9 @@ gwr_lcr <- function(
             longlat = longlat,
             p = p,
             theta = theta,
+            lambda = lambda,
+            lambda_adjust = lambda_adjust,
+            cn_thresh = cn_thresh,
             hatmatrix = hatmatrix,
             has_intercept = has_intercept,
             parallel_method = parallel_method,
@@ -199,6 +215,10 @@ print.gwlcrm <- function(x, decimal_fmt = "%.3f", ...) {
         ifelse(x$args$optim_bw, paste0(
             "(Optimized accroding to CV)"
         ), ""), fill = T)
+    cat("Lambda(ridge parameter for gwr ridge model):", x$args$lambda, 
+        ifelse(x$args$lambda_adjust, " (Adjusted)", ""),
+        fill = T)
+
     cat("\n", fill = T)
 
     cat("Summary of Coefficient Estimates", fill = T)
