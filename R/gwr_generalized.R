@@ -107,7 +107,7 @@ gwr_generalized <- function(
     }
 
     ### Call solver
-    c_result <- tryCatch(ggwr_fit(
+    c_result <- tryCatch(gwr_generalized_fit(
         x, y, coords, 
         enum(family, c("poisson", "binomial")),
         bw, adaptive, enum(kernel), longlat, p, theta,
@@ -174,7 +174,7 @@ gwr_generalized <- function(
     ggwrm
 }
 
-#' @describeIn Print description of a `ggwrm` object
+#' Print description of a `ggwrm` object
 #'
 #' @param x An `ggwrm` object returned by [gwr_generalized()].
 #' @param decimal_fmt The format string passing to [base::sprintf()].
@@ -274,3 +274,100 @@ coef.ggwrm <- function(object, ...) {
     }
     sf::st_drop_geometry(object$SDF[object$indep_vars])
 }
+
+# ### 测试问题可能在内核库的predict函数中，应该先设置一下mHasRegressionData，否则导致现在出现矩阵列数计算的错误。
+# ### 在内核库中测试通过predict后，再完善这部分内容。
+# #' @describeIn gwr_generalized Predict on new locations.
+# #'
+# #' @param object A "ggwrm" object.
+# #' @param regression_points Data of new locations.
+# #' @param \dots Additional arguments.
+# #' @param verbose Whether to print additional message.
+# #'
+# #' @method predict ggwrm
+# #'
+# #' @examples
+# #' ### predict(m, LondonHP)
+# #'
+# #' @export
+# predict.ggwrm <- function(object, regression_points, verbose = FALSE, ...) {
+#     if (!inherits(object, "ggwrm")) {
+#         stop("It's not a ggwrm object.")
+#     }
+#     if (!inherits(regression_points, c("sf", "sfc", "matrix", "data.frame"))) {
+#         stop("The type of regression_points is not supported.")
+#     }
+
+#     has_intercept <- object$args$has_intercept
+#     ### Extract coordinates (and data, if possible)
+#     pcoords <- NULL
+#     py <- NULL
+#     px <- NULL
+#     if (inherits(regression_points, c("sf", "sfc"))) {
+#         pcoords <- sf::st_coordinates(sf::st_centroid(regression_points))
+#         ### Extract X
+#         indep_vars <- object$indep_vars
+#         if (has_intercept) indep_vars <- indep_vars[-1]
+#         if (all(indep_vars %in% names(regression_points))) {
+#             px <- as.matrix(sf::st_drop_geometry(regression_points[indep_vars]))
+#         }
+#         if (has_intercept) {
+#             px <- cbind(1, px)
+#         }
+#         ### Extract Y
+#         dep_var <- object$dep_var
+#         if (dep_var %in% names(regression_points)) {
+#             py <- regression_points[[dep_var]]
+#         }
+#     } else if(inherits(regression_points, c("matrix", "data.frame"))) {
+#         if (length(dim(regression_points)) == 2 && ncol(regression_points) == 2) {
+#             pcoords <- as.matrix(regression_points)
+#             if (!is.numeric(pcoords)) {
+#                 stop("Cannot convert regression_points to numeric matrix.")
+#             }
+#         } else {
+#             stop("Only matrix or data.frame of 2 columns is supported.")
+#         }
+#     } else {
+#         stop("Cannot extract coordinates of regression_points")
+#     }
+#     pcoords <- as.matrix(pcoords)
+
+#     ### refer to libgwmodel code GWRGenetalized.cpp:175
+#     if(object$args$hatmatrix) warning("hatmatrix is not need in prediction")
+#     has_hatmatrix <- FALSE
+
+#     ### Predict coefficients
+#     c_betas <- tryCatch(with(object$args, gwr_generalized_predict(
+#         pcoords, x, y, coords,
+#         enum(family, c("poisson", "binomial")),
+#         bw, adaptive, enum(kernel, kernel_enums),
+#         longlat, p, theta,
+#         has_hatmatrix, has_intercept,
+#         enum_list(parallel_method, parallel_types), parallel_arg
+#     )), error = function(e) {
+#         stop("Error:", conditionMessage(e))
+#     })
+
+#     result <- as.data.frame(c_betas)
+#     colnames(result) <- object$indep_vars
+
+#     ### If px exists, calculate yhat
+#     if (!is.null(px)) {
+#         yhat <- rowSums(px * c_betas)
+#         result <- cbind(result, "yhat" = yhat)
+
+#         if (!is.null(py)) {
+#             resi <- py - yhat
+#             result <- cbind(result, "residual" = resi)
+#         }
+#     }
+
+#     ### If regression_points is a sf object, return sf
+#     if (inherits(regression_points, c("sf", "sfc"))) {
+#         result$geometry <- sf::st_geometry(regression_points)
+#         result <- sf::st_as_sf(result)
+#     }
+
+#     result
+# }

@@ -39,5 +39,7 @@ Print description of a \code{gtdrm} object
 
 Print description of a \code{gwrm} object
 
+Print description of a \code{ggwrm} object
+
 Print description of a \code{gwrmultiscalem} object
 }
