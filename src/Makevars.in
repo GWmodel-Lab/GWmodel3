@@ -45,6 +45,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
+	libgwmodel/src/gwmodelpp/GWAverage.o \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMultiscaleAlgorithm.o \
@@ -61,6 +62,7 @@ OBJECTS_GWMODEL = \
 	gwr_basic.o \
 	gwr_multiscale.o \
 	gtdr.o \
+	gwaverage.o \
 	RcppExports.o
 
 OBJECTS_CXX = $(OBJECTS_LIBGWMODEL) $(OBJECTS_TELEGRAM) $(OBJECTS_GWMODEL)
