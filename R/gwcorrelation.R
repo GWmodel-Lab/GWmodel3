@@ -448,14 +448,19 @@ print.gwcorrm <- function(x, ..., decimal_fmt = "%.3f") {
 
     config_str_print <- config_str[, c("bw", "optim_bw", "unit", "kernel", "criterion", "distance")]
 
-    rownames(config_str_print) <- x$names_all
+    rownames(config_str_print) <- paste0("   ", x$names_all)
     print.data.frame(config_str_print)
-    cat("\n", fill = T)
+    # cat("\n", fill = T)
 
-    cat("\n   ************************Local Summary Statistics:**********************\n", fill = T)
-    # cat("   =======================================================================\n", fill = T)
+    cat("\n   ************************Local Summary Statistics:**********************", fill = T)
     res <- st_drop_geometry(x$SDF)
-    print(as.data.frame(t(sapply(res, summary))))
+
+    df <- as.data.frame(t(sapply(res, summary)))
+    output <- capture.output(print(df))
+    output <- paste0("   ", output)
+    cat(output, sep = "\n")
+
+    # print(as.data.frame(t(sapply(res, summary))))
     cat("   ***********************************************************************\n")
 }
 
