@@ -7,6 +7,7 @@
 #'  Please find more details in the details section.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
+#' @param verbose Whether to print additional information.
 #' 
 #' @return A `gwcorrm` object.
 #' 
@@ -22,7 +23,7 @@
 #' # Specify using default for all variables
 #' gwcorrelation(
 #'   formula = PURCHASE + FLOORSZ ~ UNEMPLOY + PROF,
-#'   data = LondonHP, 
+#'   data = LondonHP,
 #'   config = list(.default = gwcorr_config(adaptive = TRUE, kernel = "gaussian", optim_bw="CV"))
 #' )
 #' # or
@@ -405,14 +406,13 @@ print.gwcorrm <- function(x, ..., decimal_fmt = "%.3f") {
     cat("   ***********************************************************************\n")
     cat("   *                       Package   GWmodel                             *\n")
     cat("   ***********************************************************************\n")
-    cat("   ***********************Calibration information*************************\n")
-    cat("                   Local summary statistics of GW", fill = T, x$args$mode)
-    # cat("   =======================================================================\n", fill = T)
+    cat("   ***************Geographically Weighted Correlation Model***************\n")
+    cat("\n   =======================Calibration information=========================\n")
     cat("   Data:", deparse(x$call$data), fill = T)
     cat("   Number of summary points:", nrow(x$args$x1), fill = T)
 
     cat("\n   Parameter-specified Weighting Configuration", fill = T)
-    cat("   -----------------------------------------------------------------------\n", fill = T)
+    cat("   -----------------------------------------------------------------------", fill = T)
 
     config_str <- with(x$args, data.frame(
         bw = matrix2char(bw_init, ifelse(adaptive, "%.0f", decimal_fmt)),
@@ -451,8 +451,8 @@ print.gwcorrm <- function(x, ..., decimal_fmt = "%.3f") {
     rownames(config_str_print) <- paste0("   ", x$names_all)
     print.data.frame(config_str_print)
     # cat("\n", fill = T)
-
-    cat("\n   ************************Local Summary Statistics:**********************", fill = T)
+    
+    cat("\n   ***********************Local Summary Statistics************************", fill = T)
     res <- st_drop_geometry(x$SDF)
 
     df <- as.data.frame(t(sapply(res, summary)))
@@ -461,7 +461,7 @@ print.gwcorrm <- function(x, ..., decimal_fmt = "%.3f") {
     cat(output, sep = "\n")
 
     # print(as.data.frame(t(sapply(res, summary))))
-    cat("   ***********************************************************************\n")
+    cat("   *********************************************************************\n")
 }
 
 #' @describeIn gwss Plot the result of basic GWSS model.
