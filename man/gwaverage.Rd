@@ -41,8 +41,6 @@ default to 2, i.e., Euclidean distance.}
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
-
-\item{mode}{Algorithm mode. Average or correlation.}
 }
 \value{
 A \code{gwavgm} object.

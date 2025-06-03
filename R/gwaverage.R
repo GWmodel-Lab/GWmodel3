@@ -4,7 +4,6 @@
 #' @param data A `sf` objects.
 #' @param bw Bandwidth value
 #' @param adaptive Whether the bandwidth value is adaptive or not.
-#' @param mode Algorithm mode. Average or correlation.
 #' @param quantile Whether to calculate local quantiles.
 #' @param kernel Kernel function used.
 #' @param longlat Whether the coordinates
@@ -28,7 +27,8 @@ gwaverage <- function(
     p = 2.0,
     theta = 0.0,
     parallel_method = c("no", "omp"),
-    parallel_arg = c(0)) {
+    parallel_arg = c(0))
+{
     ### Check args
     kernel <- match.arg(kernel)
     parallel_method <- match.arg(parallel_method)
@@ -127,13 +127,19 @@ print.gwavgm <- function(x, ..., decimal_fmt) {
     if (!inherits(x, "gwavgm")) {
         stop("It's not a 'gwavgm' object.")
     }
-    cat("Local summary statistics", fill = T)
-    cat("========================", fill = T)
-    cat("                 Formula:", deparse(x$call$formula), fill = T)
-    cat("                    Data:", deparse(x$call$data), fill = T)
-    cat("Number of summary points:", nrow(x$args$x), fill = T)
-    cat("         Kernel function:", x$args$kernel, fill = T)
-    cat("               Bandwidth:", x$args$bw,
+
+    cat("   ***********************************************************************\n")
+    cat("   *                         Package   GWmodel3                          *\n")
+    cat("   ***********************************************************************\n")
+    cat("   *              Results of Geographically Weighted Average             *\n")
+    cat("   ***********************************************************************\n")
+    cat("\n   *********************Model Calibration Information*********************\n")
+
+    cat("   Formula:", deparse(x$call$formula), fill = T)
+    cat("   Data:", deparse(x$call$data), fill = T)
+    cat("   Number of summary points:", nrow(x$args$x), fill = T)
+    cat("   Kernel function:", x$args$kernel, fill = T)
+    cat("   Bandwidth:", x$args$bw,
         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
         fill = T
     )
@@ -150,6 +156,13 @@ print.gwavgm <- function(x, ..., decimal_fmt) {
         distance_type <- "Generalized Minkowski"
     }
     distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
-    cat("                Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
-    cat("\n", fill = T)
+    cat("   Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
+
+    cat("\n   ***********************Local Summary Statistics************************", fill = T)
+    res <- st_drop_geometry(x$SDF)
+    df <- as.data.frame(t(sapply(res, summary)))
+    output <- capture.output(print(df))
+    output <- paste0("   ", output)
+    cat(output, sep = "\n")
+    cat("   ***********************************************************************\n")
 }
