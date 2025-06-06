@@ -113,3 +113,64 @@ gwda <- function(
     class(gwdam) <- "gwdam"
     gwdam
 }
+
+#' Print description of a `gwdam` object
+#'
+#' @param x An `gwdam` object returned by [gwr_basic()].
+#' @param decimal_fmt The format string passing to [base::sprintf()].
+#' @inheritDotParams print_table_md
+#'
+#' @method print gwdam
+#' @rdname print
+#' @export
+print.gwdam <- function(x, ..., decimal_fmt) {
+    if (!inherits(x, "gwdam")) {
+        stop("It's not a 'gwdam' object.")
+    }
+
+    cat("   ***********************************************************************\n")
+    cat("   *                         Package   GWmodel3                          *\n")
+    cat("   ***********************************************************************\n")
+    cat("   *            Results of Geographically Discriminant Analysis          *\n")
+    cat("   ***********************************************************************\n")
+    cat("\n   *********************Model Calibration Information*********************\n")
+
+    cat("   Formula:", deparse(x$call$formula), fill = T)
+    cat("   Data:", deparse(x$call$data), fill = T)
+    cat("   Method:", x$args$method, fill = T)
+    cat("   Number of summary points:", nrow(x$args$x), fill = T)
+    cat("   Kernel function:", x$args$kernel, fill = T)
+    cat("   Bandwidth:", x$args$bw,
+        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+        fill = T
+    )
+    distance_type <- "Euclidean"
+    if (x$args$longlat) {
+        distance_type <- "Geodetic"
+    } else if (x$args$p == 2) {
+        distance_type <- "Euclidean"
+    } else if (x$args$p == 1) {
+        distance_type <- "Manhattan"
+    } else if (is.infinite(x$args$p)) {
+        distance_type <- "Chebyshev"
+    } else {
+        distance_type <- "Generalized Minkowski"
+    }
+    distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
+    cat("   Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
+    res <- st_drop_geometry(x$SDF)
+    group_counts <- as.data.frame(table(res$groups))
+    cat("   Discrimination Result:", fill = T)
+    colnames(group_counts) <- c("Group", "Count")
+    output <- capture.output(print(group_counts, row.names = FALSE))
+    output <- paste0("  ", output)
+    cat(output, sep = "\n")
+
+    cat("\n   ***********************Local Summary Statistics************************", fill = T)
+    numeric_res <- res[sapply(res, is.numeric)]
+    df <- as.data.frame(t(sapply(numeric_res, summary)))
+    output <- capture.output(print(df))
+    output <- paste0("   ", output)
+    cat(output, sep = "\n")
+    cat("   ***********************************************************************\n")
+}
