@@ -10,7 +10,8 @@
 #'  default to 2, i.e., Euclidean distance.
 #' @param theta Angle in radian to roate the coordinate system, default to 0.
 #' @param components How many components want to keep, default to 2.
-#'
+#' @param scale Whether to standardised data.
+#' 
 #' @return A `gwpcam` object.
 #'
 #' @examples
@@ -32,7 +33,8 @@ gwpca <- function(
     longlat = FALSE,
     p = 2.0,
     theta = 0.0,
-    components = 2
+    components = 2,
+    scale = FALSE
 ) {
     ### Check args
     kernel = match.arg(kernel)
@@ -50,6 +52,7 @@ gwpca <- function(
     mf <- model.frame(formula = formula(update(formula, ~ . - 1)), data = sf::st_drop_geometry(data))
     mt <- attr(mf, "terms")
     x <- model.matrix(mt, mf)
+    if(scale)  x <- scale(x)
     indep_vars <- colnames(x)
 
     ### Check whether bandwidth is valid.
@@ -67,7 +70,6 @@ gwpca <- function(
     if(length(indep_vars) < components) {
         stop("Components to keep must be lower than variable counts!")
     }
-
 
 
     c_result <- tryCatch(gwpca_cal(
@@ -162,4 +164,95 @@ print.gwpcam <- function(x, decimal_fmt = "%.3f", ...) {
     )
     print_table_md(loadings_1st_str, ...)
     cat("\n", fill = T)
+}
+
+#' Glyph plot generic
+#' @export
+glyph.plot <- function(x, ...) {
+    UseMethod("glyph.plot")
+}
+
+#' Glyph plot for local loadings in PC1 of GWPCA model.
+#'
+#' @param x A "gwpcam" object.
+#' @param y Ignored.
+#' @param columns Column names to plot.
+#'  If it is missing or non-character value, all coefficient columns are plotted.
+#' @param sign whether to plot according to the loadings is beyond 0 or not.
+#' @param \dots Additional arguments passed to [sf::plot()].
+#' @method glyph.plot gwpcam
+#' @export
+glyph.plot.gwpcam <- function(x, y, ..., columns, sign = FALSE) {
+    if (!inherits(x, "gwpcam")) {
+        stop("It's not a gwpcam object.")
+    }
+
+    sdf <- sf::st_as_sf(x$SDF)
+    coords <- sf::st_coordinates(sdf)
+    r <- 0.05 * max(diff(range(coords[, 1])), diff(range(coords[, 2])))
+
+    ld <- x$local_loadings[, , 1]
+    colnames(ld) <- x$indep_vars
+    n.col <- ncol(ld)
+
+    colors <- rainbow(n.col)
+    rgb_colors <- col2rgb(colors) / 255
+
+    rowmax <- function(z) z[cbind(1:nrow(z), max.col(abs(z)))]
+    ld <- sweep(ld, 1, sign(rowmax(ld)), "*")
+
+    angles <- (0:(n.col - 1)) * 2 * pi / n.col
+    J <- 0 + (0 + 1i)
+    disp <- exp((pi / 2 - angles) * J) * r
+    loc2 <- coords[, 1] + coords[, 2] * J
+    ld.max <- max(ld)
+    ld.scaled <- abs(ld) / ld.max
+
+    plot(coords, asp = 1, type = "n")
+    points(coords, pch = 14, cex = 0.1, col = "black")
+
+    for (i in 1:nrow(ld)) {
+        for (j in 1:ncol(ld)) {
+        l.from <- loc2[i]
+        l.to <- loc2[i] + disp[j] * ld.scaled[i, j]
+        
+    if (sign) {
+    alpha <- 1
+    col <- if (ld[i, j] > 0) {
+        rgb(1, 0, 0, alpha)  # red
+    } else {
+        rgb(0, 0, 1, alpha)  # blue
+    }
+    } else {
+            col_index <- (j - 1) %% n.col + 1
+            col <- rgb(rgb_colors[1, col_index],
+                    rgb_colors[2, col_index],
+                    rgb_colors[3, col_index],
+                    alpha = 1)
+        }
+
+        lines(Re(c(l.from, l.to)), Im(c(l.from, l.to)), col = col)
+        }
+    }
+
+    par(cex = 1.3)
+    legend_labels <- colnames(ld)
+
+    if (!sign) {
+        text.w <- max(strwidth(legend_labels)) * 1.2
+        legend("bottomleft",
+            legend = legend_labels,
+            col = colors,
+            lty = 1,
+            lwd = 2,
+            text.width = text.w,
+            bg = "white")
+    } else {
+        legend("bottomleft",
+            legend = c("Positive loading", "Negative loading"),
+            col = c("red", "blue"),
+            lty = 1,
+            lwd = 2,
+            bg = "white")
+    }
 }

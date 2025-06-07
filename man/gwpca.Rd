@@ -13,7 +13,8 @@ gwpca(
   longlat = FALSE,
   p = 2,
   theta = 0,
-  components = 2
+  components = 2,
+  scale = FALSE
 )
 }
 \arguments{
@@ -35,6 +36,8 @@ default to 2, i.e., Euclidean distance.}
 \item{theta}{Angle in radian to roate the coordinate system, default to 0.}
 
 \item{components}{How many components want to keep, default to 2.}
+
+\item{scale}{Whether to standardised data.}
 }
 \value{
 A \code{gwpcam} object.
