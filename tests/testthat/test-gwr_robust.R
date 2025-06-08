@@ -2,13 +2,13 @@ data(LondonHP)
 m <- NULL
 
 test_that("GWR Robust: works", {
-  m <<- expect_no_error(
+  expect_no_error(
     gwr_robust(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE)
   )
 })
 
 test_that("GWR Robust: filtered", {
-  m <<- expect_no_error(
+  expect_no_error(
     gwr_robust(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, 64, TRUE, filter=TRUE)
   )
 })
@@ -30,12 +30,18 @@ test_that("GWR Robust: missing values", {
 
 test_that("GWR Robust: Bandwidth selection", {
   m <<- expect_no_error(
-    gwr_robust(PURCHASE~FLOORSZ+UNEMPLOY, LondonHP, "AIC", TRUE)
+    gwr_robust(PURCHASE~FLOORSZ+UNEMPLOY+PROF+TYPEDETCH, LondonHP, "AIC", TRUE)
   )
 })
 
-# test_that("GWR Robust: Variable selection", {
-#   m1 <<- expect_no_error(
-#     step(m)
-#   )
-# })
+test_that("GWR Robust: Variable selection", {
+  m1 <<- expect_no_error(
+    step(m)
+  )
+})
+
+test_that("GWR Robust: predict", {
+  expect_no_error(
+    predict(m, LondonHP)
+  )
+})

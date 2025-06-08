@@ -1,4 +1,4 @@
-#' Calibrate a basic GWR model
+#' Calibrate a Robust GWR model
 #'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.
@@ -23,12 +23,12 @@
 #' @param parallel_arg Parallel method argument.
 #' @param verbose Whether to print additional information.
 #'
-#' @return A `gwrm` object.
+#' @return A `rgwrm` object.
 #' 
 #' @details
 #' ## Parallelization
 #' 
-#' Multithreading (`omp`) are provided to speed up basic GWR algorithm:
+#' Multithreading (`omp`) are provided to speed up robust GWR algorithm:
 #' 
 #' See the vignettes about parallelization to learn more about this topic.
 #'
@@ -176,3 +176,95 @@ gwr_robust <- function(
     rgwrm
 }
 
+
+#' @describeIn gwr_robust Model selection for Robust GWR model
+#'
+#' @param object A "`gwrm`" class object.
+#' @param criterion The model-selection method.
+#'  Currently there is only AIC available.
+#' @param threshold The threshold of criterion changes. Default to 3.0.
+#' @param bw The bandwidth used in selecting models.
+#'  If `NA` or missing, the bandwidth value will be derived
+#'  from the `gwrm` object.
+#' @param optim_bw Whether optimize bandwidth after selecting models.
+#'  Avaliable values are `no`, `AIC`, and `CV`.
+#'  If `no` is specified, the bandwidth specified by argument `bw`
+#'  is used in calibrating selected models.
+#' @param \dots Other parameters.
+#' @return A `rgwrm` object.
+#' @method step rgwrm
+#'
+#' @examples
+#' step(m, threshold = 100.0, bw = Inf, optim_bw = "AIC")
+#'
+#' @importFrom stats formula
+#' @export
+step.rgwrm <- function(
+    object,
+    ...,
+    criterion = c("AIC"),
+    threshold = 3.0,
+    bw = NA,
+    optim_bw = c("no", "AIC", "CV")
+) {
+    # step method in gwr
+    res <- NextMethod()
+    res$is_filtered <- object$args$is_filtered
+    class(res) <- c("rgwrm", "gwrm")
+    res
+}
+
+#' Print description of a `rgwrm` object
+#'
+#' @param x An `rgwrm` object returned by [gwr_robust()].
+#' @param decimal_fmt The format string passing to [base::sprintf()].
+#' @inheritDotParams print_table_md
+#' 
+#' @method print rgwrm
+#' @importFrom stats coef fivenum
+#' @rdname print
+#' @export
+print.rgwrm <- function(x, decimal_fmt = "%.3f", ...) {
+    if (!inherits(x, "rgwrm")) {
+        stop("It's not a rgwrm object.")
+    }
+
+    cat("   ***********************************************************************\n")
+    cat("   *                         Package   GWmodel3                          *\n")
+    cat("   ***********************************************************************\n")
+    cat("   *        Results of Roubust Geographically Weighted Regression        *\n")
+    cat("   ***********************************************************************\n")
+    cat("\n   *********************Model Calibration Information*********************\n")
+    cat("   Formula:", deparse(x$call$formula), fill = T)
+    cat("   Data:", deparse(x$call$data), fill = T)
+    cat("   Kernel:", x$args$kernel, fill = T)
+    cat("   Bandwidth:", x$args$bw,
+        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+        ifelse(x$args$optim_bw, paste0(
+            "(Optimized accroding to ",
+            x$args$optim_bw_criterion,
+            ")"
+        ), ""), fill = T)
+    cat("   Filtered:", x$args$is_filtered, fill = T)
+
+    cat("\n   ****************Local Summary of Coefficient Estimates*****************", fill = T)
+    betas <- coef(x)
+    beta_fivenum <- t(apply(betas, 2, fivenum))
+    colnames(beta_fivenum) <- c("Min.", "1st Qu.", "Median", "3rd Qu.", "Max.")
+    rownames(beta_fivenum) <- paste0("   ", colnames(betas))
+    beta_str <- rbind(
+        c("   Coefficient", colnames(beta_fivenum)),
+        cbind(rownames(beta_fivenum), matrix2char(beta_fivenum, decimal_fmt))
+    )
+    print_table_md(beta_str, ...)
+
+    cat("\n   ************************Diagnostic Information*************************", fill = T)
+    cat("   RSS:", x$diagnostic$RSS, fill = T)
+    cat("   ENP:", x$diagnostic$ENP, fill = T)
+    cat("   EDF:", x$diagnostic$EDF, fill = T)
+    cat("   R2:", x$diagnostic$RSquare, fill = T)
+    cat("   R2adj:", x$diagnostic$RSquareAdjust, fill = T)
+    cat("   AIC:", x$diagnostic$AIC, fill = T)
+    cat("   AICc:", x$diagnostic$AICc, fill = T)
+    cat("\n", fill = T)
+}
