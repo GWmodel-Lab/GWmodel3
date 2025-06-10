@@ -152,6 +152,30 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gwr_scalable_fit
+List gwr_scalable_fit(const arma::mat& x, const arma::vec& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, double polynomial, bool hatmatrix, bool intercept, bool optim_bw, size_t optim_bw_criterion);
+RcppExport SEXP _GWmodel3_gwr_scalable_fit(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP polynomialSEXP, SEXP hatmatrixSEXP, SEXP interceptSEXP, SEXP optim_bwSEXP, SEXP optim_bw_criterionSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const arma::vec& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< double >::type polynomial(polynomialSEXP);
+    Rcpp::traits::input_parameter< bool >::type hatmatrix(hatmatrixSEXP);
+    Rcpp::traits::input_parameter< bool >::type intercept(interceptSEXP);
+    Rcpp::traits::input_parameter< bool >::type optim_bw(optim_bwSEXP);
+    Rcpp::traits::input_parameter< size_t >::type optim_bw_criterion(optim_bw_criterionSEXP);
+    rcpp_result_gen = Rcpp::wrap(gwr_scalable_fit(x, y, coords, bw, adaptive, kernel, longlat, p, theta, polynomial, hatmatrix, intercept, optim_bw, optim_bw_criterion));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gtdr_fit", (DL_FUNC) &_GWmodel3_gtdr_fit, 19},
@@ -159,6 +183,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
     {"_GWmodel3_gwr_multiscale_fit", (DL_FUNC) &_GWmodel3_gwr_multiscale_fit, 25},
+    {"_GWmodel3_gwr_scalable_fit", (DL_FUNC) &_GWmodel3_gwr_scalable_fit, 14},
     {NULL, NULL, 0}
 };
 
