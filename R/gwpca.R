@@ -19,8 +19,12 @@
 #'
 #' # Basic usage
 #' gwpca(~FLOORSZ + UNEMPLOY + PROF, LondonHP, 50, TRUE, components = 2)
-#'
-#' @seealso `browseVignettes("")`
+#' 
+#' # Standardised
+#' m <- gwpca(~FLOORSZ + UNEMPLOY + PROF, LondonHP, 50, TRUE, components = 2, scale = TRUE)
+#' # Plot local loadings
+#' glyph.plot(m)
+#' @seealso glyph.plot
 #'
 #' @importFrom stats na.action model.frame model.extract model.matrix terms
 #' @export

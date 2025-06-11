@@ -2,7 +2,17 @@ data(LondonHP)
 m <- NULL
 
 test_that("GWPCA: works", {
-  m <<- expect_no_error(gwpca(~PURCHASE + FLOORSZ + UNEMPLOY + PROF, LondonHP, bw = 50, adaptive = TRUE, components = 3))
+  expect_no_error(gwpca(~PURCHASE + FLOORSZ + UNEMPLOY + PROF + TYPEDETCH, LondonHP, bw = 50, adaptive = TRUE, components = 3))
+})
+
+test_that("GWPCA: works with scaled", {
+  m <<- expect_no_error(gwpca(~PURCHASE + FLOORSZ + UNEMPLOY + PROF, LondonHP, bw = 50, adaptive = TRUE, components = 3, scale = TRUE))
+})
+
+test_that("GWPCA: glyph plot", {
+  expect_no_error(
+    glyph.plot(m)
+  )
 })
 
 test_that("GWPCA: error test", {

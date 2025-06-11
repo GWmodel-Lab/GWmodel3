@@ -51,7 +51,11 @@ data(LondonHP)
 # Basic usage
 gwpca(~FLOORSZ + UNEMPLOY + PROF, LondonHP, 50, TRUE, components = 2)
 
+# Standardised
+m <- gwpca(~FLOORSZ + UNEMPLOY + PROF, LondonHP, 50, TRUE, components = 2, scale = TRUE)
+# Plot local loadings
+glyph.plot(m)
 }
 \seealso{
-\code{browseVignettes("")}
+glyph.plot
 }

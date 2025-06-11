@@ -5,6 +5,10 @@ gtdr_fit <- function(x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, p
     .Call(`_GWmodel3_gtdr_fit`, x, y, coords, bw, adaptive, kernel, intercept, hatmatrix, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, optim_threashold, optim_step, optim_max_iter, select_model, select_model_threshold, variable_names, verbose)
 }
 
+gwaverage_fit <- function(x, coords, bw, quantile, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg) {
+    .Call(`_GWmodel3_gwaverage_fit`, x, coords, bw, quantile, adaptive, kernel, longlat, p, theta, parallel_type, parallel_arg)
+}
+
 gwpca_cal <- function(x, coords, bw, adaptive, kernel, longlat, p, theta, keep_components) {
     .Call(`_GWmodel3_gwpca_cal`, x, coords, bw, adaptive, kernel, longlat, p, theta, keep_components)
 }
