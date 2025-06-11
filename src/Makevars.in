@@ -47,6 +47,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/GWAverage.o \
 	libgwmodel/src/gwmodelpp/GWCorrelation.o \
+	libgwmodel/src/gwmodelpp/GWRLocalCollinearity.o \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMultiscaleAlgorithm.o \
@@ -63,6 +64,7 @@ OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
 	gwr_multiscale.o \
+	gwr_localcollinearity.o \
 	gtdr.o \
 	gwaverage.o \
 	gwcorrelation.o \
