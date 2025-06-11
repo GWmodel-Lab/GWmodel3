@@ -21,3 +21,11 @@ gwr_multiscale_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, t
     .Call(`_GWmodel3_gwr_multiscale_fit`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw, optim_bw_criterion, threashold, initial_type, centered, optim_bw_lower, optim_bw_upper, criterion, hatmatrix, intercept, retry_times, max_iterations, parallel_type, parallel_arg, variable_names, verbose)
 }
 
+gwr_robust_fit <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw_lower, optim_bw_upper, hatmatrix, intercept, filter, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose) {
+    .Call(`_GWmodel3_gwr_robust_fit`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, optim_bw_lower, optim_bw_upper, hatmatrix, intercept, filter, parallel_type, parallel_arg, optim_bw, optim_bw_criterion, select_model, select_model_criterion, select_model_threshold, variable_names, verbose)
+}
+
+gwr_robust_predict <- function(pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg, verbose) {
+    .Call(`_GWmodel3_gwr_robust_predict`, pcoords, x, y, coords, bw, adaptive, kernel, longlat, p, theta, intercept, parallel_type, parallel_arg, verbose)
+}
+
