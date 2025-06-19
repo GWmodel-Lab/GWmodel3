@@ -27,11 +27,6 @@ gwr_scalable <- function(
     polynomial = 3,
     hatmatrix = TRUE)
 {
-    # bw <- as.numeric(bw)
-    # p <- as.numeric(p)
-    # theta <- as.numeric(theta)
-    # polynomial <- as.numeric(polynomial)
-
     ### Check args
     kernel <- match.arg(kernel)
     attr(data, "na.action") <- getOption("na.action")
@@ -79,22 +74,6 @@ gwr_scalable <- function(
         bw <- Inf
     }
 
-    print("here.")
-    print(typeof(bw))
-    print(typeof(p))
-    print(typeof(theta))
-    # print(typeof(polynomial))
-    print("type done.")
-
-
-    bw <- as.numeric(bw)
-    p <- as.numeric(p)
-    theta <- as.numeric(theta)
-
-    cat("optim_bw:", optim_bw, "\n")
-    cat("optim_bw_criterion:", optim_bw_criterion, "\n")
-    cat("bw:", bw, "\n")
-    cat("kernel:", enum(kernel), "\n")
 
     c_results <- tryCatch(gwr_scalable_fit(
         x, y, coords, bw,
@@ -148,55 +127,55 @@ gwr_scalable <- function(
     gwscalem
 }
 
-# #' Print description of a `gwscalem` object
-# #'
-# #' @param x An `gwscalem` object returned by [gwr_basic()].
-# #' @param decimal_fmt The format string passing to [base::sprintf()].
-# #' @inheritDotParams print_table_md
-# #'
-# #' @method print gwscalem
-# #' @rdname print
-# #' @export
-# print.gwscalem <- function(x, ..., decimal_fmt) {
-#     if (!inherits(x, "gwscalem")) {
-#         stop("It's not a 'gwscalem' object.")
-#     }
+#' Print description of a `gwscalem` object
+#'
+#' @param x An `gwscalem` object returned by [gwr_basic()].
+#' @param decimal_fmt The format string passing to [base::sprintf()].
+#' @inheritDotParams print_table_md
+#'
+#' @method print gwscalem
+#' @rdname print
+#' @export
+print.gwscalem <- function(x, ..., decimal_fmt) {
+    if (!inherits(x, "gwscalem")) {
+        stop("It's not a 'gwscalem' object.")
+    }
 
-#     cat("   ***********************************************************************\n")
-#     cat("   *                         Package   GWmodel3                          *\n")
-#     cat("   ***********************************************************************\n")
-#     cat("   *              Results of Geographically Weighted Average             *\n")
-#     cat("   ***********************************************************************\n")
-#     cat("\n   *********************Model Calibration Information*********************\n")
+    cat("   ***********************************************************************\n")
+    cat("   *                         Package   GWmodel3                          *\n")
+    cat("   ***********************************************************************\n")
+    cat("   *              Results of Geographically Weighted Average             *\n")
+    cat("   ***********************************************************************\n")
+    cat("\n   *********************Model Calibration Information*********************\n")
 
-#     cat("   Formula:", deparse(x$call$formula), fill = T)
-#     cat("   Data:", deparse(x$call$data), fill = T)
-#     cat("   Number of summary points:", nrow(x$args$x), fill = T)
-#     cat("   Kernel function:", x$args$kernel, fill = T)
-#     cat("   Bandwidth:", x$args$bw,
-#         ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
-#         fill = T
-#     )
-#     distance_type <- "Euclidean"
-#     if (x$args$longlat) {
-#         distance_type <- "Geodetic"
-#     } else if (x$args$p == 2) {
-#         distance_type <- "Euclidean"
-#     } else if (x$args$p == 1) {
-#         distance_type <- "Manhattan"
-#     } else if (is.infinite(x$args$p)) {
-#         distance_type <- "Chebyshev"
-#     } else {
-#         distance_type <- "Generalized Minkowski"
-#     }
-#     distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
-#     cat("   Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
+    cat("   Formula:", deparse(x$call$formula), fill = T)
+    cat("   Data:", deparse(x$call$data), fill = T)
+    cat("   Number of summary points:", nrow(x$args$x), fill = T)
+    cat("   Kernel function:", x$args$kernel, fill = T)
+    cat("   Bandwidth:", x$args$bw,
+        ifelse(x$args$adaptive, "(Nearest Neighbours)", "(Meters)"),
+        fill = T
+    )
+    distance_type <- "Euclidean"
+    if (x$args$longlat) {
+        distance_type <- "Geodetic"
+    } else if (x$args$p == 2) {
+        distance_type <- "Euclidean"
+    } else if (x$args$p == 1) {
+        distance_type <- "Manhattan"
+    } else if (is.infinite(x$args$p)) {
+        distance_type <- "Chebyshev"
+    } else {
+        distance_type <- "Generalized Minkowski"
+    }
+    distance_rotated <- (x$args$theta != 0 && x$args$p != 2 && !x$args$longlat)
+    cat("   Distance:", distance_type, ifelse(distance_rotated, " (rotated)", ""), fill = T)
 
-#     cat("\n   ***********************Local Summary Statistics************************", fill = T)
-#     res <- st_drop_geometry(x$SDF)
-#     df <- as.data.frame(t(sapply(res, summary)))
-#     output <- capture.output(print(df))
-#     output <- paste0("   ", output)
-#     cat(output, sep = "\n")
-#     cat("   ***********************************************************************\n")
-# }
+    cat("\n   ***********************Local Summary Statistics************************", fill = T)
+    res <- st_drop_geometry(x$SDF)
+    df <- as.data.frame(t(sapply(res, summary)))
+    output <- capture.output(print(df))
+    output <- paste0("   ", output)
+    cat(output, sep = "\n")
+    cat("   ***********************************************************************\n")
+}
