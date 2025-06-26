@@ -41,9 +41,13 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/GeneralizedLinearModel.o \
+	libgwmodel/src/gwmodelpp/PoissonModel.o \
+	libgwmodel/src/gwmodelpp/BinomialModel.o \
 	libgwmodel/src/gwmodelpp/GTDR.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
+	libgwmodel/src/gwmodelpp/GWRGeneralized.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/GWAverage.o \
 	libgwmodel/src/gwmodelpp/GWCorrelation.o \
@@ -64,6 +68,7 @@ OBJECTS_TELEGRAM = \
 OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
+	gwr_generalized.o \
 	gwr_multiscale.o \
 	gwr_localcollinearity.o \
 	gtdr.o \
