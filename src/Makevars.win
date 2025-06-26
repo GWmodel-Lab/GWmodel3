@@ -52,6 +52,7 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/GWRGeneralized.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/GWAverage.o \
+	libgwmodel/src/gwmodelpp/GWDA.o \
 	libgwmodel/src/gwmodelpp/GWCorrelation.o \
 	libgwmodel/src/gwmodelpp/GWRLocalCollinearity.o \
 	libgwmodel/src/gwmodelpp/GWPCA.o \
@@ -75,6 +76,7 @@ OBJECTS_GWMODEL = \
 	gwr_localcollinearity.o \
 	gtdr.o \
 	gwaverage.o \
+	gwda.o \
 	gwcorrelation.o \
 	gwpca.o \
 	RcppExports.o

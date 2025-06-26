@@ -13,6 +13,10 @@ gw_correlation_cal <- function(x1, x2, coords, bw, adaptive, kernel, longlat, p,
     .Call(`_GWmodel3_gw_correlation_cal`, x1, x2, coords, bw, adaptive, kernel, longlat, p, theta, initial_type, optim_bw_criterion, parallel_type, parallel_arg, variable_names, verbose)
 }
 
+gwda_cal <- function(x, y, coords, bw, adaptive, kernel, longlat, p, theta, method, parallel_type, parallel_arg) {
+    .Call(`_GWmodel3_gwda_cal`, x, y, coords, bw, adaptive, kernel, longlat, p, theta, method, parallel_type, parallel_arg)
+}
+
 gwpca_cal <- function(x, coords, bw, adaptive, kernel, longlat, p, theta, keep_components) {
     .Call(`_GWmodel3_gwpca_cal`, x, coords, bw, adaptive, kernel, longlat, p, theta, keep_components)
 }

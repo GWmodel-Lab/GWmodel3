@@ -86,6 +86,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// gwda_cal
+List gwda_cal(const arma::mat& x, std::vector<std::string>& y, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, bool method, size_t parallel_type, const IntegerVector& parallel_arg);
+RcppExport SEXP _GWmodel3_gwda_cal(SEXP xSEXP, SEXP ySEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP methodSEXP, SEXP parallel_typeSEXP, SEXP parallel_argSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const arma::mat& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< std::vector<std::string>& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const arma::mat& >::type coords(coordsSEXP);
+    Rcpp::traits::input_parameter< double >::type bw(bwSEXP);
+    Rcpp::traits::input_parameter< bool >::type adaptive(adaptiveSEXP);
+    Rcpp::traits::input_parameter< size_t >::type kernel(kernelSEXP);
+    Rcpp::traits::input_parameter< bool >::type longlat(longlatSEXP);
+    Rcpp::traits::input_parameter< double >::type p(pSEXP);
+    Rcpp::traits::input_parameter< double >::type theta(thetaSEXP);
+    Rcpp::traits::input_parameter< bool >::type method(methodSEXP);
+    Rcpp::traits::input_parameter< size_t >::type parallel_type(parallel_typeSEXP);
+    Rcpp::traits::input_parameter< const IntegerVector& >::type parallel_arg(parallel_argSEXP);
+    rcpp_result_gen = Rcpp::wrap(gwda_cal(x, y, coords, bw, adaptive, kernel, longlat, p, theta, method, parallel_type, parallel_arg));
+    return rcpp_result_gen;
+END_RCPP
+}
 // gwpca_cal
 List gwpca_cal(const arma::mat& x, const arma::mat& coords, double bw, bool adaptive, size_t kernel, bool longlat, double p, double theta, size_t keep_components);
 RcppExport SEXP _GWmodel3_gwpca_cal(SEXP xSEXP, SEXP coordsSEXP, SEXP bwSEXP, SEXP adaptiveSEXP, SEXP kernelSEXP, SEXP longlatSEXP, SEXP pSEXP, SEXP thetaSEXP, SEXP keep_componentsSEXP) {
@@ -279,6 +301,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GWmodel3_gtdr_fit", (DL_FUNC) &_GWmodel3_gtdr_fit, 19},
     {"_GWmodel3_gwaverage_fit", (DL_FUNC) &_GWmodel3_gwaverage_fit, 11},
     {"_GWmodel3_gw_correlation_cal", (DL_FUNC) &_GWmodel3_gw_correlation_cal, 15},
+    {"_GWmodel3_gwda_cal", (DL_FUNC) &_GWmodel3_gwda_cal, 12},
     {"_GWmodel3_gwpca_cal", (DL_FUNC) &_GWmodel3_gwpca_cal, 9},
     {"_GWmodel3_gwr_basic_fit", (DL_FUNC) &_GWmodel3_gwr_basic_fit, 22},
     {"_GWmodel3_gwr_basic_predict", (DL_FUNC) &_GWmodel3_gwr_basic_predict, 14},
