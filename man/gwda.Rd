@@ -2,7 +2,7 @@
 % Please edit documentation in R/gwda.R
 \name{gwda}
 \alias{gwda}
-\title{Geographically Weighted Summary Statistics}
+\title{Geographically Weighted Discriminant Analysis}
 \usage{
 gwda(
   formula,
@@ -36,6 +36,13 @@ default to 2, i.e., Euclidean distance.}
 
 \item{theta}{Angle in radian to roate the coordinate system, default to 0.}
 
+\item{method}{Discriminant method for GWDA, can be set as
+\itemize{
+\item \code{wqda}, weighted quadratic discriminant analysis
+\item \code{wlda}, weighted linear discriminant analysis
+If not provided, this parameter will be set to \code{wqda}.
+}}
+
 \item{parallel_method}{Parallel method.}
 
 \item{parallel_arg}{Parallel method argument.}
@@ -46,5 +53,5 @@ default to 2, i.e., Euclidean distance.}
 A \code{gwdam} object.
 }
 \description{
-Geographically Weighted Summary Statistics
+Geographically Weighted Discriminant Analysis
 }

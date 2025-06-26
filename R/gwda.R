@@ -1,4 +1,4 @@
-#' Geographically Weighted Summary Statistics
+#' Geographically Weighted Discriminant Analysis
 #'
 #' @param formula Regresison model.
 #' @param data A `sf` objects.
@@ -10,6 +10,10 @@
 #' @param p Power of the Minkowski distance,
 #'  default to 2, i.e., Euclidean distance.
 #' @param theta Angle in radian to roate the coordinate system, default to 0.
+#' @param method Discriminant method for GWDA, can be set as
+#'  - `wqda`, weighted quadratic discriminant analysis
+#'  - `wlda`, weighted linear discriminant analysis
+#'  If not provided, this parameter will be set to `wqda`.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.
 #'
