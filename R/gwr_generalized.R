@@ -15,8 +15,6 @@
 #' @param p Power of the Minkowski distance,
 #'  default to 2, i.e., Euclidean distance.
 #' @param theta Angle in radian to roate the coordinate system, default to 0.
-#' @param optim_bw_range Bounds on bandwidth optimization, a vector of two numeric elements.
-#'  Set to `NA_real_` to enable default values selected by the algorithm.
 #' @param hatmatrix If TRUE, great circle will be caculated.
 #' @param parallel_method Parallel method.
 #' @param parallel_arg Parallel method argument.

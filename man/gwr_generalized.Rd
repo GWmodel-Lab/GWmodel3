@@ -68,9 +68,6 @@ If it is missing or non-character value, all coefficient columns are plottd.}
 
 \item{object}{A "ggwrm" object.}
 
-\item{optim_bw_range}{Bounds on bandwidth optimization, a vector of two numeric elements.
-Set to \code{NA_real_} to enable default values selected by the algorithm.}
-
 \item{verbose}{Whether to print additional information.}
 }
 \value{
