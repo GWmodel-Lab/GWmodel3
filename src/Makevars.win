@@ -43,12 +43,20 @@ OBJECTS_LIBGWMODEL = \
 	libgwmodel/src/gwmodelpp/spatialweight/SpatialWeight.o \
 	libgwmodel/src/gwmodelpp/spatialweight/Weight.o \
 	libgwmodel/src/gwmodelpp/BandwidthSelector.o \
+	libgwmodel/src/gwmodelpp/GeneralizedLinearModel.o \
+	libgwmodel/src/gwmodelpp/PoissonModel.o \
+	libgwmodel/src/gwmodelpp/BinomialModel.o \
 	libgwmodel/src/gwmodelpp/GTDR.o \
 	libgwmodel/src/gwmodelpp/GWRBase.o \
 	libgwmodel/src/gwmodelpp/GWRBasic.o \
+	libgwmodel/src/gwmodelpp/GWRGeneralized.o \
 	libgwmodel/src/gwmodelpp/GWRMultiscale.o \
 	libgwmodel/src/gwmodelpp/GWAverage.o \
 	libgwmodel/src/gwmodelpp/GWRRobust.o \
+	libgwmodel/src/gwmodelpp/GWDA.o \
+	libgwmodel/src/gwmodelpp/GWCorrelation.o \
+	libgwmodel/src/gwmodelpp/GWRLocalCollinearity.o \
+	libgwmodel/src/gwmodelpp/GWPCA.o \
 	libgwmodel/src/gwmodelpp/SpatialAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMonoscaleAlgorithm.o \
 	libgwmodel/src/gwmodelpp/SpatialMultiscaleAlgorithm.o \
@@ -58,15 +66,21 @@ OBJECTS_TELEGRAM = \
 	telegrams/RTelegram.o \
 	telegrams/GWRBasicTelegram.o \
 	telegrams/GWRMultiscaleTelegram.o \
-	telegrams/GTDRTelegram.o
+	telegrams/GTDRTelegram.o \
+	telegrams/GWCorrelationTelegram.o
 
 OBJECTS_GWMODEL = \
 	utils.o \
 	gwr_basic.o \
+	gwr_generalized.o \
 	gwr_multiscale.o \
+	gwr_localcollinearity.o \
 	gtdr.o \
 	gwaverage.o \
 	gwr_robust.o \
+	gwda.o \
+	gwcorrelation.o \
+	gwpca.o \
 	RcppExports.o
 
 
