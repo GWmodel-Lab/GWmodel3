@@ -71,7 +71,9 @@ gwr_scalable <- function(
         optim_bw <- TRUE
         optim_bw_criterion <- 
             ifelse(is.character(bw), match.arg(bw, c("CV", "AIC")), "AIC")
-        bw <- Inf
+        print(optim_bw)
+        print(optim_bw_criterion)
+        bw <- 20
     }
 
 
@@ -103,8 +105,8 @@ gwr_scalable <- function(
     gwscalem <- list(
         SDF = sdf,
         args = list(
-            x = x,
-            coords = coords,
+            # x = x,
+            # coords = coords,
             bw = bw,
             adaptive = adaptive,
             kernel = kernel,

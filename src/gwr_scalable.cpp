@@ -60,10 +60,14 @@ List gwr_scalable_fit(
     
     if (optim_bw)
     {
-        algorithm.setParameterOptimizeCriterion(GWRScalable::BandwidthSelectionCriterionType(size_t(optim_bw_criterion)));
+        algorithm.setHasHatMatrix(true);
+        algorithm.setParameterOptimizeCriterion(GWRScalable::BandwidthSelectionCriterionType(optim_bw_criterion));
     }
     try
     {
+        cout<<"555"<<endl;
+        cout<<"带宽是："<<bw<<endl;
+        cout<<"带宽优选标准是："<<optim_bw_criterion<<endl;
         algorithm.fit();
     }
     catch(const std::exception& e)
