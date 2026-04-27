@@ -6,13 +6,15 @@
 #' 
 #' @exportClass GTDRConfig
 GTDRConfig <- setClass("GTDRConfig", slots = c(
-    bw = "numeric",
-    adaptive = "logical",
-    kernel = "character"
+  bw = "numeric",
+  adaptive = "logical",
+  kernel = "character",
+  kernel_params = "numeric"
 ), prototype = list(
-    bw = NA_real_,
-    adaptive = FALSE,
-    kernel = "gaussian"
+  bw = NA_real_,
+  adaptive = FALSE,
+  kernel = "gaussian",
+  kernel_params = numeric()
 ))
 
 #' Replicate GTDR config
@@ -32,30 +34,31 @@ NULL
 #' @rdname rep-GTDRConfig
 #' @export
 setMethod(
-    "rep",
-    signature(x = "GTDRConfig"),
-    definition = function(x, ...) {
-        mc <- match.call(rep.int)
-        mc[[1L]] <- as.name("rep.int")
-        eval(mc)
-    }
+  "rep",
+  signature(x = "GTDRConfig"),
+  definition = function(x, ...) {
+    mc <- match.call(rep.int)
+    mc[[1L]] <- as.name("rep.int")
+    eval(mc)
+  }
 )
 
 #' @rdname rep-GTDRConfig
 #' @export
 setMethod(
-    "rep.int",
-    signature(x = "GTDRConfig", times = "numeric"),
-    definition = function(x, times = 1) {
-        times <- as.integer(floor(times))
-        lapply(seq_len(times), function(i) {
-            gtdr_config(
-                bw = x@bw,
-                adaptive = x@adaptive,
-                kernel = x@kernel
-            )
-        })
-    }
+  "rep.int",
+  signature(x = "GTDRConfig", times = "numeric"),
+  definition = function(x, times = 1) {
+    times <- as.integer(floor(times))
+    lapply(seq_len(times), function(i) {
+      gtdr_config(
+        bw = x@bw,
+        adaptive = x@adaptive,
+        kernel = x@kernel,
+        kernel_params = x@kernel_params
+      )
+    })
+  }
 )
 
 #' Create an instance of GTDRConfig.
@@ -71,19 +74,20 @@ setMethod(
 #'
 #' @export
 gtdr_config <- function(
-    bw = 0.618,
-    adaptive = TRUE,
-    kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
+  bw = 0.618,
+  adaptive = TRUE,
+  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical")
 ) {
-    kernel <- match.arg(kernel)
-    new("GTDRConfig",
-        bw = bw,
-        adaptive = adaptive,
-        kernel = kernel
-    )
+  kernel <- match.arg(kernel)
+  new("GTDRConfig",
+    bw = bw,
+    adaptive = adaptive,
+    kernel = kernel,
+    kernel_params = numeric()
+  )
 }
 
 gtdr_bw_criterion_enums <- c(
-    "CV",
-    "AIC"
+  "CV",
+  "AIC"
 )

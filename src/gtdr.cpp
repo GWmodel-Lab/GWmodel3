@@ -17,6 +17,7 @@ List gtdr_fit(
     const NumericVector& bw,
     const LogicalVector& adaptive,
     const IntegerVector& kernel,
+    const List& kernel_params,
     bool intercept,
     bool hatmatrix,
     size_t parallel_type,
@@ -40,7 +41,16 @@ List gtdr_fit(
     vector<SpatialWeight> spatials;
     for (size_t i = 0; i < nDim; i++)
     {
-        BandwidthWeight bandwidth(vbw[i] * coords.n_rows, vadaptive[i], BandwidthWeight::KernelFunctionType(vkernel[i]));
+        optional<vec> kernelParams = nullopt;
+        if (vkernel[i] == BandwidthWeight::KernelFunctionType::LocalPeriodical) {
+            kernelParams = as<vec>(kernel_params[i]);
+        }
+        BandwidthWeight bandwidth { 
+            vbw[i] * coords.n_rows,
+            vadaptive[i],
+            BandwidthWeight::KernelFunctionType(vkernel[i]),
+            kernelParams
+        };
         OneDimDistance distance;
         spatials.push_back(SpatialWeight(&bandwidth, &distance));
     }
@@ -107,7 +117,7 @@ List gtdr_fit(
         const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
         for (size_t i = 0; i < nDim; i++)
         {
-            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth() / double(coords.n_rows));
+            bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>().bandwidth() / double(coords.n_rows));
         }
         result_list["bw_value"] = wrap(bw_value);
     }
