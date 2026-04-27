@@ -119,7 +119,7 @@ gtdr <- function(
   kernel_params <- lapply(config, function(x) x@kernel_params)
 
   c_result <- tryCatch(gtdr_fit(
-    x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums),
+    x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums), kernel_params,
     has_intercept, TRUE,
     enum_list(parallel_method, parallel_types), parallel_arg,
     optim_bw, enum(optim_bw_criterion, gtdr_bw_criterion_enums),
@@ -162,6 +162,7 @@ gtdr <- function(
       bw_value = bw_value,
       adaptive = adaptive,
       kernel = kernel,
+      kernel_params = kernel_params,
       optim_bw = optim_bw,
       optim_bw_criterion = optim_bw_criterion,
       optim_bw_threshold = optim_bw_threshold,

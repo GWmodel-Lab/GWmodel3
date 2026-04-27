@@ -76,14 +76,15 @@ setMethod(
 gtdr_config <- function(
   bw = 0.618,
   adaptive = TRUE,
-  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical")
+  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical"),
+  kernel_params = numeric()
 ) {
   kernel <- match.arg(kernel)
   new("GTDRConfig",
     bw = bw,
     adaptive = adaptive,
     kernel = kernel,
-    kernel_params = numeric()
+    kernel_params = kernel_params
   )
 }
 
