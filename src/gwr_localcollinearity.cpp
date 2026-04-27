@@ -101,7 +101,7 @@ List gwr_lcr_fit(
     );
     
     if (optim_bw){
-        double bw_value = algorithm.spatialWeight().weight<BandwidthWeight>()->bandwidth();
+        double bw_value = algorithm.spatialWeight().weight<BandwidthWeight>().bandwidth();
         result_list["bandwidth"] = wrap(bw_value);
     }
 

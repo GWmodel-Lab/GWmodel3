@@ -17,6 +17,7 @@ gtdr(
   optim_bw_threshold = 1e-06,
   optim_bw_step = 0.02,
   optim_bw_max_iter = 1e+06,
+  coords = NULL,
   parallel_method = c("no", "omp"),
   parallel_arg = c(0),
   verbose = FALSE

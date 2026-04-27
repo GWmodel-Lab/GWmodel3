@@ -7,7 +7,7 @@
 gtdr_config(
   bw = 0.618,
   adaptive = TRUE,
-  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar")
+  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical")
 )
 }
 \arguments{

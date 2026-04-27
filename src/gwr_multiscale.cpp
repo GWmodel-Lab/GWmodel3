@@ -124,7 +124,7 @@ List gwr_multiscale_fit (
     const vector<SpatialWeight>& spatialWeights = algorithm.spatialWeights();
     for (size_t i = 0; i < nVar; i++)
     {
-        bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>()->bandwidth());
+        bw_value.push_back(spatialWeights[i].weight<BandwidthWeight>().bandwidth());
     }
     
     // Return Results

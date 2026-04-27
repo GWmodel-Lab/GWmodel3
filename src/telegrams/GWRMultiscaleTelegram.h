@@ -33,7 +33,7 @@ public:
         mBandwidthType.resize(sws.size());
         std::transform(sws.cbegin(), sws.cend(), mBandwidthType.begin(), [](const gwm::SpatialWeight& sw)
         {
-            return sw.weight<gwm::BandwidthWeight>()->adaptive();
+            return sw.weight<gwm::BandwidthWeight>().adaptive();
         });
     }
     ~GWRMultiscaleTelegram() {}

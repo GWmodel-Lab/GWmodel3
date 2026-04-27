@@ -24,7 +24,7 @@ public:
         mBandwidthTypes.resize(mDims);
         std::transform(sws.cbegin(), sws.cend(), mBandwidthTypes.begin(), [](const gwm::SpatialWeight& sw)
         {
-            return sw.weight<gwm::BandwidthWeight>()->adaptive();
+            return sw.weight<gwm::BandwidthWeight>().adaptive();
         });
         mBandwidthCriterionType = algorithm.bandwidthCriterionType();
     }
