@@ -34,8 +34,8 @@ we can calibrate a GTDR model with the following code.
 ```{r model-calibration, cache=T}
 data(LondonHP)
 m1 <- gtdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
- data = LondonHP
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP
 )
 m1
 ```
@@ -117,9 +117,9 @@ For example, the following code will set the bandwidth size to 10% samples for a
 
 ```{r, cache=T}
 m2 <- gtdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
- data = LondonHP,
- config = list(gtdr_config(0.2))
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP,
+  config = list(gtdr_config(0.2))
 )
 m2
 ```
@@ -129,9 +129,9 @@ which should be equal to the number of independent variables (including the inte
 
 ```r
 m2 <- gtdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
- data = LondonHP,
- config = rep(gtdr_config(0.2), times = 2)
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP,
+  config = rep(gtdr_config(0.2), times = 2)
 )
 ```
 
@@ -143,10 +143,10 @@ with the same number of elements to that of dimensions.
 
 ```{r, cache=T}
 m3 <- gtdr(
- formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
- data = LondonHP,
- config = list(gtdr_config(bw = 0.5, kernel = "bisquare"),
-               gtdr_config(bw = 0.5, kernel = "bisquare"))
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP,
+  config = list(gtdr_config(bw = 0.5, kernel = "bisquare"),
+                gtdr_config(bw = 0.5, kernel = "bisquare"))
 )
 m3
 ```
@@ -161,9 +161,9 @@ We can enable bandwidth optimization with the following codes.
 
 ```{r, cahce=T}
 m4 <- gtdr(
-    formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
-    data = LondonHP,
-    optim_bw = "AIC"
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP,
+  optim_bw = "AIC"
 )
 ```
 
@@ -179,9 +179,9 @@ We can use the following code to enable model selection.
 
 ```{r model-selection, eval=FALSE, cache=T, eval=F}
 m5 <- gtdr(
-    formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
-    data = LondonHP,
-    optim_bw = "AIC"
+  formula = PURCHASE ~ FLOORSZ + UNEMPLOY,
+  data = LondonHP,
+  optim_bw = "AIC"
 ) |> step(criterion = "AIC", threshold = 3, optim_bw = "AIC")
 ```
 
@@ -192,8 +192,8 @@ For R of lower version, please use the following form:
 
 ```{r, eval=TRUE}
 m5 <- gtdr(
-    PURCHASE ~ FLOORSZ + UNEMPLOY,
-    LondonHP, optim_bw = "AIC"
+  PURCHASE ~ FLOORSZ + UNEMPLOY,
+  LondonHP, optim_bw = "AIC"
 )
 m5 <- step(m5, criterion = "AIC", threshold = 10, optim_bw = "AIC")
 m5
