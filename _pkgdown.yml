@@ -24,26 +24,46 @@ reference:
   - contents:
       - GWmodel3-package
   - title: GW regression models
-  - subtitle: Basic GWR
+  - subtitle: Basic GWR and its variants
   - contents:
     - starts_with("gwr_basic")
+    - starts_with("gwr_generalized")
+    - starts_with("gwr_lcr")
+    - starts_with("gwr_robust")
   - subtitle: Multiscale GWR
   - contents:
     - starts_with("gwr_multiscale")
     - starts_with("MGWRConfig")
     - ends_with("MGWRConfig")
     - starts_with("mgwr")
-  - subtitle: Density GWR
+  - subtitle: Density Regression
   - contents:
     - starts_with("gtdr")
     - starts_with("GTDRConfig")
     - ends_with("GTDRConfig")
     - starts_with("gtdr")
+  - title: GW Principle Componenet Analysis
+  - contents:
+    - ends_with("gwpca")
+    - ends_with("gwpcam")
+  - title: GW Summary Statistics
+  - subtitle: Univariate Statistics
+  - contents:
+    - starts_with("gwaverage")
+  - subtitle: Bivariate Statistics
+  - contents:
+    - starts_with("gwcorr")
+    - starts_with("GWCorr")
+    - ends_with("GWCorrConfig")
+  - title: GW Discriminant Analysis
+  - contents:
+    - starts_with("gwda")
   - title: Utils
   - contents:
     - print_table_md
     - starts_with("print")
     - starts_with("step_view")
+    - glyph.plot
     - ends_with("modelselcritl")
   - title: Data
   - contents:
