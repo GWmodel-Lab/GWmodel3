@@ -14,7 +14,7 @@ navbar:
         href: articles/tutorial-01-gwr-basic.html
       - text: Multiscale GWR
         href: articles/tutorial-02-gwr-multiscale.html
-      - text: Multiscale GWR
+      - text: GTDR
         href: articles/tutorial-03-gtdr.html
       - text: -------
       - text: Others
