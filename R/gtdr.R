@@ -270,7 +270,7 @@ step.gtdrm <- function(
   ### Calibrate GWR
   c_result <- with(object$args, gtdr_fit(
     x, y, coords, bw_value, adaptive,
-    enum(kernel, kernel_enums),
+    enum(kernel, kernel_enums), kernel_params,
     has_intercept, hatmatrix = TRUE,
     enum_list(parallel_method, parallel_types), parallel_arg,
     optim_bw, enum(optim_bw_criterion, gtdr_bw_criterion_enums),
