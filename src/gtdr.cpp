@@ -18,6 +18,7 @@ List gtdr_fit(
     const LogicalVector& adaptive,
     const IntegerVector& kernel,
     const List& kernel_params,
+    const LogicalVector& coord_is_angle,
     bool intercept,
     bool hatmatrix,
     size_t parallel_type,
@@ -38,6 +39,7 @@ List gtdr_fit(
     auto vbw = as< vector<double> >(NumericVector(bw));
     auto vadaptive = as< vector<bool> >(LogicalVector(adaptive));
     auto vkernel = as< vector<int> >(IntegerVector(kernel));
+    auto vcoord_is_angle = as< vector<bool> >(LogicalVector(coord_is_angle));
     vector<SpatialWeight> spatials;
     for (size_t i = 0; i < nDim; i++)
     {
@@ -51,7 +53,7 @@ List gtdr_fit(
             BandwidthWeight::KernelFunctionType(vkernel[i]),
             kernelParams
         };
-        OneDimDistance distance;
+        OneDimDistance distance { vcoord_is_angle[i] };
         spatials.push_back(SpatialWeight(&bandwidth, &distance));
     }
     

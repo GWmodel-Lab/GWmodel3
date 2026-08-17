@@ -9,12 +9,14 @@ GTDRConfig <- setClass("GTDRConfig", slots = c(
   bw = "numeric",
   adaptive = "logical",
   kernel = "character",
-  kernel_params = "numeric"
+  kernel_params = "numeric",
+  is_angle = "logical"
 ), prototype = list(
   bw = NA_real_,
   adaptive = FALSE,
   kernel = "gaussian",
-  kernel_params = numeric()
+  kernel_params = numeric(),
+  is_angle = FALSE
 ))
 
 #' Replicate GTDR config
@@ -55,7 +57,8 @@ setMethod(
         bw = x@bw,
         adaptive = x@adaptive,
         kernel = x@kernel,
-        kernel_params = x@kernel_params
+        kernel_params = x@kernel_params,
+        is_angle = x@is_angle
       )
     })
   }
@@ -76,14 +79,16 @@ setMethod(
 gtdr_config <- function(
   bw = 0.618,
   adaptive = TRUE,
-  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical"),
-  kernel_params = numeric()
+  kernel = c("gaussian", "exp", "bisquare", "tricube", "boxcar", "localperiodical", "directionbisquare", "directiongaussian"),
+  kernel_params = numeric(),
+  is_angle = FALSE
 ) {
   kernel <- match.arg(kernel)
   new("GTDRConfig",
     bw = bw,
     adaptive = adaptive,
     kernel = kernel,
+    is_angle = is_angle,
     kernel_params = kernel_params
   )
 }

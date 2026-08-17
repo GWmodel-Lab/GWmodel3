@@ -117,10 +117,11 @@ gtdr <- function(
   adaptive <- sapply(config, function(x) x@adaptive)
   kernel <- sapply(config, function(x) x@kernel)
   kernel_params <- lapply(config, function(x) x@kernel_params)
+  coord_is_angle <- sapply(config, function(x) x@is_angle)
 
   c_result <- tryCatch(gtdr_fit(
     x, y, coords, bw_value, adaptive, enum(kernel, kernel_enums), kernel_params,
-    has_intercept, TRUE,
+    coord_is_angle, has_intercept, TRUE,
     enum_list(parallel_method, parallel_types), parallel_arg,
     optim_bw, enum(optim_bw_criterion, gtdr_bw_criterion_enums),
     optim_bw_threshold, optim_bw_step, optim_bw_max_iter,
